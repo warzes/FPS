@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ComPtr.h"
+
 class WindowSystem;
 
 struct IDeviceNotify
@@ -44,8 +46,9 @@ private:
 	bool resizeSwapChain();
 	void handleDeviceLost();
 
+	ComPtr - везде
 
-	IDXGIFactory6*             m_dxgiFactory{ nullptr };
+	ComPtr<IDXGIFactory6>      m_dxgiFactory{ nullptr };
 	ID3D11Device5*             m_device{ nullptr };
 	ID3D11DeviceContext4*      m_deviceContext{ nullptr };
 	ID3DUserDefinedAnnotation* m_annotation{ nullptr };

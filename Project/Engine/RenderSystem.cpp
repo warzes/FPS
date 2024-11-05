@@ -169,21 +169,21 @@ void RenderSystem::Present()
 
 bool RenderSystem::createFactory()
 {
+	UINT flags = 0;
 #if defined(_DEBUG)
-	bool debugDXGI = false;
-
-	IDXGIInfoQueue* dxgiInfoQueue = nullptr;
-	HRESULT hResult = DXGIGetDebugInterface1(0, IID_PPV_ARGS(& dxgiInfoQueue));
-	if (SUCCEEDED(hResult))
+	flags = DXGI_CREATE_FACTORY_DEBUG;
+#endif
+	HRESULT hResult = CreateDXGIFactory2(flags, IID_PPV_ARGS(&m_dxgiFactory));
+	if (FAILED(hResult))
 	{
-		debugDXGI = true;
-		hResult = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&m_dxgiFactory));
-		if (FAILED(hResult))
-		{
-			Fatal("CreateDXGIFactory2() failed");
-			return false;
-		}
+		Fatal("CreateDXGIFactory2() failed");
+		return false;
+	}
 
+#if defined(_DEBUG)
+	ComPtr<IDXGIInfoQueue> dxgiInfoQueue;
+	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiInfoQueue))))
+	{
 		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
 		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
 
@@ -200,16 +200,7 @@ bool RenderSystem::createFactory()
 	{
 		Error("DXGIGetDebugInterface1 failed");
 	}
-
-	if (!debugDXGI)
 #endif
-	{
-		if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&m_dxgiFactory))))
-		{
-			Fatal("CreateDXGIFactory1() failed");
-			return false;
-		}
-	}
 
 	return true;
 }

@@ -35,6 +35,9 @@
     <ClInclude Include="Timer.h">
       <Filter>Engine\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="ComPtr.h">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">

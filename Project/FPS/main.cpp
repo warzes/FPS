@@ -114,6 +114,27 @@ int main(
 		assert(SUCCEEDED(hResult));
 	}
 
+	// Create Constant Buffer
+	struct Constants
+	{
+		float pos[2];
+		float paddingUnused[2]; // color (below) needs to be 16-byte aligned! 
+		float color[4];
+	};
+
+	ID3D11Buffer* constantBuffer;
+	{
+		D3D11_BUFFER_DESC constantBufferDesc = {};
+		// ByteWidth must be a multiple of 16, per the docs
+		constantBufferDesc.ByteWidth = sizeof(Constants) + 0xf & 0xfffffff0;
+		constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+		HRESULT hResult = render.GetDevice()->CreateBuffer(&constantBufferDesc, nullptr, &constantBuffer);
+		assert(SUCCEEDED(hResult));
+	}
+
 	// Create Sampler State
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -162,15 +183,68 @@ int main(
 
 	stbi_image_free(testTextureBytes);
 
+	// Timing
+	LONGLONG startPerfCount = 0;
+	LONGLONG perfCounterFrequency = 0;
+	{
+		LARGE_INTEGER perfCount;
+		QueryPerformanceCounter(&perfCount);
+		startPerfCount = perfCount.QuadPart;
+		LARGE_INTEGER perfFreq;
+		QueryPerformanceFrequency(&perfFreq);
+		perfCounterFrequency = perfFreq.QuadPart;
+	}
+	double currentTimeInSeconds = 0.0;
+
 	FLOAT backgroundColor[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
 
 	while (!IsRequestExit)
 	{
 		window.PollEvent();
+
+		float dt;
+		{
+			double previousTimeInSeconds = currentTimeInSeconds;
+			LARGE_INTEGER perfCount;
+			QueryPerformanceCounter(&perfCount);
+
+			currentTimeInSeconds = (double)(perfCount.QuadPart - startPerfCount) / (double)perfCounterFrequency;
+			dt = (float)(currentTimeInSeconds - previousTimeInSeconds);
+			if (dt > (1.f / 60.f))
+				dt = (1.f / 60.f);
+		}
+
+		// Modulate player's y-position
+		float playerPosY = {};
+		const float posCycleAmplitude = 0.5f;
+		const float posCyclePeriod = 3.f; // in seconds
+		const float posCycleFreq = 2 * M_PI / posCyclePeriod;
+		playerPosY = posCycleAmplitude * sinf(posCycleFreq * (float)currentTimeInSeconds);
+
+		// Cycle player color
+		float playerColor[4];
+		const float colorCyclePeriod = 5.f; //in seconds
+		const float colorCycleFreq = 2 * M_PI / colorCyclePeriod;
+		playerColor[0] = 0.5f * (sinf(colorCycleFreq * (float)currentTimeInSeconds) + 1);
+		playerColor[1] = 1 - playerPosY;
+		playerColor[2] = 0.f;
+		playerColor[3] = 1.f;
+
+		D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+		render.GetDeviceContext()->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+		Constants* constants = (Constants*)(mappedSubresource.pData);
+		constants->pos[0] = 0.0f;
+		constants->pos[1] = playerPosY;
+		constants->color[0] = playerColor[0];
+		constants->color[1] = playerColor[1];
+		constants->color[2] = playerColor[2];
+		constants->color[3] = playerColor[3];
+		render.GetDeviceContext()->Unmap(constantBuffer, 0);
+
 		D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)(window.GetWindowWidth()), (FLOAT)(window.GetWindowHeight()), 0.0f, 1.0f };
 		auto* rtv = render.GetRenderTargetView();
 		auto dsv = render.GetDepthStencilView();
-
+		
 		render.GetDeviceContext()->ClearRenderTargetView(rtv, backgroundColor);
 
 		render.GetDeviceContext()->RSSetViewports(1, &viewport);
@@ -185,6 +259,8 @@ int main(
 
 		render.GetDeviceContext()->PSSetShaderResources(0, 1, &textureView);
 		render.GetDeviceContext()->PSSetSamplers(0, 1, &samplerState);
+
+		render.GetDeviceContext()->VSSetConstantBuffers(0, 1, &constantBuffer);
 
 		render.GetDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 

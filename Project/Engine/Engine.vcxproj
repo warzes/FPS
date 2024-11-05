@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseHeader.h" />
+    <ClInclude Include="ComPtr.h" />
     <ClInclude Include="CoreFunc.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="RenderSystem.h" />

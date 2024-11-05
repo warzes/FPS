@@ -8,6 +8,9 @@
     <ClCompile Include="WindowSystem.cpp">
       <Filter>Engine\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -19,6 +22,9 @@
     </ClInclude>
     <ClInclude Include="WindowSystem.h">
       <Filter>Engine\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +39,9 @@
     </Filter>
     <Filter Include="Engine\Platform">
       <UniqueIdentifier>{eb46abcc-e0b9-44fc-80bd-b20e73fd8fd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Render">
+      <UniqueIdentifier>{30efb5eb-fd9d-410e-9029-62738994c559}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

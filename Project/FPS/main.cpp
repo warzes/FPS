@@ -21,11 +21,15 @@ int main(
 	WindowSystem window;
 	window.Create({});
 
+	RenderSystem render;
+	render.Create(window, {});
+
 	while (!IsRequestExit)
 	{
 		window.PollEvent();
 	}
 
+	render.Destroy();
 	window.Destroy();
 	log.Destroy();
 }

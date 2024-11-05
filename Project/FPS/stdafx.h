@@ -7,3 +7,6 @@
 
 // Platform Header
 #include <Engine/WindowSystem.h>
+
+// Render Header
+#include <Engine/RenderSystem.h>

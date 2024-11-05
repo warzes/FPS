@@ -17,8 +17,8 @@ public:
 
 	void PollEvent();
 
-	HWND      GetWindowHWND() { return m_hwnd; }
-	HINSTANCE GetWindowInstance() { return m_handleInstance; }
+	HWND      GetWindowHWND() const { return m_hwnd; }
+	HINSTANCE GetWindowInstance() const { return m_handleInstance; }
 	uint32_t  GetWindowWidth() const { return m_windowWidth; }
 	uint32_t  GetWindowHeight() const { return m_windowHeight; }
 

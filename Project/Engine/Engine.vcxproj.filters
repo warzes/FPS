@@ -11,6 +11,9 @@
     <ClCompile Include="RenderSystem.cpp">
       <Filter>Engine\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Engine\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -25,6 +28,12 @@
     </ClInclude>
     <ClInclude Include="RenderSystem.h">
       <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreFunc.h">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Engine\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

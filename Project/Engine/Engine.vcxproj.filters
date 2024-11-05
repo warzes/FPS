@@ -2,9 +2,24 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Log.cpp">
+      <Filter>Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowSystem.cpp">
+      <Filter>Engine\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="BaseHeader.h">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowSystem.h">
+      <Filter>Engine\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -12,6 +27,12 @@
     </Filter>
     <Filter Include="Engine\Core">
       <UniqueIdentifier>{8427b413-d00e-46fe-89cd-c1b25bc716d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Application">
+      <UniqueIdentifier>{d4b19eff-f2f7-4571-8caf-b9b76c41fbe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Platform">
+      <UniqueIdentifier>{eb46abcc-e0b9-44fc-80bd-b20e73fd8fd0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

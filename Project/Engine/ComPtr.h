@@ -44,11 +44,7 @@ struct ComPtr
 
 	~ComPtr()
 	{
-		if (m_comPtr)
-		{
-			m_comPtr->Release();
-			m_comPtr = nullptr;
-		}
+		Reset();
 	}
 
 	T** operator&()
@@ -70,6 +66,15 @@ struct ComPtr
 	bool operator<(T* lComPtr) const { return m_comPtr < lComPtr; }
 	bool operator!=(T* lComPtr) const { return !operator==(lComPtr); }
 	bool operator==(T* lComPtr) const { return m_comPtr == lComPtr; }
+
+	void Reset()
+	{
+		if (m_comPtr)
+		{
+			m_comPtr->Release();
+			m_comPtr = nullptr;
+		}
+	}
 
 protected:
 	T* m_comPtr;

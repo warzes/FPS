@@ -28,7 +28,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noex
 		PostQuitMessage(0);
 		break;
 	case WM_DISPLAYCHANGE:
-		if (thisRenderSystem) thisRenderSystem->UpdateColorSpace();
 		break;
 
 	case WM_MOVE:

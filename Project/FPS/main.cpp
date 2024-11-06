@@ -231,7 +231,7 @@ int main(
 		playerColor[3] = 1.f;
 
 		D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-		render.GetDeviceContext()->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+		render.GetImmediateContext()->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 		Constants* constants = (Constants*)(mappedSubresource.pData);
 		constants->pos[0] = 0.0f;
 		constants->pos[1] = playerPosY;
@@ -239,32 +239,32 @@ int main(
 		constants->color[1] = playerColor[1];
 		constants->color[2] = playerColor[2];
 		constants->color[3] = playerColor[3];
-		render.GetDeviceContext()->Unmap(constantBuffer, 0);
+		render.GetImmediateContext()->Unmap(constantBuffer, 0);
 
 		D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)(window.GetWindowWidth()), (FLOAT)(window.GetWindowHeight()), 0.0f, 1.0f };
 		auto* rtv = render.GetRenderTargetView();
 		auto dsv = render.GetDepthStencilView();
 		
-		render.GetDeviceContext()->ClearRenderTargetView(rtv, backgroundColor);
+		render.GetImmediateContext()->ClearRenderTargetView(rtv, backgroundColor);
 
-		render.GetDeviceContext()->RSSetViewports(1, &viewport);
+		render.GetImmediateContext()->RSSetViewports(1, &viewport);
 
-		render.GetDeviceContext()->OMSetRenderTargets(1, &rtv, nullptr);
+		render.GetImmediateContext()->OMSetRenderTargets(1, &rtv, nullptr);
 
-		render.GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		render.GetDeviceContext()->IASetInputLayout(inputLayout);
+		render.GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		render.GetImmediateContext()->IASetInputLayout(inputLayout);
 
-		render.GetDeviceContext()->VSSetShader(vertexShader, nullptr, 0);
-		render.GetDeviceContext()->PSSetShader(pixelShader, nullptr, 0);
+		render.GetImmediateContext()->VSSetShader(vertexShader, nullptr, 0);
+		render.GetImmediateContext()->PSSetShader(pixelShader, nullptr, 0);
 
-		render.GetDeviceContext()->PSSetShaderResources(0, 1, &textureView);
-		render.GetDeviceContext()->PSSetSamplers(0, 1, &samplerState);
+		render.GetImmediateContext()->PSSetShaderResources(0, 1, &textureView);
+		render.GetImmediateContext()->PSSetSamplers(0, 1, &samplerState);
 
-		render.GetDeviceContext()->VSSetConstantBuffers(0, 1, &constantBuffer);
+		render.GetImmediateContext()->VSSetConstantBuffers(0, 1, &constantBuffer);
 
-		render.GetDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+		render.GetImmediateContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
-		render.GetDeviceContext()->Draw(numVerts, 0);
+		render.GetImmediateContext()->Draw(numVerts, 0);
 
 		render.Present();
 	}

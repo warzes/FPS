@@ -31,69 +31,43 @@ RenderSystem* thisRenderSystem = nullptr;
 
 RenderSystem::~RenderSystem()
 {
-	assert(!m_device);
+	assert(!thisRenderSystem);
 }
 
 bool RenderSystem::Create(const WindowSystem& window, const RenderSystemCreateInfo& createInfo)
 {
 	assert(!thisRenderSystem);
 
-	if (!createFactory()) return false;
-
-	m_window = window.GetWindowHWND();
+	m_windowHWND = window.GetWindowHWND();
 	m_outputSize.left = m_outputSize.top = 0;
 	m_outputSize.right = static_cast<long>(window.GetWindowWidth());
 	m_outputSize.bottom = static_cast<long>(window.GetWindowHeight());
 
+	m_enableGraphicsAPIValidation = createInfo.EnableGraphicsAPIValidation;
+#if defined(_DEBUG)
+	m_enableGraphicsAPIValidation = true;
+#endif
+
 	m_allowTearing = createInfo.AllowTearing;
-	// Determines whether tearing support is available for fullscreen borderless windows.
-	if (m_allowTearing)
-	{
-		BOOL allowTearing = FALSE;
-		HRESULT hr = m_dxgiFactory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
-		if (FAILED(hr) || !allowTearing)
-		{
-			m_allowTearing = false;
-			Warning("Variable refresh rate displays not supported");
-		}
-	}
+	m_enableHDR = createInfo.EnableHDR;
+	m_flipPresent = createInfo.FlipPresent;
 
-	// Create D3D11 Device and Context
-	if (!createDevice()) return false;
-
-	// Set up debug layer to break on D3D11 errors
-	setDebugLayer();
-	
-	// Create Swap Chain
-	if (!resizeSwapChain()) return false;
+	if (!create()) return false;
 
 	thisRenderSystem = this;
-
 	return true;
 }
 
 void RenderSystem::Destroy()
 {
-	if (m_renderTargetView) m_renderTargetView->Release();
-	if (m_renderTarget) m_renderTarget->Release();
-	if (m_depthStencilView) m_depthStencilView->Release();
-	if (m_depthStencil) m_depthStencil->Release();
+	m_renderTargetView.Reset();
+	m_renderTarget.Reset();
+	m_depthStencilView.Reset();
+	m_depthStencil.Reset();
 
-	if (m_swapChain) m_swapChain->Release();
-	if (m_annotation) m_annotation->Release();
-	if (m_deviceContext) m_deviceContext->Release();
-	if (m_device) m_device->Release();
-	if (m_dxgiFactory) m_dxgiFactory->Release();
-
-	m_annotation = nullptr;
-	m_dxgiFactory = nullptr;
-	m_device = nullptr;
-	m_deviceContext = nullptr;
-	m_swapChain = nullptr;
-	m_renderTargetView = nullptr;
-	m_renderTarget = nullptr;
-	m_depthStencilView = nullptr;
-	m_depthStencil = nullptr;
+	m_swapChain.Reset();
+	m_deviceContext.Reset();
+	m_device.Reset();
 
 	thisRenderSystem = nullptr;
 }
@@ -106,9 +80,7 @@ bool RenderSystem::Resize(int width, int height)
 	newRc.bottom = static_cast<long>(height);
 	if (newRc.right == m_outputSize.right && newRc.bottom == m_outputSize.bottom)
 	{
-		// Handle color space settings for HDR
-		UpdateColorSpace();
-		return false;
+		return true;
 	}
 
 	m_outputSize = newRc;
@@ -159,27 +131,21 @@ void RenderSystem::Present()
 			Fatal("Render Present failed");
 			return;
 		}
-
-		if (!m_dxgiFactory->IsCurrent())
-		{
-			UpdateColorSpace();
-		}
 	}
 }
 
-bool RenderSystem::createFactory()
+bool RenderSystem::create()
 {
-	UINT flags = 0;
-#if defined(_DEBUG)
-	flags = DXGI_CREATE_FACTORY_DEBUG;
-#endif
-	HRESULT hResult = CreateDXGIFactory2(flags, IID_PPV_ARGS(&m_dxgiFactory));
-	if (FAILED(hResult))
-	{
-		Fatal("CreateDXGIFactory2() failed");
-		return false;
-	}
+	setupDebug();
+	if (!selectAdapter()) return false;
+	if (!createDevice()) return false;
+	setDebugLayer();
+	if (!resizeSwapChain()) return false;
+	return true;
+}
 
+void RenderSystem::setupDebug()
+{
 #if defined(_DEBUG)
 	ComPtr<IDXGIInfoQueue> dxgiInfoQueue;
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiInfoQueue))))
@@ -201,29 +167,53 @@ bool RenderSystem::createFactory()
 		Error("DXGIGetDebugInterface1 failed");
 	}
 #endif
+}
+
+bool RenderSystem::selectAdapter()
+{
+	// create factory
+	ComPtr<IDXGIFactory6> dxgiFactory{ nullptr };
+	if (FAILED(CreateDXGIFactory2(m_enableGraphicsAPIValidation ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&dxgiFactory))))
+	{
+		Fatal("CreateDXGIFactory2() failed");
+		return false;
+	}
+
+	// Determines whether tearing support is available for fullscreen borderless windows.
+	if (m_allowTearing)
+	{
+		BOOL allowTearing = FALSE;
+		HRESULT hr = dxgiFactory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
+		if (FAILED(hr) || !allowTearing)
+		{
+			m_allowTearing = false;
+			Warning("Variable refresh rate displays not supported");
+		}
+	}
+
+	// select adapter
+	m_adapter = getHardwareAdapter(dxgiFactory);
+	if (!m_adapter) return false;
+
+	DXGI_ADAPTER_DESC adapterDesc;
+	m_adapter->GetDesc(&adapterDesc);
+	Print("Graphics Device: " + ToString(std::wstring(adapterDesc.Description)));
 
 	return true;
 }
 
-// This method acquires the first available hardware adapter.
-// If no such adapter can be found, *ppAdapter will be set to nullptr.
-void RenderSystem::getHardwareAdapter(IDXGIAdapter4** ppAdapter)
+ComPtr<IDXGIAdapter4> RenderSystem::getHardwareAdapter(ComPtr<IDXGIFactory6> factory)
 {
-	*ppAdapter = nullptr;
-
-	IDXGIAdapter1* adapter;
+	ComPtr<IDXGIAdapter4> adapter = nullptr;
 	for (UINT adapterIndex = 0;
-		SUCCEEDED(m_dxgiFactory->EnumAdapterByGpuPreference(
-			adapterIndex,
-			DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-			IID_PPV_ARGS(&adapter)));
+		SUCCEEDED(factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)));
 		adapterIndex++)
 	{
 		DXGI_ADAPTER_DESC1 desc;
 		if (FAILED(adapter->GetDesc1(&desc)))
 		{
 			Fatal("IDXGIAdapter1::GetDesc1() failed");
-			return;
+			return nullptr;
 		}
 
 		if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
@@ -234,83 +224,29 @@ void RenderSystem::getHardwareAdapter(IDXGIAdapter4** ppAdapter)
 
 		break;
 	}
-
-	if (!adapter)
-	{
-		for (UINT adapterIndex = 0;
-			SUCCEEDED(m_dxgiFactory->EnumAdapters1(adapterIndex, &adapter));
-				adapterIndex++)
-		{
-			DXGI_ADAPTER_DESC1 desc;
-			if (FAILED(adapter->GetDesc1(&desc)))
-			{
-				Fatal("IDXGIAdapter1::GetDesc1() failed");
-				return;
-			}
-
-			if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-			{
-				// Don't select the Basic Render Driver adapter.
-				continue;
-			}
-
-			break;
-		}
-	}
-
-	if (adapter)
-	{
-		adapter->QueryInterface(&*ppAdapter);
-		adapter->Release();
-	}
+	return adapter;
 }
 
 bool RenderSystem::createDevice()
 {
-	IDXGIAdapter4* adapter{ nullptr };
-	getHardwareAdapter(&adapter);
-	if (!adapter) return false;
-
-	DXGI_ADAPTER_DESC adapterDesc;
-	adapter->GetDesc(&adapterDesc);
-	Print("Graphics Device: " + ToString(std::wstring(adapterDesc.Description)));
-
 	D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_1, };
-	UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-#if defined(_DEBUG)
-	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+	UINT creationFlags = m_enableGraphicsAPIValidation ? D3D11_CREATE_DEVICE_DEBUG : 0;
 
-	ID3D11Device* baseDevice;
-	ID3D11DeviceContext* baseDeviceContext;
-	HRESULT hResult = D3D11CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, creationFlags, featureLevels, ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &baseDevice, nullptr, &baseDeviceContext);
-	adapter->Release();
-	if (FAILED(hResult))
+	ComPtr<ID3D11Device> baseDevice;
+	ComPtr<ID3D11DeviceContext> baseDeviceContext;
+	if (FAILED(D3D11CreateDevice(m_adapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, creationFlags, featureLevels, ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &baseDevice, nullptr, &baseDeviceContext)))
 	{
 		Fatal("D3D11CreateDevice() failed");
 		return false;
 	}
-
-	hResult = baseDevice->QueryInterface(&m_device);
-	baseDevice->Release();
-	if (FAILED(hResult))
+	if (FAILED(baseDevice->QueryInterface(&m_device)))
 	{
 		Fatal("QueryInterface ID3D11Device5 failed");
 		return false;
 	}
-
-	hResult = baseDeviceContext->QueryInterface(&m_deviceContext);
-	if (FAILED(hResult))
+	if (FAILED(baseDeviceContext->QueryInterface(&m_deviceContext)))
 	{
-		baseDeviceContext->Release();
 		Fatal("QueryInterface ID3D11DeviceContext4 failed");
-		return false;
-	}
-	hResult = baseDeviceContext->QueryInterface(&m_annotation);
-	baseDeviceContext->Release();
-	if (FAILED(hResult))
-	{
-		Fatal("QueryInterface ID3DUserDefinedAnnotation failed");
 		return false;
 	}
 
@@ -320,11 +256,11 @@ bool RenderSystem::createDevice()
 void RenderSystem::setDebugLayer()
 {
 #if defined(_DEBUG)
-	ID3D11Debug* d3dDebug = nullptr;
+	ComPtr<ID3D11Debug> d3dDebug = nullptr;
 	m_device->QueryInterface(&d3dDebug);
 	if (d3dDebug)
 	{
-		ID3D11InfoQueue* d3dInfoQueue = nullptr;
+		ComPtr<ID3D11InfoQueue> d3dInfoQueue = nullptr;
 		if (SUCCEEDED(d3dDebug->QueryInterface(&d3dInfoQueue)))
 		{
 			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
@@ -338,10 +274,7 @@ void RenderSystem::setDebugLayer()
 			filter.DenyList.NumIDs = static_cast<UINT>(std::size(hide));
 			filter.DenyList.pIDList = hide;
 			d3dInfoQueue->AddStorageFilterEntries(&filter);
-
-			d3dInfoQueue->Release();
 		}
-		d3dDebug->Release();
 	}
 #endif
 }
@@ -351,10 +284,10 @@ bool RenderSystem::resizeSwapChain()
 	if (!m_deviceContext || !m_device) return false;
 
 	m_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-	if (m_renderTargetView) m_renderTargetView->Release();
-	if (m_depthStencilView) m_depthStencilView->Release();
-	if (m_renderTarget) m_renderTarget->Release();
-	if (m_depthStencil) m_depthStencil->Release();
+	m_renderTargetView.Reset();
+	m_renderTarget.Reset();
+	m_depthStencilView.Reset();
+	m_depthStencil.Reset();
 	m_deviceContext->Flush();
 
 	// Determine the render target size in pixels.
@@ -365,14 +298,7 @@ bool RenderSystem::resizeSwapChain()
 	if (m_swapChain)
 	{
 		// If the swap chain already exists, resize it.
-		HRESULT hr = m_swapChain->ResizeBuffers(
-			m_backBufferCount,
-			backBufferWidth,
-			backBufferHeight,
-			backBufferFormat,
-			(m_allowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u
-		);
-
+		HRESULT hr = m_swapChain->ResizeBuffers(m_backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat, (m_allowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u);
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 		{
 #if defined(_DEBUG)
@@ -382,7 +308,7 @@ bool RenderSystem::resizeSwapChain()
 			Print(buff);
 #endif
 			// If the device was removed for any reason, a new device and swap chain will need to be created.
-			handleDeviceLost();
+			if (!handleDeviceLost()) return false;
 
 			// Everything is set up now. Do not continue execution of this method. HandleDeviceLost will reenter this method and correctly set up the new device.
 			return true;
@@ -398,40 +324,30 @@ bool RenderSystem::resizeSwapChain()
 	}
 	else
 	{
-		// Create a descriptor for the swap chain.
-		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-		swapChainDesc.Width = backBufferWidth;
-		swapChainDesc.Height = backBufferHeight;
-		swapChainDesc.Format = backBufferFormat;
-		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.BufferCount = m_backBufferCount;
-		swapChainDesc.SampleDesc.Count = 1;
-		swapChainDesc.SampleDesc.Quality = 0;
-		swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
-		swapChainDesc.SwapEffect = (m_flipPresent || m_allowTearing || m_enableHDR) ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD;
-		swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-		swapChainDesc.Flags = (m_allowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u;
-
-		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
-		fsSwapChainDesc.Windowed = TRUE;
-
-		// Create a SwapChain from a Win32 window.
-		if (FAILED(m_dxgiFactory->CreateSwapChainForHwnd(m_device, m_window, &swapChainDesc, &fsSwapChainDesc, nullptr, &m_swapChain)))
-		{
-			Fatal("CreateSwapChainForHwnd failed");
-			return false;
-		}
-
-		// This class does not support exclusive full-screen mode and prevents DXGI from responding to the ALT+ENTER shortcut
-		if (FAILED(m_dxgiFactory->MakeWindowAssociation(m_window, DXGI_MWA_NO_ALT_ENTER)))
-		{
-			Fatal("MakeWindowAssociation failed");
-			return false;
-		}
+		if (!createSwapChain(backBufferWidth, backBufferHeight, backBufferFormat)) return false;
 	}
 
-	// Handle color space settings for HDR
-	UpdateColorSpace();
+	// Color space
+	{
+		uint32_t colorSpaceSupport = 0;
+		HRESULT hr = m_swapChain->CheckColorSpaceSupport(m_colorSpace, &colorSpaceSupport);
+
+		if (!(colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT))
+			hr = E_FAIL;
+
+		if (SUCCEEDED(hr))
+			hr = m_swapChain->SetColorSpace1(m_colorSpace);
+
+		if (FAILED(hr))
+			Warning("IDXGISwapChain::SetColorSpace1() failed!");
+	}
+
+	// Background color
+	{
+		DXGI_RGBA color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		if (FAILED(m_swapChain->SetBackgroundColor(&color)))
+			Warning("IDXGISwapChain::SetBackgroundColor() failed!");
+	}
 
 	// Create a render target view of the swap chain back buffer.
 	if (FAILED(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&m_renderTarget))))
@@ -447,24 +363,15 @@ bool RenderSystem::resizeSwapChain()
 		return false;
 	}
 
+	// Create a depth stencil view for use with 3D rendering if needed.
 	if (m_depthBufferFormat != DXGI_FORMAT_UNKNOWN)
 	{
-		// Create a depth stencil view for use with 3D rendering if needed.
-		CD3D11_TEXTURE2D_DESC depthStencilDesc(
-			m_depthBufferFormat,
-			backBufferWidth,
-			backBufferHeight,
-			1, // Use a single array entry.
-			1, // Use a single mipmap level.
-			D3D11_BIND_DEPTH_STENCIL
-		);
-
+		CD3D11_TEXTURE2D_DESC depthStencilDesc(m_depthBufferFormat, backBufferWidth, backBufferHeight, 1, 1, D3D11_BIND_DEPTH_STENCIL);
 		if (FAILED(m_device->CreateTexture2D(&depthStencilDesc, nullptr, &m_depthStencil)))
 		{
 			Fatal("Create a depth target texture failed");
 			return false;
 		}
-
 		if (FAILED(m_device->CreateDepthStencilView(m_depthStencil, nullptr, &m_depthStencilView)))
 		{
 			Fatal("Create a depth target view failed");
@@ -478,18 +385,57 @@ bool RenderSystem::resizeSwapChain()
 	return true;
 }
 
-void RenderSystem::handleDeviceLost()
+bool RenderSystem::createSwapChain(UINT backBufferWidth, UINT backBufferHeight, DXGI_FORMAT backBufferFormat)
+{
+	assert(m_adapter);
+	ComPtr<IDXGIFactory6> dxgiFactory6;
+	if (FAILED(m_adapter->GetParent(IID_PPV_ARGS(&dxgiFactory6))))
+	{
+		Fatal("IDXGIAdapter::GetParent() failed");
+		return false;
+	}
+
+	// Create a descriptor for the swap chain.
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+	swapChainDesc.Width = backBufferWidth;
+	swapChainDesc.Height = backBufferHeight;
+	swapChainDesc.Format = backBufferFormat;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount = m_backBufferCount;
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.Scaling = DXGI_SCALING_NONE;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+	swapChainDesc.Flags = (m_allowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u;
+
+	// Create a SwapChain from a Win32 window.
+	if (FAILED(dxgiFactory6->CreateSwapChainForHwnd(m_device, m_windowHWND, &swapChainDesc, nullptr, nullptr, (IDXGISwapChain1**)&m_swapChain)))
+	{
+		Fatal("IDXGIFactory::CreateSwapChainForHwnd() failed");
+		return false;
+	}
+
+	// This class does not support exclusive full-screen mode and prevents DXGI from responding to the ALT+ENTER shortcut
+	if (FAILED(dxgiFactory6->MakeWindowAssociation(m_windowHWND, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER)))
+	{
+		Fatal("IDXGIFactory::MakeWindowAssociation() failed");
+		return false;
+	}
+
+	return true;
+}
+
+bool RenderSystem::handleDeviceLost()
 {
 	if (m_deviceNotify) m_deviceNotify->OnDeviceLost();
 
-	if (m_depthStencilView) m_depthStencilView->Release();
-	if (m_renderTargetView) m_renderTargetView->Release();
-	if (m_renderTarget) m_renderTarget->Release();
-	if (m_depthStencil) m_depthStencil->Release();
-	if (m_swapChain) m_swapChain->Release();
-	if (m_deviceContext) m_deviceContext->Release();
-	if (m_annotation) m_annotation->Release();
-
+	m_depthStencilView.Reset();
+	m_renderTargetView.Reset();
+	m_renderTarget.Reset();
+	m_depthStencil.Reset();
+	m_swapChain.Reset();
+	m_deviceContext.Reset();
 #if defined(_DEBUG)
 	{
 		ID3D11Debug* d3dDebug;
@@ -499,149 +445,11 @@ void RenderSystem::handleDeviceLost()
 		}
 	}
 #endif
+	m_device.Reset();
 
-	m_device->Release();
-	m_dxgiFactory->Release();
-
-	if (!createFactory())
-	{
-		// TODO: error
-	}
-	if (!createDevice())
-	{
-		// TODO: error
-	}
-	setDebugLayer();
-	if (!resizeSwapChain())
-	{
-		// TODO: error
-	}
+	if (!create()) return false;
 
 	if (m_deviceNotify) m_deviceNotify->OnDeviceRestored();
-}
 
-// Sets the color space for the swap chain in order to handle HDR output.
-void RenderSystem::UpdateColorSpace()
-{
-	if (!m_dxgiFactory) return;
-
-	if (!m_dxgiFactory->IsCurrent())
-	{
-		// Output information is cached on the DXGI Factory. If it is stale we need to create a new factory.
-		if (!createFactory())
-		{
-			// TODO: error
-		}
-	}
-
-	DXGI_COLOR_SPACE_TYPE colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
-
-	bool isDisplayHDR10 = false;
-
-	if (m_swapChain)
-	{
-		// To detect HDR support, we will need to check the color space in the primary DXGI output associated with the app at this point in time (using window/display intersection).
-
-		// Get the rectangle bounds of the app window.
-		RECT windowBounds;
-		if (!GetWindowRect(m_window, &windowBounds))
-		{
-			Fatal("GetWindowRect");
-			return;
-		}
-
-		const long ax1 = windowBounds.left;
-		const long ay1 = windowBounds.top;
-		const long ax2 = windowBounds.right;
-		const long ay2 = windowBounds.bottom;
-
-		IDXGIOutput* bestOutput{ nullptr };
-		long bestIntersectArea = -1;
-
-		IDXGIAdapter* adapter;
-		for (UINT adapterIndex = 0;
-			SUCCEEDED(m_dxgiFactory->EnumAdapters(adapterIndex, &adapter));
-			++adapterIndex)
-		{
-			IDXGIOutput* output;
-			for (UINT outputIndex = 0;
-				SUCCEEDED(adapter->EnumOutputs(outputIndex, &output));
-				++outputIndex)
-			{
-				// Get the rectangle bounds of current output.
-				DXGI_OUTPUT_DESC desc;
-				if (FAILED(output->GetDesc(&desc)))
-				{
-					Fatal("GetDesc failed");
-					return;
-				}
-				const auto& r = desc.DesktopCoordinates;
-
-				// Compute the intersection
-				const long intersectArea = computeIntersectionArea(ax1, ay1, ax2, ay2, r.left, r.top, r.right, r.bottom);
-				if (intersectArea > bestIntersectArea)
-				{
-					if (bestOutput) bestOutput->Release();
-					bestOutput = output;
-					bestIntersectArea = intersectArea;
-				}
-			}
-		}
-
-		if (bestOutput)
-		{
-			IDXGIOutput6* output6;
-			if (SUCCEEDED(bestOutput->QueryInterface(&output6)))
-			{
-				DXGI_OUTPUT_DESC1 desc;
-				if (FAILED(output6->GetDesc1(&desc)))
-				{
-					Fatal("GetDesc1 failed");
-					return;
-				}
-
-				if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020)
-				{
-					// Display output is HDR10.
-					isDisplayHDR10 = true;
-				}
-			}
-		}
-	}
-
-	if ((m_enableHDR) && isDisplayHDR10)
-	{
-		switch (m_backBufferFormat)
-		{
-		case DXGI_FORMAT_R10G10B10A2_UNORM:
-			// The application creates the HDR10 signal.
-			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
-			break;
-
-		case DXGI_FORMAT_R16G16B16A16_FLOAT:
-			// The system creates the HDR10 signal; application uses linear values.
-			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	m_colorSpace = colorSpace;
-
-	IDXGISwapChain3* swapChain3;
-	if (m_swapChain && SUCCEEDED(m_swapChain->QueryInterface(&swapChain3)))
-	{
-		UINT colorSpaceSupport = 0;
-		if (SUCCEEDED(swapChain3->CheckColorSpaceSupport(colorSpace, &colorSpaceSupport))
-			&& (colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT))
-		{
-			if (FAILED(swapChain3->SetColorSpace1(colorSpace)))
-			{
-				Fatal("SetColorSpace1 failed");
-				return;
-			}
-		}
-	}
+	return true;
 }

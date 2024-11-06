@@ -168,7 +168,7 @@ void RenderSystem::setupDebug()
 bool RenderSystem::selectAdapter()
 {
 	// create factory
-	IDXGIFactory6* dxgiFactory{ nullptr };
+	ComPtr<IDXGIFactory6> dxgiFactory{ nullptr };
 	if (FAILED(CreateDXGIFactory2(m_enableGraphicsAPIValidation ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&dxgiFactory))))
 	{
 		Fatal("CreateDXGIFactory2() failed");

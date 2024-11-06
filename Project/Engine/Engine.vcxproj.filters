@@ -14,6 +14,9 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Engine\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="InputSystem.cpp">
+      <Filter>Engine\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -37,6 +40,12 @@
     </ClInclude>
     <ClInclude Include="ComPtr.h">
       <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem.h">
+      <Filter>Engine\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Key.h">
+      <Filter>Engine\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

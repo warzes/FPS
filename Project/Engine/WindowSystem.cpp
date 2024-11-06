@@ -2,15 +2,18 @@
 #include "WindowSystem.h"
 #include "Log.h"
 #include "RenderSystem.h"
+#include "InputSystem.h"
 //=============================================================================
 extern void RequestExit();
 extern RenderSystem* thisRenderSystem;
+extern InputSystem* thisInputSystem;
 //=============================================================================
 namespace
 {
 	constexpr auto windowClassName = L"Sapphire Window Class";
 }
 WindowSystem* thisWindowSystem = nullptr;
+
 //=============================================================================
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
@@ -150,6 +153,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noex
 			s_fullscreen = !s_fullscreen;
 		}
 		break;
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	{
+		bool isDown = (msg == WM_KEYDOWN);
+		if (wParam == 'W')
+			thisInputSystem->m_keyState[static_cast<size_t>(Key::KEY_W)] = isDown ? KeyState::Down : KeyState::Up;
+		else if (wParam == 'A')
+			thisInputSystem->m_keyState[static_cast<size_t>(Key::KEY_A)] = isDown ? KeyState::Down : KeyState::Up;
+		else if (wParam == 'S')
+			thisInputSystem->m_keyState[static_cast<size_t>(Key::KEY_S)] = isDown ? KeyState::Down : KeyState::Up;
+		else if (wParam == 'D')
+			thisInputSystem->m_keyState[static_cast<size_t>(Key::KEY_D)] = isDown ? KeyState::Down : KeyState::Up;
+		else if (wParam == VK_UP)
+			thisInputSystem->m_keyState[static_cast<size_t>(Key::KEY_UP)] = isDown ? KeyState::Down : KeyState::Up;
+		else if (wParam == VK_LEFT)
+			thisInputSystem->m_keyState[static_cast<size_t>(Key::KEY_LEFT)] = isDown ? KeyState::Down : KeyState::Up;
+		else if (wParam == VK_DOWN)
+			thisInputSystem->m_keyState[static_cast<size_t>(Key::KEY_DOWN)] = isDown ? KeyState::Down : KeyState::Up;
+		else if (wParam == VK_RIGHT)
+			thisInputSystem->m_keyState[static_cast<size_t>(Key::KEY_RIGHT)] = isDown ? KeyState::Down : KeyState::Up;
+		break;
+	}
+
 	case WM_MENUCHAR:
 		// A menu is active and the user presses a key that does not correspond to any mnemonic or accelerator key. Ignore so we don't produce an error beep.
 		return MAKELRESULT(0, MNC_CLOSE);

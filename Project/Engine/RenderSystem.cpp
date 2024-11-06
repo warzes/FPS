@@ -60,6 +60,7 @@ bool RenderSystem::Create(const WindowSystem& window, const RenderSystemCreateIn
 
 void RenderSystem::Destroy()
 {
+	if (m_deviceContext) m_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 	m_renderTargetView.Reset();
 	m_renderTarget.Reset();
 	m_depthStencilView.Reset();
@@ -230,7 +231,8 @@ ComPtr<IDXGIAdapter4> RenderSystem::getHardwareAdapter(ComPtr<IDXGIFactory6> fac
 bool RenderSystem::createDevice()
 {
 	D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_1, };
-	UINT creationFlags = m_enableGraphicsAPIValidation ? D3D11_CREATE_DEVICE_DEBUG : 0;
+	UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+	if (m_enableGraphicsAPIValidation) creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 
 	ComPtr<ID3D11Device> baseDevice;
 	ComPtr<ID3D11DeviceContext> baseDeviceContext;

@@ -93,6 +93,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -106,6 +107,8 @@
     <ClInclude Include="BaseHeader.h" />
     <ClInclude Include="ComPtr.h" />
     <ClInclude Include="CoreFunc.h" />
+    <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="Key.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="stdafx.h" />

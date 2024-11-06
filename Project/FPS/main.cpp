@@ -21,6 +21,9 @@ int main(
 	WindowSystem window;
 	window.Create({});
 
+	InputSystem input;
+	input.Create();
+
 	RenderSystem render;
 	render.Create(window, {});
 
@@ -215,25 +218,35 @@ int main(
 		}
 
 		// Modulate player's y-position
-		float playerPosY = {};
+		float playerPosY = {0.0f};
 		const float posCycleAmplitude = 0.5f;
 		const float posCyclePeriod = 3.f; // in seconds
 		const float posCycleFreq = 2 * M_PI / posCyclePeriod;
 		playerPosY = posCycleAmplitude * sinf(posCycleFreq * (float)currentTimeInSeconds);
+
+		// Player movement logic
+		const float playerSpeed = 1.5f;
+		const float playerMoveAmount = playerSpeed * dt;
+
+		static float playerPosX = { 0.0f };
+		if (input.GetKetState(Key::KEY_A) == KeyState::Down || input.GetKetState(Key::KEY_LEFT) == KeyState::Down)
+			playerPosX -= playerMoveAmount;
+		if (input.GetKetState(Key::KEY_D) == KeyState::Down || input.GetKetState(Key::KEY_RIGHT) == KeyState::Down)
+			playerPosX += playerMoveAmount;
 
 		// Cycle player color
 		float playerColor[4];
 		const float colorCyclePeriod = 5.f; //in seconds
 		const float colorCycleFreq = 2 * M_PI / colorCyclePeriod;
 		playerColor[0] = 0.5f * (sinf(colorCycleFreq * (float)currentTimeInSeconds) + 1);
-		playerColor[1] = 1 - playerPosY;
+		playerColor[1] = 1.f - playerPosY;
 		playerColor[2] = 0.f;
-		playerColor[3] = 1.f;
+		playerColor[3] = 1.f - playerPosX;
 
 		D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 		render.GetImmediateContext()->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 		Constants* constants = (Constants*)(mappedSubresource.pData);
-		constants->pos[0] = 0.0f;
+		constants->pos[0] = playerPosX;
 		constants->pos[1] = playerPosY;
 		constants->color[0] = playerColor[0];
 		constants->color[1] = playerColor[1];
@@ -270,6 +283,7 @@ int main(
 	}
 
 	render.Destroy();
+	input.Destroy();
 	window.Destroy();
 	log.Destroy();
 }

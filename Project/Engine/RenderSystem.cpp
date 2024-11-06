@@ -22,11 +22,6 @@ inline DXGI_FORMAT NoSRGB(DXGI_FORMAT fmt) noexcept
 	}
 }
 
-inline long computeIntersectionArea(long ax1, long ay1, long ax2, long ay2, long bx1, long by1, long bx2, long by2) noexcept
-{
-	return std::max(0l, std::min(ax2, bx2) - std::max(ax1, bx1)) * std::max(0l, std::min(ay2, by2) - std::max(ay1, by1));
-}
-
 RenderSystem* thisRenderSystem = nullptr;
 
 RenderSystem::~RenderSystem()
@@ -90,8 +85,6 @@ bool RenderSystem::Resize(int width, int height)
 
 void RenderSystem::Present()
 {
-	m_swapChain->Present(1, 0);
-
 	HRESULT hr = E_FAIL;
 	if (m_allowTearing)
 	{
@@ -153,6 +146,8 @@ void RenderSystem::setupDebug()
 	{
 		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
 		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
+		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, true);
+		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE, true);
 
 		DXGI_INFO_QUEUE_MESSAGE_ID hide[] =
 		{
@@ -173,7 +168,7 @@ void RenderSystem::setupDebug()
 bool RenderSystem::selectAdapter()
 {
 	// create factory
-	ComPtr<IDXGIFactory6> dxgiFactory{ nullptr };
+	IDXGIFactory6* dxgiFactory{ nullptr };
 	if (FAILED(CreateDXGIFactory2(m_enableGraphicsAPIValidation ? DXGI_CREATE_FACTORY_DEBUG : 0, IID_PPV_ARGS(&dxgiFactory))))
 	{
 		Fatal("CreateDXGIFactory2() failed");
@@ -267,6 +262,9 @@ void RenderSystem::setDebugLayer()
 		{
 			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
 			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_INFO, true);
+			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_MESSAGE, true);
+			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
 
 			D3D11_MESSAGE_ID hide[] =
 			{

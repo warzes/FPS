@@ -7,9 +7,6 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "DXGI.lib")
 #pragma comment(lib, "D3DCompiler.lib")
-#if defined(_DEBUG)
-#	pragma comment(lib, "dxguid.lib")
-#endif
 
 inline DXGI_FORMAT NoSRGB(DXGI_FORMAT fmt) noexcept
 {
@@ -34,9 +31,8 @@ bool RenderSystem::Create(const WindowSystem& window, const RenderSystemCreateIn
 	assert(!thisRenderSystem);
 
 	m_windowHWND = window.GetWindowHWND();
-	m_outputSize.left = m_outputSize.top = 0;
-	m_outputSize.right = static_cast<long>(window.GetWindowWidth());
-	m_outputSize.bottom = static_cast<long>(window.GetWindowHeight());
+	m_backBufferWidth = std::max(window.GetWindowWidth(), 1u);
+	m_backBufferHeight = std::max(window.GetWindowHeight(), 1u);
 
 	m_enableGraphicsAPIValidation = createInfo.EnableGraphicsAPIValidation;
 #if defined(_DEBUG)
@@ -47,7 +43,9 @@ bool RenderSystem::Create(const WindowSystem& window, const RenderSystemCreateIn
 	m_enableHDR = createInfo.EnableHDR;
 	m_flipPresent = createInfo.FlipPresent;
 
-	if (!create()) return false;
+	if (!selectAdapter()) return false;
+	if (!createDevice()) return false;
+	if (!resizeSwapChain()) return false;
 
 	thisRenderSystem = this;
 	return true;
@@ -55,31 +53,23 @@ bool RenderSystem::Create(const WindowSystem& window, const RenderSystemCreateIn
 
 void RenderSystem::Destroy()
 {
-	if (m_deviceContext) m_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-	m_renderTargetView.Reset();
-	m_renderTarget.Reset();
-	m_depthStencilView.Reset();
-	m_depthStencil.Reset();
+	destroyMainRenderTarget();
 
 	m_swapChain.Reset();
 	m_deviceContext.Reset();
+	m_adapter.Reset();
 	m_device.Reset();
 
 	thisRenderSystem = nullptr;
 }
 
-bool RenderSystem::Resize(int width, int height)
+bool RenderSystem::Resize(uint32_t width, uint32_t height)
 {
-	RECT newRc;
-	newRc.left = newRc.top = 0;
-	newRc.right = static_cast<long>(width);
-	newRc.bottom = static_cast<long>(height);
-	if (newRc.right == m_outputSize.right && newRc.bottom == m_outputSize.bottom)
-	{
+	if (m_backBufferWidth == width && m_backBufferHeight == height)
 		return true;
-	}
 
-	m_outputSize = newRc;
+	m_backBufferWidth = std::max(width, 1u);
+	m_backBufferHeight = std::max(height, 1u);
 	return resizeSwapChain();
 }
 
@@ -116,7 +106,7 @@ void RenderSystem::Present()
 			static_cast<unsigned int>((hr == DXGI_ERROR_DEVICE_REMOVED) ? m_device->GetDeviceRemovedReason() : hr));
 		Print(buff);
 #endif
-		handleDeviceLost();
+		//handleDeviceLost();
 	}
 	else
 	{
@@ -126,43 +116,6 @@ void RenderSystem::Present()
 			return;
 		}
 	}
-}
-
-bool RenderSystem::create()
-{
-	setupDebug();
-	if (!selectAdapter()) return false;
-	if (!createDevice()) return false;
-	setDebugLayer();
-	if (!resizeSwapChain()) return false;
-	return true;
-}
-
-void RenderSystem::setupDebug()
-{
-#if defined(_DEBUG)
-	ComPtr<IDXGIInfoQueue> dxgiInfoQueue;
-	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiInfoQueue))))
-	{
-		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
-		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
-		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, true);
-		dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE, true);
-
-		DXGI_INFO_QUEUE_MESSAGE_ID hide[] =
-		{
-			80 /* IDXGISwapChain::GetContainingOutput: The swapchain's adapter does not control the output on which the swapchain's window resides. */,
-		};
-		DXGI_INFO_QUEUE_FILTER filter = {};
-		filter.DenyList.NumIDs = static_cast<UINT>(std::size(hide));
-		filter.DenyList.pIDList = hide;
-		dxgiInfoQueue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &filter);
-	}
-	else
-	{
-		Error("DXGIGetDebugInterface1 failed");
-	}
-#endif
 }
 
 bool RenderSystem::selectAdapter()
@@ -188,39 +141,36 @@ bool RenderSystem::selectAdapter()
 	}
 
 	// select adapter
-	m_adapter = getHardwareAdapter(dxgiFactory);
-	if (!m_adapter) return false;
-
-	DXGI_ADAPTER_DESC adapterDesc;
-	m_adapter->GetDesc(&adapterDesc);
-	Print("Graphics Device: " + ToString(std::wstring(adapterDesc.Description)));
-
-	return true;
-}
-
-ComPtr<IDXGIAdapter4> RenderSystem::getHardwareAdapter(ComPtr<IDXGIFactory6> factory)
-{
 	ComPtr<IDXGIAdapter4> adapter = nullptr;
 	for (UINT adapterIndex = 0;
-		SUCCEEDED(factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)));
+		SUCCEEDED(dxgiFactory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)));
 		adapterIndex++)
 	{
-		DXGI_ADAPTER_DESC1 desc;
-		if (FAILED(adapter->GetDesc1(&desc)))
+		DXGI_ADAPTER_DESC3 desc;
+		if (FAILED(adapter->GetDesc3(&desc)))
 		{
-			Fatal("IDXGIAdapter1::GetDesc1() failed");
-			return nullptr;
+			Fatal("IDXGIAdapter::GetDesc3() failed");
+			return false;
 		}
 
-		if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-		{
-			// Don't select the Basic Render Driver adapter.
-			continue;
-		}
+		if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) continue; // Don't select the Basic Render Driver adapter.
 
 		break;
 	}
-	return adapter;
+	m_adapter = adapter;
+	if (!m_adapter) return false;
+
+	DXGI_ADAPTER_DESC3 adapterDesc;
+	if (FAILED(m_adapter->GetDesc3(&adapterDesc)))
+	{
+		Fatal("IDXGIAdapter::GetDesc3() failed");
+		return false;
+	}
+	Print("Graphics Device: " + ToString(std::wstring(adapterDesc.Description)));
+
+	m_backBufferFormat = (m_flipPresent || m_allowTearing || m_enableHDR) ? NoSRGB(m_backBufferFormat) : m_backBufferFormat;
+
+	return true;
 }
 
 bool RenderSystem::createDevice()
@@ -247,58 +197,35 @@ bool RenderSystem::createDevice()
 		return false;
 	}
 
-	return true;
-}
-
-void RenderSystem::setDebugLayer()
-{
-#if defined(_DEBUG)
-	ComPtr<ID3D11Debug> d3dDebug = nullptr;
-	m_device->QueryInterface(&d3dDebug);
-	if (d3dDebug)
+	if (m_enableGraphicsAPIValidation)
 	{
-		ComPtr<ID3D11InfoQueue> d3dInfoQueue = nullptr;
-		if (SUCCEEDED(d3dDebug->QueryInterface(&d3dInfoQueue)))
-		{
-			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
-			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
-			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_INFO, true);
-			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_MESSAGE, true);
-			d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
+		//ComPtr<ID3D11Debug> debug;
+		//m_device->QueryInterface(&debug);
+		//debug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY | D3D11_RLDO_DETAIL);
 
-			D3D11_MESSAGE_ID hide[] =
-			{
-				D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
-			};
-			D3D11_INFO_QUEUE_FILTER filter = {};
-			filter.DenyList.NumIDs = static_cast<UINT>(std::size(hide));
-			filter.DenyList.pIDList = hide;
-			d3dInfoQueue->AddStorageFilterEntries(&filter);
+		ComPtr<ID3D11InfoQueue> infoQueue;
+		m_device->QueryInterface(&infoQueue);
+		if (infoQueue)
+		{
+			infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+			infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+			infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_INFO, true);
+			infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_MESSAGE, true);
+			infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
 		}
 	}
-#endif
+
+	return true;
 }
 
 bool RenderSystem::resizeSwapChain()
 {
-	if (!m_deviceContext || !m_device) return false;
-
-	m_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
-	m_renderTargetView.Reset();
-	m_renderTarget.Reset();
-	m_depthStencilView.Reset();
-	m_depthStencil.Reset();
-	m_deviceContext->Flush();
-
-	// Determine the render target size in pixels.
-	const UINT backBufferWidth = std::max<UINT>(static_cast<UINT>(m_outputSize.right - m_outputSize.left), 1u);
-	const UINT backBufferHeight = std::max<UINT>(static_cast<UINT>(m_outputSize.bottom - m_outputSize.top), 1u);
-	const DXGI_FORMAT backBufferFormat = (m_flipPresent || m_allowTearing || m_enableHDR) ? NoSRGB(m_backBufferFormat) : m_backBufferFormat; // TODO: ?
+	destroyMainRenderTarget();
 
 	if (m_swapChain)
 	{
 		// If the swap chain already exists, resize it.
-		HRESULT hr = m_swapChain->ResizeBuffers(m_backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat, (m_allowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u);
+		HRESULT hr = m_swapChain->ResizeBuffers(m_backBufferCount, m_backBufferWidth, m_backBufferHeight, m_backBufferFormat, (m_allowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u);
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 		{
 #if defined(_DEBUG)
@@ -308,7 +235,7 @@ bool RenderSystem::resizeSwapChain()
 			Print(buff);
 #endif
 			// If the device was removed for any reason, a new device and swap chain will need to be created.
-			if (!handleDeviceLost()) return false;
+			//if (!handleDeviceLost()) return false;
 
 			// Everything is set up now. Do not continue execution of this method. HandleDeviceLost will reenter this method and correctly set up the new device.
 			return true;
@@ -324,22 +251,62 @@ bool RenderSystem::resizeSwapChain()
 	}
 	else
 	{
-		if (!createSwapChain(backBufferWidth, backBufferHeight, backBufferFormat)) return false;
+		if (!createSwapChain()) return false;
+	}
+
+	if (!createMainRenderTarget()) return false;
+
+	return true;
+}
+
+bool RenderSystem::createSwapChain()
+{
+	assert(m_adapter);
+	ComPtr<IDXGIFactory6> dxgiFactory6;
+	if (FAILED(m_adapter->GetParent(IID_PPV_ARGS(&dxgiFactory6))))
+	{
+		Fatal("IDXGIAdapter::GetParent() failed");
+		return false;
+	}
+
+	// Create a descriptor for the swap chain.
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+	swapChainDesc.Width = m_backBufferWidth;
+	swapChainDesc.Height = m_backBufferHeight;
+	swapChainDesc.Format = m_backBufferFormat;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount = m_backBufferCount;
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.Scaling = DXGI_SCALING_NONE;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+	swapChainDesc.Flags = (m_allowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u;
+
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC swapChainFullscreenDesc = {};
+	swapChainFullscreenDesc.Windowed = TRUE;
+
+	// Create a SwapChain from a Win32 window.
+	if (FAILED(dxgiFactory6->CreateSwapChainForHwnd(m_device, m_windowHWND, &swapChainDesc, &swapChainFullscreenDesc, nullptr, (IDXGISwapChain1**)&m_swapChain)))
+	{
+		Fatal("IDXGIFactory6::CreateSwapChainForHwnd() failed");
+		return false;
+	}
+
+	// This class does not support exclusive full-screen mode and prevents DXGI from responding to the ALT+ENTER shortcut
+	if (FAILED(dxgiFactory6->MakeWindowAssociation(m_windowHWND, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER)))
+	{
+		Fatal("IDXGIFactory6::MakeWindowAssociation() failed");
+		return false;
 	}
 
 	// Color space
 	{
 		uint32_t colorSpaceSupport = 0;
 		HRESULT hr = m_swapChain->CheckColorSpaceSupport(m_colorSpace, &colorSpaceSupport);
-
-		if (!(colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT))
-			hr = E_FAIL;
-
-		if (SUCCEEDED(hr))
-			hr = m_swapChain->SetColorSpace1(m_colorSpace);
-
-		if (FAILED(hr))
-			Warning("IDXGISwapChain::SetColorSpace1() failed!");
+		if (!(colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT)) hr = E_FAIL;
+		if (SUCCEEDED(hr)) hr = m_swapChain->SetColorSpace1(m_colorSpace);
+		if (FAILED(hr)) Warning("IDXGISwapChain::SetColorSpace1() failed!");
 	}
 
 	// Background color
@@ -349,6 +316,11 @@ bool RenderSystem::resizeSwapChain()
 			Warning("IDXGISwapChain::SetBackgroundColor() failed!");
 	}
 
+	return true;
+}
+
+bool RenderSystem::createMainRenderTarget()
+{
 	// Create a render target view of the swap chain back buffer.
 	if (FAILED(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&m_renderTarget))))
 	{
@@ -366,7 +338,7 @@ bool RenderSystem::resizeSwapChain()
 	// Create a depth stencil view for use with 3D rendering if needed.
 	if (m_depthBufferFormat != DXGI_FORMAT_UNKNOWN)
 	{
-		CD3D11_TEXTURE2D_DESC depthStencilDesc(m_depthBufferFormat, backBufferWidth, backBufferHeight, 1, 1, D3D11_BIND_DEPTH_STENCIL);
+		CD3D11_TEXTURE2D_DESC depthStencilDesc(m_depthBufferFormat, m_backBufferWidth, m_backBufferHeight, 1, 1, D3D11_BIND_DEPTH_STENCIL);
 		if (FAILED(m_device->CreateTexture2D(&depthStencilDesc, nullptr, &m_depthStencil)))
 		{
 			Fatal("Create a depth target texture failed");
@@ -380,76 +352,17 @@ bool RenderSystem::resizeSwapChain()
 	}
 
 	// Set the 3D rendering viewport to target the entire window.
-	m_screenViewport = { 0.0f, 0.0f, static_cast<float>(backBufferWidth), static_cast<float>(backBufferHeight), 0.f, 1.f };
+	m_screenViewport = { 0.0f, 0.0f, static_cast<float>(m_backBufferWidth), static_cast<float>(m_backBufferHeight), 0.f, 1.f };
 
 	return true;
 }
 
-bool RenderSystem::createSwapChain(UINT backBufferWidth, UINT backBufferHeight, DXGI_FORMAT backBufferFormat)
+void RenderSystem::destroyMainRenderTarget()
 {
-	assert(m_adapter);
-	ComPtr<IDXGIFactory6> dxgiFactory6;
-	if (FAILED(m_adapter->GetParent(IID_PPV_ARGS(&dxgiFactory6))))
-	{
-		Fatal("IDXGIAdapter::GetParent() failed");
-		return false;
-	}
-
-	// Create a descriptor for the swap chain.
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-	swapChainDesc.Width = backBufferWidth;
-	swapChainDesc.Height = backBufferHeight;
-	swapChainDesc.Format = backBufferFormat;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount = m_backBufferCount;
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
-	swapChainDesc.Scaling = DXGI_SCALING_NONE;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-	swapChainDesc.Flags = (m_allowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u;
-
-	// Create a SwapChain from a Win32 window.
-	if (FAILED(dxgiFactory6->CreateSwapChainForHwnd(m_device, m_windowHWND, &swapChainDesc, nullptr, nullptr, (IDXGISwapChain1**)&m_swapChain)))
-	{
-		Fatal("IDXGIFactory::CreateSwapChainForHwnd() failed");
-		return false;
-	}
-
-	// This class does not support exclusive full-screen mode and prevents DXGI from responding to the ALT+ENTER shortcut
-	if (FAILED(dxgiFactory6->MakeWindowAssociation(m_windowHWND, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER)))
-	{
-		Fatal("IDXGIFactory::MakeWindowAssociation() failed");
-		return false;
-	}
-
-	return true;
-}
-
-bool RenderSystem::handleDeviceLost()
-{
-	if (m_deviceNotify) m_deviceNotify->OnDeviceLost();
-
-	m_depthStencilView.Reset();
+	if (m_deviceContext) m_deviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 	m_renderTargetView.Reset();
 	m_renderTarget.Reset();
+	m_depthStencilView.Reset();
 	m_depthStencil.Reset();
-	m_swapChain.Reset();
-	m_deviceContext.Reset();
-#if defined(_DEBUG)
-	{
-		ID3D11Debug* d3dDebug;
-		if (SUCCEEDED(m_device->QueryInterface(&d3dDebug)))
-		{
-			d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_SUMMARY);
-		}
-	}
-#endif
-	m_device.Reset();
-
-	if (!create()) return false;
-
-	if (m_deviceNotify) m_deviceNotify->OnDeviceRestored();
-
-	return true;
+	if (m_deviceContext) m_deviceContext->Flush();
 }

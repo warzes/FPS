@@ -34,11 +34,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noex
 		break;
 
 	case WM_MOVE:
-		if (thisRenderSystem)
-		{
-			auto const r = thisRenderSystem->GetOutputSize();
-			thisRenderSystem->Resize(r.right, r.bottom);
-		}
 		break;
 
 	case WM_SIZE:
@@ -232,6 +227,7 @@ bool WindowSystem::Create(const WindowSystemCreateInfo& createInfo)
 	ShowWindow(m_hwnd, SW_SHOW);
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd);
+	UpdateWindow(m_hwnd);
 
 	GetClientRect(m_hwnd, &rect);
 	m_windowWidth = static_cast<uint32_t>(rect.right - rect.left);

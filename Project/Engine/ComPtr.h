@@ -76,6 +76,6 @@ struct ComPtr
 		}
 	}
 
-protected:
+private:
 	T* m_comPtr;
 };

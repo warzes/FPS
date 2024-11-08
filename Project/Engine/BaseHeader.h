@@ -24,11 +24,13 @@
 #define NOHELP
 #include <Windows.h>
 //#include <ShellScalingApi.h>
+#include <wrl.h>
 
 #include <d3d11_4.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
 
+#define _XM_NO_XMVECTOR_OVERLOADS_
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
@@ -46,6 +48,8 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <map>
+#include <mutex>
 
 //#include <ppl.h>
 //#include <ppltasks.h>

@@ -20,6 +20,114 @@
     <ClCompile Include="SimpleMath.cpp">
       <Filter>Engine\Core</Filter>
     </ClCompile>
+    <ClCompile Include="DirectXTK\AlphaTestEffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\BasicEffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\BasicPostProcess.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\BinaryReader.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\BufferHelpers.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\CommonStates.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DDSTextureLoader.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DebugEffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DGSLEffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DGSLEffectFactory.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DirectXHelpers.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DualPostProcess.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\DualTextureEffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\EffectCommon.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\EffectFactory.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\EnvironmentMapEffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\GamePad.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\GeometricPrimitive.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\Geometry.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\GraphicsMemory.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\Keyboard.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\Model.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\ModelLoadCMO.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\ModelLoadSDKMESH.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\ModelLoadVBO.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\Mouse.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\NormalMapEffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\PBREffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\PBREffectFactory.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\PrimitiveBatch.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\SkinnedEffect.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\SpriteBatch.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\SpriteFont.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\ToneMapPostProcess.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\VertexTypes.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXTK\WICTextureLoader.cpp">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -53,6 +161,102 @@
     <ClInclude Include="SimpleMath.h">
       <Filter>Engine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="DirectXTK\Audio.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\BufferHelpers.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\CommonStates.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DDSTextureLoader.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DirectXHelpers.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\Effects.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\GamePad.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\GeometricPrimitive.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\GraphicsMemory.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\Keyboard.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\Model.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\Mouse.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\PostProcess.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\PrimitiveBatch.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\SpriteBatch.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\SpriteFont.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\VertexTypes.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\WICTextureLoader.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\AlignedNew.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\Bezier.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\BinaryReader.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\CMO.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DDS.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DemandCreate.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\EffectCommon.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\Geometry.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\LoaderHelpers.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\pch.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\PlatformHelpers.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\SDKMesh.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\SharedResourcePool.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\vbo.h">
+      <Filter>Engine\Lib\DirectXTK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -70,10 +274,19 @@
     <Filter Include="Engine\Render">
       <UniqueIdentifier>{30efb5eb-fd9d-410e-9029-62738994c559}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Lib">
+      <UniqueIdentifier>{5fdf58a3-ecfb-45f7-a8c8-f92cf16c3f76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Lib\DirectXTK">
+      <UniqueIdentifier>{1920f3fe-0367-4316-87b4-e2d7f628144b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
       <Filter>Engine\Core</Filter>
+    </None>
+    <None Include="DirectXTK\TeapotData.inc">
+      <Filter>Engine\Lib\DirectXTK</Filter>
     </None>
   </ItemGroup>
 </Project>

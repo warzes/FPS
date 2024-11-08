@@ -1,34 +1,26 @@
 #include "stdafx.h"
 #include "Timer.h"
 
-Timer::Timer()
+double SystemTime::sm_cpuTickDelta = 0.0;
+
+// Query the performance counter frequency
+void SystemTime::Initialize(void)
 {
-	if (!QueryPerformanceFrequency(&m_qpcFrequency))
-	{
-		Fatal("QueryPerformanceFrequency failed");
-		return;
-	}
-
-	if (!QueryPerformanceCounter(&m_qpcLastTime))
-	{
-		Fatal("QueryPerformanceCounter failed");
-		return;
-	}
-
-	// Initialize max delta to 1/10 of a second.
-	m_qpcMaxDelta = static_cast<uint64_t>(m_qpcFrequency.QuadPart / 10);
+	LARGE_INTEGER frequency;
+	assert(TRUE == QueryPerformanceFrequency(&frequency) && "Unable to query performance counter frequency");
+	sm_cpuTickDelta = 1.0 / static_cast<double>(frequency.QuadPart);
 }
 
-void Timer::ResetElapsedTime()
+// Query the current value of the performance counter
+int64_t SystemTime::GetCurrentTick(void)
 {
-	if (!QueryPerformanceCounter(&m_qpcLastTime))
-	{
-		Fatal("QueryPerformanceCounter failed");
-		return;
-	}
+	LARGE_INTEGER currentTick;
+	assert(TRUE == QueryPerformanceCounter(&currentTick) && "Unable to query performance counter value");
+	return static_cast<int64_t>(currentTick.QuadPart);
+}
 
-	m_leftOverTicks = 0;
-	m_framesPerSecond = 0;
-	m_framesThisSecond = 0;
-	m_qpcSecondCounter = 0;
+void SystemTime::BusyLoopSleep(float SleepTime)
+{
+	int64_t finalTick = (int64_t)((double)SleepTime / sm_cpuTickDelta) + GetCurrentTick();
+	while (GetCurrentTick() < finalTick);
 }

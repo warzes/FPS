@@ -186,7 +186,7 @@ Vector2 operator* (float S, const Vector2& V) noexcept;
 //-----------------------------------------------------------------------------
 #pragma region 3D vector
 
-struct Vector3 : public DirectX::XMFLOAT3
+struct Vector3 final : public DirectX::XMFLOAT3
 {
 	Vector3() noexcept : XMFLOAT3(0.f, 0.f, 0.f) {}
 	constexpr explicit Vector3(float ix) noexcept : XMFLOAT3(ix, ix, ix) {}
@@ -426,7 +426,7 @@ Vector4 operator* (float S, const Vector4& V) noexcept;
 //-----------------------------------------------------------------------------
 #pragma region 4x4 Matrix (assumes right-handed cooordinates)
 
-struct Matrix : public DirectX::XMFLOAT4X4
+struct Matrix final : public DirectX::XMFLOAT4X4
 {
 	Matrix() noexcept
 		: XMFLOAT4X4(

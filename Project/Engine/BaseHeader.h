@@ -9,7 +9,7 @@
 #define _USE_MATH_DEFINES
 
 #include <winsdkver.h>
-#define _WIN32_WINNT 0x0601
+#define _WIN32_WINNT 0x0A00
 #include <sdkddkver.h>
 
 #define VC_EXTRALEAN
@@ -40,8 +40,14 @@
 
 #include <cassert>
 #include <algorithm>
+#include <memory>
+#include <filesystem>
+#include <fstream>
 #include <string>
 #include <string_view>
+#include <vector>
 
+//#include <ppl.h>
+//#include <ppltasks.h>
 
 #pragma warning(pop)

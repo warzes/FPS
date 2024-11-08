@@ -23,11 +23,9 @@ public:
 	bool Resize(uint32_t width, uint32_t height);
 	void Present();
 
-	uint32_t GetBackBufferWidth() const noexcept { return m_backBufferWidth; }
-	uint32_t GetBackBufferHeight() const noexcept { return m_backBufferHeight; }
-	IDXGIAdapter* GetAdapter() const noexcept { return m_adapter; }
-	ID3D11Device5* GetDevice() const noexcept { return m_device; }
-	ID3D11DeviceContext4* GetImmediateContext() const noexcept { return m_deviceContext; }
+	IDXGIAdapter*           GetAdapter() const noexcept { return m_adapter; }
+	ID3D11Device5*          GetDevice() const noexcept { return m_device; }
+	ID3D11DeviceContext4*   GetImmediateContext() const noexcept { return m_deviceContext; }
 	ID3D11RenderTargetView* GetRenderTargetView() const noexcept { return m_renderTargetView; }
 	ID3D11DepthStencilView* GetDepthStencilView() const noexcept { return m_depthStencilView; }
 private:

@@ -96,6 +96,7 @@
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -111,9 +112,13 @@
     <ClInclude Include="Key.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="WindowSystem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SimpleMath.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

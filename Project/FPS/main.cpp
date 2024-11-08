@@ -255,14 +255,13 @@ int main(
 		render.GetImmediateContext()->Unmap(constantBuffer, 0);
 
 		D3D11_VIEWPORT viewport = { 0.0f, 0.0f, (FLOAT)(window.GetWindowWidth()), (FLOAT)(window.GetWindowHeight()), 0.0f, 1.0f };
-		auto* rtv = render.GetRenderTargetView();
+		auto rtv = render.GetRenderTargetView();
 		auto dsv = render.GetDepthStencilView();
 		
+		render.GetImmediateContext()->OMSetRenderTargets(1, &rtv, dsv);
 		render.GetImmediateContext()->ClearRenderTargetView(rtv, backgroundColor);
-
+		render.GetImmediateContext()->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		render.GetImmediateContext()->RSSetViewports(1, &viewport);
-
-		render.GetImmediateContext()->OMSetRenderTargets(1, &rtv, nullptr);
 
 		render.GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		render.GetImmediateContext()->IASetInputLayout(inputLayout);

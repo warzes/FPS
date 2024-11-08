@@ -17,6 +17,9 @@
     <ClCompile Include="InputSystem.cpp">
       <Filter>Engine\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="SimpleMath.cpp">
+      <Filter>Engine\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -47,6 +50,9 @@
     <ClInclude Include="Key.h">
       <Filter>Engine\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleMath.h">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -64,5 +70,10 @@
     <Filter Include="Engine\Render">
       <UniqueIdentifier>{30efb5eb-fd9d-410e-9029-62738994c559}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SimpleMath.inl">
+      <Filter>Engine\Core</Filter>
+    </None>
   </ItemGroup>
 </Project>

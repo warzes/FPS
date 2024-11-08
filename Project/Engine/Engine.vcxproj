@@ -165,7 +165,6 @@
     <ClInclude Include="DirectXTK\LoaderHelpers.h" />
     <ClInclude Include="DirectXTK\Model.h" />
     <ClInclude Include="DirectXTK\Mouse.h" />
-    <ClInclude Include="DirectXTK\pch.h" />
     <ClInclude Include="DirectXTK\PlatformHelpers.h" />
     <ClInclude Include="DirectXTK\PostProcess.h" />
     <ClInclude Include="DirectXTK\PrimitiveBatch.h" />

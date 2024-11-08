@@ -242,9 +242,6 @@
     <ClInclude Include="DirectXTK\LoaderHelpers.h">
       <Filter>Engine\Lib\DirectXTK</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXTK\pch.h">
-      <Filter>Engine\Lib\DirectXTK</Filter>
-    </ClInclude>
     <ClInclude Include="DirectXTK\PlatformHelpers.h">
       <Filter>Engine\Lib\DirectXTK</Filter>
     </ClInclude>

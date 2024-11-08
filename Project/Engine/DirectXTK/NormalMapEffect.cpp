@@ -115,25 +115,25 @@ namespace
 #include "XboxOneNormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
 #include "XboxOneNormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
 #else
-#include "NormalMapEffect_VSNormalPixelLightingTx.inc"
-#include "NormalMapEffect_VSNormalPixelLightingTxInst.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTx.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxInst.inc"
 
-#include "NormalMapEffect_VSNormalPixelLightingTxVc.inc"
-#include "NormalMapEffect_VSNormalPixelLightingTxVcInst.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVc.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVcInst.inc"
 
-#include "NormalMapEffect_VSNormalPixelLightingTxBn.inc"
-#include "NormalMapEffect_VSNormalPixelLightingTxBnInst.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxBn.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxBnInst.inc"
 
-#include "NormalMapEffect_VSNormalPixelLightingTxVcBn.inc"
-#include "NormalMapEffect_VSNormalPixelLightingTxVcBnInst.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVcBn.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSNormalPixelLightingTxVcBnInst.inc"
 
-#include "NormalMapEffect_VSSkinnedPixelLightingTx.inc"
-#include "NormalMapEffect_VSSkinnedPixelLightingTxBn.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSSkinnedPixelLightingTx.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_VSSkinnedPixelLightingTxBn.inc"
 
-#include "NormalMapEffect_PSNormalPixelLightingTx.inc"
-#include "NormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
-#include "NormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
-#include "NormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTx.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoFog.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoSpec.inc"
+#include "DirectXTK/Shaders/Compiled/NormalMapEffect_PSNormalPixelLightingTxNoFogSpec.inc"
 #endif
 }
 

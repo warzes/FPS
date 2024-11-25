@@ -2,15 +2,19 @@
 
 #if defined(_MSC_VER)
 #	pragma warning(push, 3)
-//#	pragma warning(disable : 4061)
+#	pragma warning(disable : 4820)
+#	pragma warning(disable : 5039)
 #endif
 
 #define _USE_MATH_DEFINES
 
 #include <cassert>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_set>
+#include <unordered_map>
 
 #if PLATFORM_WINDOWS
 
@@ -32,7 +36,7 @@
 #	define NOCTLMGR
 #	define NODRAWTEXT
 #	define NOKERNEL
-#	define NONLS
+//#	define NONLS
 #	define NOMEMMGR
 #	define NOMETAFILE
 #	define NOOPENFILE
@@ -60,10 +64,10 @@
 #	include <Windows.h>
 #endif
 
-#if RENDER_D3D12
-#	include <wrl.h>
-using Microsoft::WRL::ComPtr;
-#endif
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
+#include "PrivateHeader.h"
 
 #if defined(_MSC_VER)
 #	pragma warning(pop)

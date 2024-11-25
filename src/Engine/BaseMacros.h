@@ -25,7 +25,6 @@
 #	define PLATFORM_EMSCRIPTEN 1
 #endif
 
-
 #define __STRINGIZE__(_x) #_x
 #define STRINGIZE(_x) __STRINGIZE__(_x)
 

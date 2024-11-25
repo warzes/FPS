@@ -60,10 +60,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\physx\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\physx\;$(SolutionDir)3rdparty\glslang\;$(SolutionDir)3rdparty\spirv-cross\;$(SolutionDir)3rdparty\spirv-reflect\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -82,9 +81,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\physx\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\physx\;$(SolutionDir)3rdparty\glslang\;$(SolutionDir)3rdparty\spirv-cross\;$(SolutionDir)3rdparty\spirv-reflect\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -97,23 +95,47 @@
   <ItemGroup>
     <ClInclude Include="BaseHeader.h" />
     <ClInclude Include="BaseMacros.h" />
+    <ClInclude Include="BufferD3D12.h" />
+    <ClInclude Include="ContextD3D12.h" />
     <ClInclude Include="EngineApp.h" />
+    <ClInclude Include="HashCombine.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="LogSystem.h" />
+    <ClInclude Include="PipelineStateD3D12.h" />
+    <ClInclude Include="PrivateHeader.h" />
+    <ClInclude Include="RenderCore.h" />
+    <ClInclude Include="RenderCoreD3D12.h" />
+    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="RenderTargetD3D12.h" />
+    <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="ShaderD3D12.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="TextureD3D12.h" />
+    <ClInclude Include="WindowPrivateData.h" />
     <ClInclude Include="WindowSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BufferD3D12.cpp" />
+    <ClCompile Include="ContextD3D12.cpp" />
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LogSystem.cpp" />
+    <ClCompile Include="PipelineStateD3D12.cpp" />
+    <ClCompile Include="RenderCore.cpp" />
+    <ClCompile Include="RenderCoreD3D12.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="RenderSystem_D3D12.cpp" />
+    <ClCompile Include="RenderTargetD3D12.cpp" />
+    <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="ShaderD3D12.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StringUtils.cpp" />
-    <ClCompile Include="WindowSystemWin32.cpp" />
+    <ClCompile Include="TextureD3D12.cpp" />
+    <ClCompile Include="WindowSystem_Win32.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

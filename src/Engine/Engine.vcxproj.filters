@@ -11,11 +11,44 @@
     <ClCompile Include="EngineApp.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="WindowSystemWin32.cpp">
+    <ClCompile Include="WindowSystem_Win32.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
     <ClCompile Include="StringUtils.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem_D3D12.cpp">
+      <Filter>RHI\Direct3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderCore.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextD3D12.cpp">
+      <Filter>RHI\Direct3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderCoreD3D12.cpp">
+      <Filter>RHI\Direct3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="PipelineStateD3D12.cpp">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetD3D12.cpp">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureD3D12.cpp">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderD3D12.cpp">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferD3D12.cpp">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderCompiler.cpp">
+      <Filter>RHI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +74,45 @@
     <ClInclude Include="StringUtils.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowPrivateData.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderCore.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="PrivateHeader.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextD3D12.h">
+      <Filter>RHI\Direct3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="HashCombine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderCoreD3D12.h">
+      <Filter>RHI\Direct3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="PipelineStateD3D12.h">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetD3D12.h">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureD3D12.h">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderD3D12.h">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferD3D12.h">
+      <Filter>RHI\Direct3D12\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCompiler.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -57,6 +129,15 @@
     </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{47d7a0d7-5726-43dd-8764-950078128c11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI">
+      <UniqueIdentifier>{09b218a8-f823-4338-92e5-3313ca542c11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\Direct3D12">
+      <UniqueIdentifier>{ab4489ca-1985-411e-8834-0ecede3fd98d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\Direct3D12\Resources">
+      <UniqueIdentifier>{d77ac8d1-4391-49d8-b61d-849fc0af9902}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

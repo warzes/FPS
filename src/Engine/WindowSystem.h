@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "WindowPrivateData.h"
+
 struct WindowSystemCreateInfo final
 {
 	std::string_view title{ "Game" };
@@ -27,8 +29,10 @@ public:
 	uint32_t GetPositionX() const;
 	uint32_t GetPositionY() const;
 
+#if PLATFORM_WINDOWS
 	HWND      GetHWND() const { return m_hwnd; }
 	HINSTANCE GetWindowInstance() const { return m_handleInstance; }
+#endif // PLATFORM_WINDOWS
 
 private:
 	void displayChange();
@@ -51,5 +55,5 @@ private:
 	bool      m_inSuspend{ false };
 	bool      m_fullscreen{ false };
 	bool      m_requestClose{ true };
-#endif
+#endif // PLATFORM_WINDOWS
 };

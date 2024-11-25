@@ -87,7 +87,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="d3dx12\d3d12generatemips.cpp" />
+    <ClCompile Include="d3dx12\DirectXHelpers.cpp" />
+    <ClCompile Include="d3dx12\GraphicsMemory.cpp" />
+    <ClCompile Include="d3dx12\LinearAllocator.cpp" />
     <ClCompile Include="Engine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="d3dx12\d3d12generatemips.h" />
+    <ClInclude Include="d3dx12\d3dx12.h" />
+    <ClInclude Include="d3dx12\DirectXHelpers.h" />
+    <ClInclude Include="d3dx12\GraphicsMemory.h" />
+    <ClInclude Include="d3dx12\LinearAllocator.h" />
+    <ClInclude Include="d3dx12\pch.h" />
+    <ClInclude Include="d3dx12\PlatformHelpers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="d3dx12\GenerateMips_main.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

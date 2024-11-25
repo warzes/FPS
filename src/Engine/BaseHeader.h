@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #if PLATFORM_WINDOWS
 
@@ -20,7 +21,7 @@
 #	define NOBITMAP
 #	define NOGDI
 #	define NOGDICAPMASKS
-#	define NOSYSMETRICS
+//#	define NOSYSMETRICS
 #	define NOMENUS
 #	define NOICONS
 #	define NOSYSCOMMANDS

@@ -11,8 +11,11 @@
     <ClCompile Include="EngineApp.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="WindowSystem.cpp">
+    <ClCompile Include="WindowSystemWin32.cpp">
       <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,6 +38,9 @@
     <ClInclude Include="WindowSystem.h">
       <Filter>Platform</Filter>
     </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -48,6 +54,9 @@
     </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{b2f4a91a-f385-49e2-891c-a7262119e641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{47d7a0d7-5726-43dd-8764-950078128c11}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

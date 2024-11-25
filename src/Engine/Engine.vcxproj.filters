@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Log.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="LogSystem.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineApp.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowSystem.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="BaseHeader.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="LogSystem.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineApp.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseMacros.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowSystem.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{22a18f2b-ec1d-40e4-8805-a14dd4c6e822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{fe12f049-d45b-4ae4-8dcd-7370d120f66e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{b48e27f2-4c2e-470e-8139-861f1bc42b2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{b2f4a91a-f385-49e2-891c-a7262119e641}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

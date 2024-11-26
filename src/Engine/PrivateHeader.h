@@ -17,6 +17,20 @@
 using Microsoft::WRL::ComPtr;
 #endif // RENDER_D3D12
 
+#if RENDER_OPENGL
+#	if PLATFORM_WINDOWS
+#		define GLEW_STATIC
+#		include <GL/glew.h>
+#		include <GL/wglew.h>
+#	elif PLATFORM_EMSCRIPTEN
+#		include <EGL/egl.h>
+#		include <EGL/eglext.h>
+#		include <EGL/eglplatform.h>
+#		include <GLES3/gl3.h>
+#	endif
+#endif // RENDER_OPENGL
+
+
 #include <glslang/SPIRV/GlslangToSpv.h>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>

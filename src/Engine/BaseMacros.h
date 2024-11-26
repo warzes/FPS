@@ -7,9 +7,9 @@
 #define PLATFORM_EMSCRIPTEN 0
 
 // RenderAPI
-#define RENDER_D3D12 1
+#define RENDER_D3D12 0
 #define RENDER_VULKAN 0
-#define RENDER_OPENGL 0
+#define RENDER_OPENGL 1
 
 #if defined(__ANDROID__) || defined(__android__) || defined(ANDROID) || defined(__ANDROID_API__)
 #	undef PLATFORM_ANDROID

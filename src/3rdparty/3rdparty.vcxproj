@@ -91,6 +91,7 @@
     <ClCompile Include="d3dx12\DirectXHelpers.cpp" />
     <ClCompile Include="d3dx12\GraphicsMemory.cpp" />
     <ClCompile Include="d3dx12\LinearAllocator.cpp" />
+    <ClCompile Include="glew.c" />
     <ClCompile Include="glslangLib.cpp" />
     <ClCompile Include="glslangLib2.cpp" />
     <ClCompile Include="glslangLib3.cpp" />

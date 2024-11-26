@@ -317,3 +317,34 @@ uint32_t GetFormatChannelSize(PixelFormat format);
 uint32_t GetMipCount(uint32_t width, uint32_t height);
 uint32_t GetMipWidth(uint32_t base_width, uint32_t mip_level);
 uint32_t GetMipHeight(uint32_t base_height, uint32_t mip_level);
+
+class ExecuteList
+{
+public:
+	using Func = std::function<void()>;
+
+public:
+	~ExecuteList()
+	{
+		flush();
+	}
+
+public:
+	void add(Func func)
+	{
+		mFuncs.push_back(func);
+	}
+
+	void flush()
+	{
+		for (auto func : mFuncs)
+		{
+			func();
+		}
+
+		mFuncs.clear();
+	}
+
+private:
+	std::list<Func> mFuncs;
+};

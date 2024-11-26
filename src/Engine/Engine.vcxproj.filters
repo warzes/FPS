@@ -59,6 +59,30 @@
     <ClCompile Include="RenderUtils.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
+    <ClCompile Include="RenderSystem_OpenGL.cpp">
+      <Filter>RHI\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderCoreOpenGL.cpp">
+      <Filter>RHI\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextOpenGL.cpp">
+      <Filter>RHI\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderOpenGL.cpp">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferOpenGL.cpp">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetOpenGL.cpp">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureOpenGL.cpp">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="PipelineStateOpenGL.cpp">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -131,6 +155,27 @@
     <ClInclude Include="RenderUtils.h">
       <Filter>RHI</Filter>
     </ClInclude>
+    <ClInclude Include="RenderCoreOpenGL.h">
+      <Filter>RHI\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextOpenGL.h">
+      <Filter>RHI\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderOpenGL.h">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferOpenGL.h">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetOpenGL.h">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureOpenGL.h">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="PipelineStateOpenGL.h">
+      <Filter>RHI\OpenGL\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -156,6 +201,12 @@
     </Filter>
     <Filter Include="RHI\Direct3D12\Resources">
       <UniqueIdentifier>{d77ac8d1-4391-49d8-b61d-849fc0af9902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\OpenGL">
+      <UniqueIdentifier>{9a6bd3a8-b7ea-46b0-951f-4867564cddc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\OpenGL\Resources">
+      <UniqueIdentifier>{af9d4c5d-8cfd-4c11-ade5-a611da732c1d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

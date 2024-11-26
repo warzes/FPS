@@ -50,6 +50,12 @@
     <ClCompile Include="ShaderCompiler.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
+    <ClCompile Include="RenderResources.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -111,6 +117,12 @@
       <Filter>RHI\Direct3D12\Resources</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCompiler.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderResources.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
       <Filter>RHI</Filter>
     </ClInclude>
   </ItemGroup>

@@ -8,15 +8,15 @@
 class RenderContext final
 {
 public:
-	ComPtr<ID3D12Device>                device;
-	ComPtr<ID3D12CommandAllocator>      commandAllocator;
-	ComPtr<ID3D12CommandQueue>          commandQueue;
-	ComPtr<IDXGISwapChain3>             swapChain;
-	ComPtr<ID3D12GraphicsCommandList10> commandList;
-	ComPtr<ID3D12DescriptorHeap>        descriptorHeap;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE       descriptorHeapCPUHandle;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE       descriptorHeapGPUHandle;
-	UINT                                descriptorHandleIncrementSize{ 0 };
+	ComPtr<ID3D12Device>               device;
+	ComPtr<ID3D12CommandAllocator>     commandAllocator;
+	ComPtr<ID3D12CommandQueue>         commandQueue;
+	ComPtr<IDXGISwapChain3>            swapChain;
+	ComPtr<ID3D12GraphicsCommandList4> commandList;
+	ComPtr<ID3D12DescriptorHeap>       descriptorHeap;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE      descriptorHeapCPUHandle;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE      descriptorHeapGPUHandle;
+	UINT                               descriptorHandleIncrementSize{ 0 };
 
 	struct Frame
 	{

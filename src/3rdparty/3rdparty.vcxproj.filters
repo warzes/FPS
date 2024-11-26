@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="d3dx12\d3d12generatemips.cpp">
       <Filter>d3dx12</Filter>
     </ClCompile>
@@ -14,10 +13,46 @@
     <ClCompile Include="d3dx12\LinearAllocator.cpp">
       <Filter>d3dx12</Filter>
     </ClCompile>
+    <ClCompile Include="spirv-cross\spirv_hlsl.cpp">
+      <Filter>spirv-cross</Filter>
+    </ClCompile>
+    <ClCompile Include="spirv-reflect\spirv_reflect.cpp">
+      <Filter>spirv-cross</Filter>
+    </ClCompile>
+    <ClCompile Include="spirv-cross\spirv_glsl.cpp">
+      <Filter>spirv-cross</Filter>
+    </ClCompile>
+    <ClCompile Include="spirv-cross\spirv_parser.cpp">
+      <Filter>spirv-cross</Filter>
+    </ClCompile>
+    <ClCompile Include="spirv-cross\spirv_cfg.cpp">
+      <Filter>spirv-cross</Filter>
+    </ClCompile>
+    <ClCompile Include="spirv-cross\spirv_cross.cpp">
+      <Filter>spirv-cross</Filter>
+    </ClCompile>
+    <ClCompile Include="spirv-cross\spirv_cross_parsed_ir.cpp">
+      <Filter>spirv-cross</Filter>
+    </ClCompile>
+    <ClCompile Include="glslangLib.cpp">
+      <Filter>glslang</Filter>
+    </ClCompile>
+    <ClCompile Include="glslangLib2.cpp">
+      <Filter>glslang</Filter>
+    </ClCompile>
+    <ClCompile Include="glslangLib3.cpp">
+      <Filter>glslang</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="d3dx12">
       <UniqueIdentifier>{a1624ff1-2c9f-49ed-85fb-45ebae31deff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="spirv-cross">
+      <UniqueIdentifier>{efd7f84d-5603-4b40-a1ef-5ff9d92a1992}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glslang">
+      <UniqueIdentifier>{3fb3732a-0681-4c83-9b08-b9a9572f7a27}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

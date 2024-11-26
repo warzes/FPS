@@ -12,7 +12,6 @@ public:
 	~TextureD3D12();
 
 	void Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offset_x, uint32_t offset_y);
-	void Read(uint32_t pos_x, uint32_t pos_y, uint32_t width, uint32_t height, uint32_t mipLevel, void* dstMemory);
 
 	void GenerateMips(ID3D12GraphicsCommandList* cmdlist, std::vector<ComPtr<ID3D12DeviceChild>>& stagingObjects);
 	void GenerateMips();

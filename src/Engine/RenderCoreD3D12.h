@@ -35,11 +35,4 @@ static const std::unordered_map<PixelFormat, DXGI_FORMAT> PixelFormatMap = {
 	{ PixelFormat::RGBA8UNorm, DXGI_FORMAT_R8G8B8A8_UNORM }
 };
 
-TopologyKind GetTopologyKind(Topology topology);
-uint32_t GetFormatChannelsCount(PixelFormat format);
-uint32_t GetFormatChannelSize(PixelFormat format);
-uint32_t GetMipCount(uint32_t width, uint32_t height);
-uint32_t GetMipWidth(uint32_t base_width, uint32_t mip_level);
-uint32_t GetMipHeight(uint32_t base_height, uint32_t mip_level);
-
 #endif // RENDER_D3D12

@@ -13,8 +13,10 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <typeindex>
 
 #if PLATFORM_WINDOWS
 

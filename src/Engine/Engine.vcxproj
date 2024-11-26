@@ -105,6 +105,7 @@
     <ClInclude Include="PrivateHeader.h" />
     <ClInclude Include="RenderCore.h" />
     <ClInclude Include="RenderCoreD3D12.h" />
+    <ClInclude Include="RenderResources.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RenderTargetD3D12.h" />
     <ClInclude Include="ShaderCompiler.h" />
@@ -112,6 +113,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="TextureD3D12.h" />
+    <ClInclude Include="Vertex.h" />
     <ClInclude Include="WindowPrivateData.h" />
     <ClInclude Include="WindowSystem.h" />
   </ItemGroup>
@@ -124,6 +126,7 @@
     <ClCompile Include="PipelineStateD3D12.cpp" />
     <ClCompile Include="RenderCore.cpp" />
     <ClCompile Include="RenderCoreD3D12.cpp" />
+    <ClCompile Include="RenderResources.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="RenderSystem_D3D12.cpp" />
     <ClCompile Include="RenderTargetD3D12.cpp" />
@@ -135,6 +138,7 @@
     </ClCompile>
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="TextureD3D12.cpp" />
+    <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="WindowSystem_Win32.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -226,6 +226,14 @@ struct BlendMode final
 	bool operator==(const BlendMode&) const = default;
 };
 
+namespace BlendStates
+{
+	inline const BlendMode Opaque = BlendMode(Blend::One, Blend::Zero);
+	inline const BlendMode AlphaBlend = BlendMode(Blend::One, Blend::InvSrcAlpha);
+	inline const BlendMode Additive = BlendMode(Blend::SrcAlpha, Blend::One);
+	inline const BlendMode NonPremultiplied = BlendMode(Blend::SrcAlpha, Blend::InvSrcAlpha);
+}
+
 struct InputLayout final
 {
 	enum class Rate
@@ -253,16 +261,7 @@ struct InputLayout final
 	bool operator==(const InputLayout&) const = default;
 };
 
-using TextureHandle = struct TextureHandle;
-using RenderTargetHandle = struct RenderTargetHandle;
-using ShaderHandle = struct ShaderHandle;
-using RaytracingShaderHandle = struct RaytracingShaderHandle;
-using VertexBufferHandle = struct VertexBufferHandle;
-using IndexBufferHandle = struct IndexBufferHandle;
-using UniformBufferHandle = struct UniformBufferHandle;
-using StorageBufferHandle = struct StorageBufferHandle;
-using BottomLevelAccelerationStructureHandle = struct BottomLevelAccelerationStructureHandle;
-using TopLevelAccelerationStructureHandle = struct TopLevelAccelerationStructureHandle;
+
 
 SE_MAKE_HASHABLE(InputLayout::Attribute,
 	t.format,
@@ -309,3 +308,10 @@ SE_MAKE_HASHABLE(DepthBias,
 	t.factor,
 	t.units
 )
+
+TopologyKind GetTopologyKind(Topology topology);
+uint32_t GetFormatChannelsCount(PixelFormat format);
+uint32_t GetFormatChannelSize(PixelFormat format);
+uint32_t GetMipCount(uint32_t width, uint32_t height);
+uint32_t GetMipWidth(uint32_t base_width, uint32_t mip_level);
+uint32_t GetMipHeight(uint32_t base_height, uint32_t mip_level);

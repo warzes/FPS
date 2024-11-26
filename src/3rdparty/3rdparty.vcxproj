@@ -57,7 +57,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)glslang\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -75,7 +75,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)glslang\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -91,7 +91,16 @@
     <ClCompile Include="d3dx12\DirectXHelpers.cpp" />
     <ClCompile Include="d3dx12\GraphicsMemory.cpp" />
     <ClCompile Include="d3dx12\LinearAllocator.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="glslangLib.cpp" />
+    <ClCompile Include="glslangLib2.cpp" />
+    <ClCompile Include="glslangLib3.cpp" />
+    <ClCompile Include="spirv-cross\spirv_cfg.cpp" />
+    <ClCompile Include="spirv-cross\spirv_cross.cpp" />
+    <ClCompile Include="spirv-cross\spirv_cross_parsed_ir.cpp" />
+    <ClCompile Include="spirv-cross\spirv_glsl.cpp" />
+    <ClCompile Include="spirv-cross\spirv_hlsl.cpp" />
+    <ClCompile Include="spirv-cross\spirv_parser.cpp" />
+    <ClCompile Include="spirv-reflect\spirv_reflect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx12\d3d12generatemips.h" />

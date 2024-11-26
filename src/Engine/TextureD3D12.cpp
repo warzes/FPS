@@ -62,49 +62,6 @@ void TextureD3D12::Write(uint32_t width, uint32_t height, PixelFormat format, co
 		});
 }
 //=============================================================================
-void TextureD3D12::Read(uint32_t pos_x, uint32_t pos_y, uint32_t width, uint32_t height, uint32_t mip_level, void* dst_memory)
-{
-	EndCommandList(gContext.commandQueue.Get(), gContext.commandList.Get(), true);
-
-	auto texture_desc = m_texture->GetDesc();
-
-	UINT64 required_size = 0;
-	D3D12_PLACED_SUBRESOURCE_FOOTPRINT layout;
-	UINT num_rows = 0;
-	UINT64 row_sizes_in_bytes = 0;
-	gContext.device->GetCopyableFootprints(&texture_desc, mip_level, 1, 0, &layout, &num_rows, &row_sizes_in_bytes, &required_size);
-
-	auto staging_buffer = CreateBuffer(required_size);
-
-	OneTimeSubmit([&](ID3D12GraphicsCommandList* cmdlist) {
-		EnsureState(cmdlist, D3D12_RESOURCE_STATE_COPY_SOURCE);
-		auto src_loc = CD3DX12_TEXTURE_COPY_LOCATION(m_texture.Get(), mip_level);
-		auto dst_loc = CD3DX12_TEXTURE_COPY_LOCATION(staging_buffer.Get(), layout);
-		cmdlist->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, NULL); // TODO: box
-		});
-
-	UINT8* ptr = nullptr;
-	staging_buffer->Map(0, nullptr, reinterpret_cast<void**>(&ptr));
-
-	auto channels_count = GetFormatChannelsCount(m_format);
-	auto channel_size = GetFormatChannelSize(m_format);
-	auto dst_row_size = width * channels_count * channel_size;
-
-	UINT8* src_ptr = ptr + layout.Offset;
-	UINT8* dst_ptr = (uint8_t*)dst_memory;// +layouts[i].Offset;
-
-	for (UINT j = 0; j < num_rows; ++j)
-	{
-		memcpy(dst_ptr, src_ptr, dst_row_size);
-		src_ptr += layout.Footprint.RowPitch;
-		dst_ptr += dst_row_size;
-	}
-
-	staging_buffer->Unmap(0, nullptr);
-
-	BeginCommandList(gContext.commandAllocator.Get(), gContext.commandList.Get());
-}
-//=============================================================================
 void TextureD3D12::GenerateMips(ID3D12GraphicsCommandList* cmdlist, std::vector<ComPtr<ID3D12DeviceChild>>& staging_objects)
 {
 	EnsureState(cmdlist, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);

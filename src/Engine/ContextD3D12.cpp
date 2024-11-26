@@ -317,7 +317,7 @@ void EnsureGraphicsState(bool draw_indexed)
 	EnsureVertexBuffer();
 }
 //=============================================================================
-void Begin()
+void RenderBegin()
 {
 	BeginCommandList(gContext.commandAllocator.Get(), gContext.commandList.Get());
 
@@ -328,7 +328,7 @@ void Begin()
 	gContext.vertexBuffersDirty = true;
 }
 //=============================================================================
-void End()
+void RenderEnd()
 {
 	gContext.GetCurrentFrame().backBufferTexture->EnsureState(gContext.commandList.Get(), D3D12_RESOURCE_STATE_PRESENT);
 	EndCommandList(gContext.commandQueue.Get(), gContext.commandList.Get(), false);

@@ -34,6 +34,8 @@ public:
 	Texture& operator=(Texture&& other) noexcept;
 
 	operator TextureHandle*() { return m_textureHandle; }
+	TextureHandle* Get() { return m_textureHandle; }
+	const TextureHandle* Get() const { return m_textureHandle; }
 
 	auto GetWidth() const { return m_width; }
 	auto GetHeight() const { return m_height; }
@@ -70,7 +72,9 @@ public:
 	Shader(Shader&& other) noexcept;
 	~Shader();
 
-	operator ShaderHandle* () { return m_shaderHandle; }
+	operator ShaderHandle*() { return m_shaderHandle; }
+	ShaderHandle* Get() { return m_shaderHandle; }
+	const ShaderHandle* Get() const { return m_shaderHandle; }
 
 	Shader& operator=(Shader&& other) noexcept;
 
@@ -123,6 +127,8 @@ public:
 	}
 
 	operator VertexBufferHandle* () { return m_vertexBufferHandle; }
+	VertexBufferHandle* Get() { return m_vertexBufferHandle; }
+	const VertexBufferHandle* Get() const { return m_vertexBufferHandle; }
 
 private:
 	VertexBufferHandle* m_vertexBufferHandle = nullptr;
@@ -159,6 +165,8 @@ public:
 	}
 
 	operator IndexBufferHandle*() { return m_indexBufferHandle; }
+	IndexBufferHandle* Get() { return m_indexBufferHandle; }
+	const IndexBufferHandle* Get() const { return m_indexBufferHandle; }
 
 private:
 	IndexBufferHandle* m_indexBufferHandle = nullptr;
@@ -183,7 +191,8 @@ public:
 	void Write(const T& value) { Write(&const_cast<T&>(value), sizeof(T)); }
 
 	operator UniformBufferHandle* () { return m_uniformBufferHandle; }
-
+	UniformBufferHandle* Get() { return m_uniformBufferHandle; }
+	const UniformBufferHandle* Get() const { return m_uniformBufferHandle; }
 private:
 	UniformBufferHandle* m_uniformBufferHandle = nullptr;
 };

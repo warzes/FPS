@@ -2,20 +2,23 @@
 #include "RenderUtils.h"
 #include "RenderSystem.h"
 
-Mesh::Mesh(const Vertices& vertices)
+template<class... Ts> struct cases : Ts... { using Ts::operator()...; };
+template<class... Ts> cases(Ts...) -> cases<Ts...>;
+
+utils::Mesh::Mesh(const Vertices& vertices)
 {
-	SetVertices(vertices);
+	setVertices(vertices);
 }
 
-Mesh::Mesh(const Vertices& vertices, const Indices& indices)
+utils::Mesh::Mesh(const Vertices& vertices, const Indices& indices)
 {
-	SetVertices(vertices);
-	SetIndices(indices);
+	setVertices(vertices);
+	setIndices(indices);
 }
 
-void Mesh::SetVertices(const Vertex* memory, uint32_t count)
+void utils::Mesh::setVertices(const Vertex* memory, uint32_t count)
 {
-	m_vertexCount = count;
+	mVertexCount = count;
 
 	if (count == 0)
 		return;
@@ -23,20 +26,20 @@ void Mesh::SetVertices(const Vertex* memory, uint32_t count)
 	size_t size = count * sizeof(Vertex);
 	size_t stride = sizeof(Vertex);
 
-	if (!m_vertexBuffer.has_value() || m_vertexBuffer.value().GetSize() < size)
-		m_vertexBuffer.emplace(size, stride);
+	if (!mVertexBuffer.has_value() || mVertexBuffer.value().GetSize() < size)
+		mVertexBuffer.emplace(size, stride);
 
-	m_vertexBuffer.value().Write(memory, count);
+	mVertexBuffer.value().Write(memory, count);
 }
 
-void Mesh::SetVertices(const Vertices& value)
+void utils::Mesh::setVertices(const Vertices& value)
 {
-	SetVertices(value.data(), static_cast<uint32_t>(value.size()));
+	setVertices(value.data(), static_cast<uint32_t>(value.size()));
 }
 
-void Mesh::SetIndices(const Index* memory, uint32_t count)
+void utils::Mesh::setIndices(const Index* memory, uint32_t count)
 {
-	m_indexCount = count;
+	mIndexCount = count;
 
 	if (count == 0)
 		return;
@@ -44,18 +47,18 @@ void Mesh::SetIndices(const Index* memory, uint32_t count)
 	size_t size = count * sizeof(Index);
 	size_t stride = sizeof(Index);
 
-	if (!m_indexBuffer.has_value() || m_indexBuffer.value().GetSize() < size)
-		m_indexBuffer.emplace(size, stride);
+	if (!mIndexBuffer.has_value() || mIndexBuffer.value().GetSize() < size)
+		mIndexBuffer.emplace(size, stride);
 
-	m_indexBuffer.value().Write(memory, count);
+	mIndexBuffer.value().Write(memory, count);
 }
 
-void Mesh::SetIndices(const Indices& value)
+void utils::Mesh::setIndices(const Indices& value)
 {
-	SetIndices(value.data(), static_cast<uint32_t>(value.size()));
+	setIndices(value.data(), static_cast<uint32_t>(value.size()));
 }
 
-const std::string effects::BasicEffect::VertexShaderCode = R"(
+const std::string utils::effects::BasicEffect::VertexShaderCode = R"(
 #version 450 core
 
 layout(location = POSITION_LOCATION) in vec3 aPosition;
@@ -101,7 +104,7 @@ void main()
 	gl_Position = settings.projection * settings.view * settings.model * vec4(aPosition, 1.0);
 })";
 
-const std::string effects::BasicEffect::FragmentShaderCode = R"(
+const std::string utils::effects::BasicEffect::FragmentShaderCode = R"(
 #version 450 core
 
 layout(binding = SETTINGS_UNIFORM_BINDING) uniform _settings
@@ -162,7 +165,7 @@ static std::vector<std::string> ConcatDefines(std::vector<std::vector<std::strin
 
 static std::vector<std::string> MakeBasicEffectDefines()
 {
-	return ConcatDefines({ Mesh::Vertex::Defines, {
+	return ConcatDefines({ utils::Mesh::Vertex::Defines, {
 		"COLOR_TEXTURE_BINDING 0",
 		"SETTINGS_UNIFORM_BINDING 2"
 	} });
@@ -170,22 +173,22 @@ static std::vector<std::string> MakeBasicEffectDefines()
 
 static std::vector<std::string> MakeEffectDefines()
 {
-	return ConcatDefines({ effects::BasicEffect::Defines, {
+	return ConcatDefines({ utils::effects::BasicEffect::Defines, {
 		"NORMAL_TEXTURE_BINDING 1",
 		"EFFECT_UNIFORM_BINDING 3",
 		"EFFECT_FUNC effect"
 	} });
 }
 
-const std::vector<std::string> effects::BasicEffect::Defines = MakeBasicEffectDefines();
+const std::vector<std::string> utils::effects::BasicEffect::Defines = MakeBasicEffectDefines();
 
-const std::vector<std::string> effects::forward_shading::DirectionalLight::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::forward_shading::DirectionalLight::Defines = MakeEffectDefines();
 
-const std::string effects::forward_shading::DirectionalLight::VertexShaderCode =
-effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::forward_shading::DirectionalLight::VertexShaderCode =
+utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::forward_shading::DirectionalLight::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::forward_shading::DirectionalLight::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _light
 {
 	vec3 direction;
@@ -227,13 +230,13 @@ void effect(inout vec4 result)
 	result *= vec4(intensity, 1.0);
 })";
 
-const std::vector<std::string> effects::forward_shading::PointLight::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::forward_shading::PointLight::Defines = MakeEffectDefines();
 
-const std::string effects::forward_shading::PointLight::VertexShaderCode =
-effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::forward_shading::PointLight::VertexShaderCode =
+utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::forward_shading::PointLight::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::forward_shading::PointLight::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _light
 {
 	vec3 position;
@@ -286,13 +289,13 @@ void effect(inout vec4 result)
 	result *= vec4(intensity, 1.0);
 })";
 
-const std::vector<std::string> effects::deferred_shading::DirectionalLight::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::deferred_shading::DirectionalLight::Defines = MakeEffectDefines();
 
-const std::string effects::deferred_shading::DirectionalLight::VertexShaderCode =
-effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::deferred_shading::DirectionalLight::VertexShaderCode =
+utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::deferred_shading::DirectionalLight::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::deferred_shading::DirectionalLight::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _light
 {
 	vec3 direction;
@@ -327,13 +330,13 @@ void effect(inout vec4 result)
 	result *= vec4(intensity, 1.0);
 })";
 
-const std::vector<std::string> effects::deferred_shading::PointLight::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::deferred_shading::PointLight::Defines = MakeEffectDefines();
 
-const std::string effects::deferred_shading::PointLight::VertexShaderCode =
-effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::deferred_shading::PointLight::VertexShaderCode =
+utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::deferred_shading::PointLight::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::deferred_shading::PointLight::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _light
 {
 	vec3 position;
@@ -379,13 +382,13 @@ void effect(inout vec4 result)
 	result *= vec4(intensity, 1.0);
 })";
 
-const std::vector<std::string> effects::deferred_shading::ExtractGeometryBuffer::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::deferred_shading::ExtractGeometryBuffer::Defines = MakeEffectDefines();
 
-const std::string effects::deferred_shading::ExtractGeometryBuffer::VertexShaderCode =
-effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::deferred_shading::ExtractGeometryBuffer::VertexShaderCode =
+utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::deferred_shading::ExtractGeometryBuffer::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::deferred_shading::ExtractGeometryBuffer::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 //layout(location = 0) out vec4 result; // color_buffer
 layout(location = 1) out vec4 normal_buffer;
 layout(location = 2) out vec4 positions_buffer;
@@ -413,12 +416,12 @@ void effect(inout vec4 result)
 	positions_buffer = vec4(In.world_position, 1.0);
 })";
 
-const std::vector<std::string> effects::GaussianBlur::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::GaussianBlur::Defines = MakeEffectDefines();
 
-const std::string effects::GaussianBlur::VertexShaderCode = effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::GaussianBlur::VertexShaderCode = utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::GaussianBlur::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::GaussianBlur::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _blur
 {
 	vec2 direction;
@@ -441,12 +444,12 @@ void effect(inout vec4 result)
 	result += texture(sColorTexture, In.tex_coord - off2) * 0.0702702703;
 })";
 
-const std::vector<std::string> effects::BloomDownsample::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::BloomDownsample::Defines = MakeEffectDefines();
 
-const std::string effects::BloomDownsample::VertexShaderCode = effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::BloomDownsample::VertexShaderCode = utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::BloomDownsample::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::BloomDownsample::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _downsample
 {
 	uint step_number;
@@ -527,12 +530,12 @@ void effect(inout vec4 result)
 	result = vec4(downsample13tap(sColorTexture, In.tex_coord), 1.0);
 })";
 
-const std::vector<std::string> effects::BloomUpsample::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::BloomUpsample::Defines = MakeEffectDefines();
 
-const std::string effects::BloomUpsample::VertexShaderCode = effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::BloomUpsample::VertexShaderCode = utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::BloomUpsample::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::BloomUpsample::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 void effect(inout vec4 result)
 {
 	const vec2 pixelSize = vec2(1.0) / textureSize(sColorTexture, 0);
@@ -561,12 +564,12 @@ void effect(inout vec4 result)
 	result = vec4(r, 1.0) * settings.color;
 })";
 
-const std::vector<std::string> effects::BrightFilter::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::BrightFilter::Defines = MakeEffectDefines();
 
-const std::string effects::BrightFilter::VertexShaderCode = effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::BrightFilter::VertexShaderCode = utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::BrightFilter::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::BrightFilter::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _bright
 {
 	float threshold;
@@ -580,12 +583,12 @@ void effect(inout vec4 result)
 	result *= sign(luminance);
 })";
 
-const std::vector<std::string> effects::Grayscale::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::Grayscale::Defines = MakeEffectDefines();
 
-const std::string effects::Grayscale::VertexShaderCode = effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::Grayscale::VertexShaderCode = utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::Grayscale::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::Grayscale::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _grayscale
 {
 	float intensity;
@@ -598,12 +601,12 @@ void effect(inout vec4 result)
 	result.rgb = mix(result.rgb, vec3(gray), grayscale.intensity);
 })";
 
-const std::vector<std::string> effects::AlphaTest::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::AlphaTest::Defines = MakeEffectDefines();
 
-const std::string effects::AlphaTest::VertexShaderCode = effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::AlphaTest::VertexShaderCode = utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::AlphaTest::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::AlphaTest::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _alphatest
 {
 	float threshold;
@@ -617,12 +620,12 @@ void effect(inout vec4 result)
 		discard;
 })";
 
-const std::vector<std::string> effects::GammaCorrection::Defines = MakeEffectDefines();
+const std::vector<std::string> utils::effects::GammaCorrection::Defines = MakeEffectDefines();
 
-const std::string effects::GammaCorrection::VertexShaderCode = effects::BasicEffect::VertexShaderCode;
+const std::string utils::effects::GammaCorrection::VertexShaderCode = utils::effects::BasicEffect::VertexShaderCode;
 
-const std::string effects::GammaCorrection::FragmentShaderCode =
-effects::BasicEffect::FragmentShaderCode + R"(
+const std::string utils::effects::GammaCorrection::FragmentShaderCode =
+utils::effects::BasicEffect::FragmentShaderCode + R"(
 layout(binding = EFFECT_UNIFORM_BINDING) uniform _gamma
 {
 	float value;
@@ -634,7 +637,9 @@ void effect(inout vec4 result)
     result.rgb = pow(result.rgb, vec3(1.0 / gamma.value));
 })";
 
-effects::BaseDirectionalLightEffect::BaseDirectionalLightEffect(const DirectionalLight& light) :
+static std::optional<utils::Context> gContext;
+
+utils::effects::BaseDirectionalLightEffect::BaseDirectionalLightEffect(const utils::DirectionalLight& light) :
 	direction(light.direction),
 	ambient(light.ambient),
 	diffuse(light.diffuse),
@@ -643,7 +648,7 @@ effects::BaseDirectionalLightEffect::BaseDirectionalLightEffect(const Directiona
 {
 }
 
-effects::BasePointLightEffect::BasePointLightEffect(const PointLight& light) :
+utils::effects::BasePointLightEffect::BasePointLightEffect(const utils::PointLight& light) :
 	position(light.position),
 	ambient(light.ambient),
 	diffuse(light.diffuse),
@@ -655,32 +660,32 @@ effects::BasePointLightEffect::BasePointLightEffect(const PointLight& light) :
 {
 }
 
-effects::GaussianBlur::GaussianBlur(glm::vec2 _direction) :
+utils::effects::GaussianBlur::GaussianBlur(glm::vec2 _direction) :
 	direction(std::move(_direction))
 {
 }
 
-effects::BloomDownsample::BloomDownsample(uint32_t _step_number) :
+utils::effects::BloomDownsample::BloomDownsample(uint32_t _step_number) :
 	step_number(_step_number)
 {
 }
 
-effects::BrightFilter::BrightFilter(float _threshold) :
+utils::effects::BrightFilter::BrightFilter(float _threshold) :
 	threshold(_threshold)
 {
 }
 
-std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> MakeCameraMatrices(const OrthogonalCamera& camera)
+std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> utils::MakeCameraMatrices(const OrthogonalCamera& camera)
 {
-	float width = (float)camera.width.value_or(1);
-	float height = (float)camera.height.value_or(1);
+	auto width = (float)camera.width.value_or(gRenderSystem->GetBackbufferWidth());
+	auto height = (float)camera.height.value_or(gRenderSystem->GetBackbufferHeight());
 	auto proj = glm::orthoLH(0.0f, width, height, 0.0f, -1.0f, 1.0f);
 	auto view = glm::lookAtLH(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f));
 	return { proj, view };
 }
 
-std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> MakeCameraMatrices(const PerspectiveCamera& camera)
+std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> utils::MakeCameraMatrices(const PerspectiveCamera& camera)
 {
 	auto sin_yaw = glm::sin(camera.yaw);
 	auto sin_pitch = glm::sin(camera.pitch);
@@ -692,8 +697,8 @@ std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> MakeCameraMatrices(const Perspe
 	auto right = glm::normalize(glm::cross(front, camera.world_up));
 	auto up = glm::normalize(glm::cross(right, front));
 
-	auto width = (float)camera.width.value_or(1);
-	auto height = (float)camera.height.value_or(1);
+	auto width = (float)camera.width.value_or(gRenderSystem->GetBackbufferWidth());
+	auto height = (float)camera.height.value_or(gRenderSystem->GetBackbufferHeight());
 
 	auto proj = glm::perspectiveFov(camera.fov, width, height, camera.near_plane, camera.far_plane);
 	auto view = glm::lookAtRH(camera.position, camera.position + front, up);
@@ -701,14 +706,12 @@ std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> MakeCameraMatrices(const Perspe
 	return { proj, view };
 }
 
-std::optional<Context> gContext;
-
-void ClearContext()
+void utils::ClearContext()
 {
 	gContext.reset();
 }
 
-Context& GetContext()
+utils::Context& utils::GetContext()
 {
 	if (!gContext.has_value())
 		gContext.emplace();
@@ -718,7 +721,7 @@ Context& GetContext()
 
 static const uint32_t white_pixel = 0xFFFFFFFF;
 
-Context::Context() :
+utils::Context::Context() :
 	default_mesh({
 		{ { -1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
 		{ { -1.0f,  1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
@@ -729,14 +732,13 @@ Context::Context() :
 {
 }
 
-
 // commands
 
-commands::SetEffect::SetEffect(std::nullopt_t) : SetEffect(effects::BasicEffect{})
+utils::commands::SetEffect::SetEffect(std::nullopt_t) : SetEffect(effects::BasicEffect{})
 {
 }
 
-commands::SetEffect::SetEffect(Shader* _shader, uint32_t uniform_binding, void* uniform_data,
+utils::commands::SetEffect::SetEffect(Shader* _shader, uint32_t uniform_binding, void* uniform_data,
 	size_t uniform_size) :
 	shader(_shader)
 {
@@ -746,162 +748,162 @@ commands::SetEffect::SetEffect(Shader* _shader, uint32_t uniform_binding, void* 
 	std::memcpy(uniform->data.data(), uniform_data, uniform_size);
 }
 
-commands::SetTopology::SetTopology(Topology _topology) :
+utils::commands::SetTopology::SetTopology(Topology _topology) :
 	topology(_topology)
 {
 }
 
-commands::SetViewport::SetViewport(std::optional<Viewport> _viewport) :
+utils::commands::SetViewport::SetViewport(std::optional<Viewport> _viewport) :
 	viewport(std::move(_viewport))
 {
 }
 
-commands::SetScissor::SetScissor(std::optional<Scissor> _scissor) :
+utils::commands::SetScissor::SetScissor(std::optional<Scissor> _scissor) :
 	scissor(_scissor)
 {
 }
 
-commands::SetBlendMode::SetBlendMode(std::optional<BlendMode> _blend_mode) :
+utils::commands::SetBlendMode::SetBlendMode(std::optional<BlendMode> _blend_mode) :
 	blend_mode(std::move(_blend_mode))
 {
 }
 
-commands::SetSampler::SetSampler(Sampler _sampler) :
+utils::commands::SetSampler::SetSampler(Sampler _sampler) :
 	sampler(_sampler)
 {
 }
 
-commands::SetCullMode::SetCullMode(CullMode _cull_mode) :
+utils::commands::SetCullMode::SetCullMode(CullMode _cull_mode) :
 	cull_mode(_cull_mode)
 {
 }
 
-commands::SetTextureAddress::SetTextureAddress(TextureAddress _texture_address) :
+utils::commands::SetTextureAddress::SetTextureAddress(TextureAddress _texture_address) :
 	texture_address(_texture_address)
 {
 }
 
-commands::SetFrontFace::SetFrontFace(FrontFace _front_face) :
+utils::commands::SetFrontFace::SetFrontFace(FrontFace _front_face) :
 	front_face(_front_face)
 {
 }
 
-commands::SetDepthBias::SetDepthBias(std::optional<DepthBias> _depth_bias) :
+utils::commands::SetDepthBias::SetDepthBias(std::optional<DepthBias> _depth_bias) :
 	depth_bias(_depth_bias)
 {
 }
 
-commands::SetDepthMode::SetDepthMode(std::optional<DepthMode> _depth_mode) :
+utils::commands::SetDepthMode::SetDepthMode(std::optional<DepthMode> _depth_mode) :
 	depth_mode(_depth_mode)
 {
 }
 
-commands::SetStencilMode::SetStencilMode(std::optional<StencilMode> _stencil_mode) :
+utils::commands::SetStencilMode::SetStencilMode(std::optional<StencilMode> _stencil_mode) :
 	stencil_mode(_stencil_mode)
 {
 }
 
-commands::SetShader::SetShader(const Shader* _shader) :
+utils::commands::SetShader::SetShader(const Shader* _shader) :
 	shader(_shader)
 {
 }
 
-commands::SetVertexBuffer::SetVertexBuffer(const VertexBuffer* _buffer) :
+utils::commands::SetVertexBuffer::SetVertexBuffer(const VertexBuffer* _buffer) :
 	buffer(_buffer)
 {
 }
 
-commands::SetIndexBuffer::SetIndexBuffer(const IndexBuffer* _buffer) :
+utils::commands::SetIndexBuffer::SetIndexBuffer(const IndexBuffer* _buffer) :
 	buffer(_buffer)
 {
 }
 
-commands::SetUniformBuffer::SetUniformBuffer(uint32_t _binding, const void* _memory, size_t _size) :
+utils::commands::SetUniformBuffer::SetUniformBuffer(uint32_t _binding, const void* _memory, size_t _size) :
 	binding(_binding), memory(_memory), size(_size)
 {
 }
 
-commands::SetMesh::SetMesh(const Mesh* _mesh) :
+utils::commands::SetMesh::SetMesh(const Mesh* _mesh) :
 	mesh(_mesh)
 {
 }
 
-commands::SetTexture::SetTexture(uint32_t _binding, const Texture* _texture) :
+utils::commands::SetTexture::SetTexture(uint32_t _binding, const Texture* _texture) :
 	binding(_binding),
 	texture(_texture)
 {
 }
 
-commands::Draw::Draw(uint32_t _vertex_count, uint32_t _vertex_offset, uint32_t _instance_count) :
+utils::commands::Draw::Draw(uint32_t _vertex_count, uint32_t _vertex_offset, uint32_t _instance_count) :
 	vertex_count(_vertex_count),
 	vertex_offset(_vertex_offset),
 	instance_count(_instance_count)
 {
 }
 
-commands::DrawIndexed::DrawIndexed(uint32_t _index_count, uint32_t _index_offset, uint32_t _instance_count) :
+utils::commands::DrawIndexed::DrawIndexed(uint32_t _index_count, uint32_t _index_offset, uint32_t _instance_count) :
 	index_count(_index_count),
 	index_offset(_index_offset),
 	instance_count(_instance_count)
 {
 }
 
-commands::SetColorTexture::SetColorTexture(const Texture* _color_texture) :
+utils::commands::SetColorTexture::SetColorTexture(const Texture* _color_texture) :
 	color_texture(_color_texture)
 {
 }
 
-commands::SetNormalTexture::SetNormalTexture(const Texture* _normal_texture) :
+utils::commands::SetNormalTexture::SetNormalTexture(const Texture* _normal_texture) :
 	normal_texture(_normal_texture)
 {
 }
 
-commands::SetColor::SetColor(glm::vec4 _color) :
+utils::commands::SetColor::SetColor(glm::vec4 _color) :
 	color(std::move(_color))
 {
 }
 
-commands::SetProjectionMatrix::SetProjectionMatrix(glm::mat4 _projection_matrix) :
+utils::commands::SetProjectionMatrix::SetProjectionMatrix(glm::mat4 _projection_matrix) :
 	projection_matrix(std::move(_projection_matrix))
 {
 }
 
-commands::SetViewMatrix::SetViewMatrix(glm::mat4 _view_matrix) :
+utils::commands::SetViewMatrix::SetViewMatrix(glm::mat4 _view_matrix) :
 	view_matrix(std::move(_view_matrix))
 {
 }
 
-commands::SetModelMatrix::SetModelMatrix(glm::mat4 _model_matrix) :
+utils::commands::SetModelMatrix::SetModelMatrix(glm::mat4 _model_matrix) :
 	model_matrix(std::move(_model_matrix))
 {
 }
 
-commands::SetCamera::SetCamera(Camera _camera) :
+utils::commands::SetCamera::SetCamera(Camera _camera) :
 	camera(std::move(_camera))
 {
 }
 
-commands::SetEyePosition::SetEyePosition(glm::vec3 _eye_position) :
+utils::commands::SetEyePosition::SetEyePosition(glm::vec3 _eye_position) :
 	eye_position(std::move(_eye_position))
 {
 }
 
-commands::SetMipmapBias::SetMipmapBias(float _mipmap_bias) :
+utils::commands::SetMipmapBias::SetMipmapBias(float _mipmap_bias) :
 	mipmap_bias(_mipmap_bias)
 {
 }
 
-commands::Subcommands::Subcommands(const std::vector<Command>* _subcommands) :
+utils::commands::Subcommands::Subcommands(const std::vector<Command>* _subcommands) :
 	subcommands(_subcommands)
 {
 }
 
-commands::DrawMesh::DrawMesh(std::optional<DrawCommand> _draw_command) :
+utils::commands::DrawMesh::DrawMesh(std::optional<DrawCommand> _draw_command) :
 	draw_command(std::move(_draw_command))
 {
 }
 
-void ExecuteCommands(const std::vector<Command>& cmds)
+void utils::ExecuteCommands(const std::vector<Command>& cmds)
 {
 	gRenderSystem->SetTopology(Topology::TriangleList);
 	gRenderSystem->SetViewport(std::nullopt);
@@ -943,7 +945,7 @@ void ExecuteCommands(const std::vector<Command>& cmds)
 
 	std::function<void(const Command&)> execute_command;
 
-	auto execute_commands = [&](const std::vector<::Command>& _cmds) {
+	auto execute_commands = [&](const std::vector<Command>& _cmds) {
 		for (const auto& cmd : _cmds)
 		{
 			execute_command(cmd);
@@ -952,24 +954,24 @@ void ExecuteCommands(const std::vector<Command>& cmds)
 
 	execute_command = [&](const Command& _cmd) {
 		std::visit(cases{
-			[&](const commands::SetTopology& cmd) { SetTopology(cmd.topology); },
-			[&](const commands::SetViewport& cmd) { SetViewport(cmd.viewport); },
-			[&](const commands::SetScissor& cmd) { SetScissor(cmd.scissor); },
-			[&](const commands::SetBlendMode& cmd) { SetBlendMode(cmd.blend_mode); },
-			[&](const commands::SetSampler& cmd) { SetSampler(cmd.sampler); },
-			[&](const commands::SetCullMode& cmd) { SetCullMode(cmd.cull_mode); },
-			[&](const commands::SetTextureAddress& cmd) { SetTextureAddress(cmd.texture_address); },
-			[&](const commands::SetFrontFace& cmd) { SetFrontFace(cmd.front_face); },
-			[&](const commands::SetDepthBias& cmd) { SetDepthBias(cmd.depth_bias); },
-			[&](const commands::SetDepthMode& cmd) { SetDepthMode(cmd.depth_mode); },
-			[&](const commands::SetStencilMode& cmd) { SetStencilMode(cmd.stencil_mode); },
-			[&](const commands::SetShader& cmd) { SetShader(*cmd.shader); },
-			[&](const commands::SetVertexBuffer& cmd) { SetVertexBuffer(*cmd.buffer); },
-			[&](const commands::SetIndexBuffer& cmd) { SetIndexBuffer(*cmd.buffer); },
-			[&](const commands::SetUniformBuffer& cmd) { SetUniformBuffer(cmd.binding, cmd.memory, cmd.size); },
-			[&](const commands::SetTexture& cmd) { SetTexture(cmd.binding, *cmd.texture); },
-			[&](const commands::Draw& cmd) { Draw(cmd.vertex_count, cmd.vertex_offset, cmd.instance_count); },
-			[&](const commands::DrawIndexed& cmd) { DrawIndexed(cmd.index_count, cmd.index_offset, cmd.instance_count); },
+			[&](const commands::SetTopology& cmd) { gRenderSystem->SetTopology(cmd.topology); },
+			[&](const commands::SetViewport& cmd) { gRenderSystem->SetViewport(cmd.viewport); },
+			[&](const commands::SetScissor& cmd) { gRenderSystem->SetScissor(cmd.scissor); },
+			[&](const commands::SetBlendMode& cmd) { gRenderSystem->SetBlendMode(cmd.blend_mode); },
+			[&](const commands::SetSampler& cmd) { gRenderSystem->SetSampler(cmd.sampler); },
+			[&](const commands::SetCullMode& cmd) { gRenderSystem->SetCullMode(cmd.cull_mode); },
+			[&](const commands::SetTextureAddress& cmd) { gRenderSystem->SetTextureAddress(cmd.texture_address); },
+			[&](const commands::SetFrontFace& cmd) { gRenderSystem->SetFrontFace(cmd.front_face); },
+			[&](const commands::SetDepthBias& cmd) { gRenderSystem->SetDepthBias(cmd.depth_bias); },
+			[&](const commands::SetDepthMode& cmd) { gRenderSystem->SetDepthMode(cmd.depth_mode); },
+			[&](const commands::SetStencilMode& cmd) { gRenderSystem->SetStencilMode(cmd.stencil_mode); },
+			[&](const commands::SetShader& cmd) { gRenderSystem->SetShader(cmd.shader->Get()); },
+			[&](const commands::SetVertexBuffer& cmd) { gRenderSystem->SetVertexBuffer(*cmd.buffer); },
+			[&](const commands::SetIndexBuffer& cmd) { gRenderSystem->SetIndexBuffer(cmd.buffer->Get()); },
+			[&](const commands::SetUniformBuffer& cmd) { gRenderSystem->SetUniformBuffer(cmd.binding, cmd.memory, cmd.size); },
+			[&](const commands::SetTexture& cmd) { gRenderSystem->SetTexture(cmd.binding, cmd.texture->Get()); },
+			[&](const commands::Draw& cmd) { gRenderSystem->Draw(cmd.vertex_count, cmd.vertex_offset, cmd.instance_count); },
+			[&](const commands::DrawIndexed& cmd) { gRenderSystem->DrawIndexed(cmd.index_count, cmd.index_offset, cmd.instance_count); },
 			[&](const commands::SetMesh& cmd) {
 				mesh = cmd.mesh ? cmd.mesh : &context.default_mesh;
 				mesh_dirty = true;
@@ -1041,8 +1043,8 @@ void ExecuteCommands(const std::vector<Command>& cmds)
 
 				if (mesh_dirty)
 				{
-					const auto& vertex_buffer = mesh->GetVertexBuffer();
-					const auto& index_buffer = mesh->GetIndexBuffer();
+					const auto& vertex_buffer = mesh->getVertexBuffer();
+					const auto& index_buffer = mesh->getIndexBuffer();
 
 					if (vertex_buffer.has_value())
 						execute_command(commands::SetVertexBuffer(&vertex_buffer.value()));
@@ -1088,7 +1090,7 @@ void ExecuteCommands(const std::vector<Command>& cmds)
 	execute_commands(cmds);
 }
 
-void ExecuteRenderPass(const RenderPass& render_pass)
+void utils::ExecuteRenderPass(const RenderPass& render_pass)
 {
 	if (render_pass.targets.empty() || render_pass.targets == std::vector<const RenderTarget*>{ nullptr })
 		gRenderSystem->SetRenderTarget(std::nullopt);
@@ -1101,7 +1103,7 @@ void ExecuteRenderPass(const RenderPass& render_pass)
 	ExecuteCommands(render_pass.commands);
 }
 
-void passes::Blit(Texture* src, RenderTarget* dst, const BlitOptions& options)
+void utils::passes::Blit(Texture* src, RenderTarget* dst, const BlitOptions& options)
 {
 	auto render_pass = RenderPass{
 		.targets = { dst },
@@ -1122,7 +1124,7 @@ void passes::Blit(Texture* src, RenderTarget* dst, const BlitOptions& options)
 	ExecuteRenderPass(render_pass);
 }
 
-void passes::GaussianBlur(RenderTarget* src, RenderTarget* dst)
+void utils::passes::GaussianBlur(RenderTarget* src, RenderTarget* dst)
 {
 	auto blur_target = gRenderSystem->AcquireTransientRenderTarget(src->GetWidth(), src->GetHeight());
 	Blit(src, blur_target, {
@@ -1134,10 +1136,10 @@ void passes::GaussianBlur(RenderTarget* src, RenderTarget* dst)
 		.effect = effects::GaussianBlur({ 0.0f, 1.0f })
 		});
 	ViewStage("gaussian vertical", dst);
-	ReleaseTransientRenderTarget(blur_target);
+	gRenderSystem->ReleaseTransientRenderTarget(blur_target);
 }
 
-void passes::Grayscale(RenderTarget* src, RenderTarget* dst, float intensity)
+void utils::passes::Grayscale(RenderTarget* src, RenderTarget* dst, float intensity)
 {
 	Blit(src, dst, {
 		.effect = effects::Grayscale{ intensity }
@@ -1145,7 +1147,7 @@ void passes::Grayscale(RenderTarget* src, RenderTarget* dst, float intensity)
 	ViewStage("grayscale", dst);
 }
 
-void passes::Bloom(RenderTarget* src, RenderTarget* dst, float bright_threshold, float intensity)
+void utils::passes::Bloom(RenderTarget* src, RenderTarget* dst, float bright_threshold, float intensity)
 {
 	Blit(src, dst);
 
@@ -1220,15 +1222,15 @@ void passes::Bloom(RenderTarget* src, RenderTarget* dst, float bright_threshold,
 
 	// release targets
 
-	ReleaseTransientRenderTarget(bright);
+	gRenderSystem->ReleaseTransientRenderTarget(bright);
 
 	for (auto target : tex_chain)
 	{
-		ReleaseTransientRenderTarget(target);
+		gRenderSystem->ReleaseTransientRenderTarget(target);
 	}
 }
 
-void passes::BloomGaussian(RenderTarget* src, RenderTarget* dst, float bright_threshold,
+void utils::passes::BloomGaussian(RenderTarget* src, RenderTarget* dst, float bright_threshold,
 	float intensity)
 {
 	Blit(src, dst);
@@ -1262,11 +1264,11 @@ void passes::BloomGaussian(RenderTarget* src, RenderTarget* dst, float bright_th
 		.blend_mode = BlendStates::Additive
 		});
 
-	ReleaseTransientRenderTarget(bright);
-	ReleaseTransientRenderTarget(blur_dst);
+	gRenderSystem->ReleaseTransientRenderTarget(bright);
+	gRenderSystem->ReleaseTransientRenderTarget(blur_dst);
 }
 
-std::vector<Command> Model::Draw(const Model& model, bool use_color_texture, bool use_normal_texture)
+std::vector<utils::Command> utils::Model::Draw(const Model& model, bool use_color_texture, bool use_normal_texture)
 {
 	return {
 		commands::SetColorTexture(use_color_texture ? model.color_texture : nullptr),
@@ -1282,10 +1284,12 @@ std::vector<Command> Model::Draw(const Model& model, bool use_color_texture, boo
 	};
 }
 
-static void DrawSceneForwardShading(RenderTarget* target, const PerspectiveCamera& camera,
-	const std::vector<Model>& models, const std::vector<Light>& lights,
-	const DrawSceneOptions& options)
+static void DrawSceneForwardShading(RenderTarget* target, const utils::PerspectiveCamera& camera,
+	const std::vector<utils::Model>& models, const std::vector<utils::Light>& lights,
+	const utils::DrawSceneOptions& options)
 {
+	using namespace utils;
+
 	if (models.empty())
 		return;
 
@@ -1335,10 +1339,12 @@ static void DrawSceneForwardShading(RenderTarget* target, const PerspectiveCamer
 	ExecuteRenderPass(render_pass);
 }
 
-static void DrawSceneDeferredShading(RenderTarget* target, const PerspectiveCamera& camera,
-	const std::vector<Model>& models, const std::vector<Light>& lights,
-	const DrawSceneOptions& options)
+static void DrawSceneDeferredShading(RenderTarget* target, const utils::PerspectiveCamera& camera,
+	const std::vector<utils::Model>& models, const std::vector<utils::Light>& lights,
+	const utils::DrawSceneOptions& options)
 {
+	using namespace utils;
+
 	if (models.empty())
 		return;
 
@@ -1403,21 +1409,21 @@ static void DrawSceneDeferredShading(RenderTarget* target, const PerspectiveCame
 	ViewStage("normal_buffer", normal_buffer);
 	ViewStage("positions_buffer", positions_buffer);
 
-	ReleaseTransientRenderTarget(color_buffer);
-	ReleaseTransientRenderTarget(normal_buffer);
-	ReleaseTransientRenderTarget(positions_buffer);
+	gRenderSystem->ReleaseTransientRenderTarget(color_buffer);
+	gRenderSystem->ReleaseTransientRenderTarget(normal_buffer);
+	gRenderSystem->ReleaseTransientRenderTarget(positions_buffer);
 }
 
-void DrawScene(RenderTarget* target, const PerspectiveCamera& camera,
+void utils::DrawScene(RenderTarget* target, const PerspectiveCamera& camera,
 	const std::vector<Model>& models, const std::vector<Light>& lights, const DrawSceneOptions& options)
 {
 	std::optional<RenderTarget*> scene_target;
 
 	auto get_same_transient_target = [](const RenderTarget* target) {
 		if (target != nullptr)
-			return AcquireTransientRenderTarget(target->getWidth(), target->getHeight());
+			return gRenderSystem->AcquireTransientRenderTarget(target->GetWidth(), target->GetHeight());
 		else
-			return AcquireTransientRenderTarget();
+			return gRenderSystem->AcquireTransientRenderTarget();
 		};
 
 	if (!options.posteffects.empty())
@@ -1458,19 +1464,19 @@ void DrawScene(RenderTarget* target, const PerspectiveCamera& camera,
 			}
 			}, posteffect);
 
-		ReleaseTransientRenderTarget(src);
+		gRenderSystem->ReleaseTransientRenderTarget(src);
 		src = dst;
 	}
 }
 
-static StageViewer* gStageViewer = nullptr;
+static utils::StageViewer* gStageViewer = nullptr;
 
-void SetStageViewer(StageViewer* value)
+void utils::SetStageViewer(StageViewer* value)
 {
 	gStageViewer = value;
 }
 
-void ViewStage(const std::string& name, Texture* texture)
+void utils::ViewStage(const std::string& name, Texture* texture)
 {
 	if (gStageViewer == nullptr)
 		return;
@@ -1478,7 +1484,7 @@ void ViewStage(const std::string& name, Texture* texture)
 	gStageViewer->stage(name, texture);
 }
 
-void MeshBuilder::reset()
+void utils::MeshBuilder::reset()
 {
 	if (mBegan)
 		throw std::runtime_error("missing end()");
@@ -1489,7 +1495,7 @@ void MeshBuilder::reset()
 	mTopology.reset();
 }
 
-void MeshBuilder::begin(Mode mode, std::function<void()> onFlush)
+void utils::MeshBuilder::begin(Mode mode, std::function<void()> onFlush)
 {
 	if (mBegan)
 		throw std::runtime_error("missing end()");
@@ -1518,7 +1524,7 @@ void MeshBuilder::begin(Mode mode, std::function<void()> onFlush)
 	mVertexStart = (uint32_t)mVertices.size();
 }
 
-void MeshBuilder::vertex(const Mesh::Vertex& value)
+void utils::MeshBuilder::vertex(const Mesh::Vertex& value)
 {
 	if (!mBegan)
 		throw std::runtime_error("missing begin()");
@@ -1526,7 +1532,7 @@ void MeshBuilder::vertex(const Mesh::Vertex& value)
 	mVertices.push_back(value);
 }
 
-static void AddIndicesForVertexArray(MeshBuilder::Mode mode, Topology topology,
+static void AddIndicesForVertexArray(utils::MeshBuilder::Mode mode, Topology topology,
 	uint32_t vertex_start, uint32_t vertex_count, std::vector<uint32_t>& indices)
 {
 	auto extract_ordered_index_sequence = [](uint32_t vertex_start, uint32_t vertex_count, auto& indices) {
@@ -1576,22 +1582,22 @@ static void AddIndicesForVertexArray(MeshBuilder::Mode mode, Topology topology,
 	using ExtractIndicesFunc = std::function<void(uint32_t vertex_start,
 		uint32_t vertex_count, std::vector<uint32_t>& indices)>;
 
-	static const std::unordered_map<MeshBuilder::Mode, std::unordered_map<Topology, ExtractIndicesFunc>> ExtractIndicesFuncs = {
-		{ MeshBuilder::Mode::Points, { { Topology::PointList, extract_ordered_index_sequence } } },
-		{ MeshBuilder::Mode::Lines, { { Topology::LineList, extract_ordered_index_sequence } } },
-		{ MeshBuilder::Mode::LineLoop, { { Topology::LineList, extract_line_list_indices_from_line_loop } } },
-		{ MeshBuilder::Mode::LineStrip, { { Topology::LineList, extract_line_list_indices_from_line_strip } } },
-		{ MeshBuilder::Mode::Polygon, { { Topology::TriangleList, extract_triangles_indices_from_polygons } } },
-		{ MeshBuilder::Mode::TriangleFan, { { Topology::TriangleList, extract_triangles_indices_from_triangle_fan } } },
-		{ MeshBuilder::Mode::Quads, { { Topology::TriangleList, extract_triangles_indices_from_quads } } },
-		{ MeshBuilder::Mode::TriangleStrip, { { Topology::TriangleList, extract_triangles_indices_from_triangle_strip } } },
-		{ MeshBuilder::Mode::Triangles, { { Topology::TriangleList, extract_ordered_index_sequence } } }
+	static const std::unordered_map<utils::MeshBuilder::Mode, std::unordered_map<Topology, ExtractIndicesFunc>> ExtractIndicesFuncs = {
+		{ utils::MeshBuilder::Mode::Points, { { Topology::PointList, extract_ordered_index_sequence } } },
+		{ utils::MeshBuilder::Mode::Lines, { { Topology::LineList, extract_ordered_index_sequence } } },
+		{ utils::MeshBuilder::Mode::LineLoop, { { Topology::LineList, extract_line_list_indices_from_line_loop } } },
+		{ utils::MeshBuilder::Mode::LineStrip, { { Topology::LineList, extract_line_list_indices_from_line_strip } } },
+		{ utils::MeshBuilder::Mode::Polygon, { { Topology::TriangleList, extract_triangles_indices_from_polygons } } },
+		{ utils::MeshBuilder::Mode::TriangleFan, { { Topology::TriangleList, extract_triangles_indices_from_triangle_fan } } },
+		{ utils::MeshBuilder::Mode::Quads, { { Topology::TriangleList, extract_triangles_indices_from_quads } } },
+		{ utils::MeshBuilder::Mode::TriangleStrip, { { Topology::TriangleList, extract_triangles_indices_from_triangle_strip } } },
+		{ utils::MeshBuilder::Mode::Triangles, { { Topology::TriangleList, extract_ordered_index_sequence } } }
 	};
 
 	ExtractIndicesFuncs.at(mode).at(topology)(vertex_start, vertex_count, indices);
 }
 
-void MeshBuilder::end()
+void utils::MeshBuilder::end()
 {
 	if (!mBegan)
 		throw std::runtime_error("missing begin()");
@@ -1600,11 +1606,123 @@ void MeshBuilder::end()
 	AddIndicesForVertexArray(mMode.value(), mTopology.value(), mVertexStart, (uint32_t)mVertices.size(), mIndices);
 }
 
-void MeshBuilder::setToMesh(Mesh& mesh)
+void utils::MeshBuilder::setToMesh(Mesh& mesh)
 {
 	if (mBegan)
 		throw std::runtime_error("missing end()");
 
-	mesh.SetVertices(mVertices);
-	mesh.SetIndices(mIndices);
+	mesh.setVertices(mVertices);
+	mesh.setIndices(mIndices);
+}
+
+void utils::Scratch::begin(MeshBuilder::Mode mode, const State& state)
+{
+	if (!mMeshBuilder.getVertices().empty() && mState != state)
+		pushCommand();
+
+	mMeshBuilder.begin(mode, [&] {
+		pushCommand();
+		});
+
+	mState = state;
+}
+
+void utils::Scratch::begin(MeshBuilder::Mode mode)
+{
+	begin(mode, {});
+}
+
+void utils::Scratch::vertex(const Mesh::Vertex& value)
+{
+	mMeshBuilder.vertex(value);
+}
+
+void utils::Scratch::end()
+{
+	mMeshBuilder.end();
+}
+
+void utils::Scratch::flush(bool sort_textures)
+{
+	if (mMeshBuilder.getVertices().empty())
+	{
+		mMeshBuilder.reset();
+		return;
+	}
+
+	pushCommand();
+
+	mMeshBuilder.setToMesh(mMesh);
+	mMeshBuilder.reset();
+
+	if (sort_textures)
+	{
+		std::sort(mScratchCommands.begin(), mScratchCommands.end(), [](const ScratchCommand& left, const ScratchCommand& right) {
+			return left.state.texture < right.state.texture;
+			});
+	}
+
+	mCommands.push_back(commands::SetMesh(&mMesh));
+
+	for (const auto& command : mScratchCommands)
+	{
+		mCommands.insert(mCommands.end(), {
+			command.state.alpha_test_threshold.has_value() ?
+				commands::SetEffect(effects::AlphaTest{ command.state.alpha_test_threshold.value() }) :
+				commands::SetEffect(std::nullopt),
+			commands::SetViewport(command.state.viewport),
+			commands::SetScissor(command.state.scissor),
+			commands::SetBlendMode(command.state.blend_mode),
+			commands::SetDepthBias(command.state.depth_bias),
+			commands::SetDepthMode(command.state.depth_mode),
+			commands::SetStencilMode(command.state.stencil_mode),
+			commands::SetCullMode(command.state.cull_mode),
+			commands::SetFrontFace(command.state.front_face),
+			commands::SetSampler(command.state.sampler),
+			commands::SetTextureAddress(command.state.texaddr),
+			commands::SetMipmapBias(command.state.mipmap_bias),
+			commands::SetProjectionMatrix(command.state.projection_matrix),
+			commands::SetViewMatrix(command.state.view_matrix),
+			commands::SetModelMatrix(command.state.model_matrix),
+			commands::SetColorTexture(command.state.texture),
+			commands::SetTopology(command.topology),
+			commands::DrawMesh(commands::DrawMesh::DrawIndexedVerticesCommand{
+				.index_count = command.index_count,
+				.index_offset = command.index_offset
+			})
+			});
+	}
+
+	mScratchCommands.clear();
+
+	ExecuteCommands(mCommands);
+
+	mCommands.clear();
+}
+
+bool utils::Scratch::isBegan() const
+{
+	return mMeshBuilder.isBegan();
+}
+
+void utils::Scratch::pushCommand()
+{
+	uint32_t index_offset = 0;
+
+	if (!mScratchCommands.empty())
+	{
+		const auto& prev_command = mScratchCommands.at(mScratchCommands.size() - 1);
+		index_offset = prev_command.index_offset + prev_command.index_count;
+	}
+
+	uint32_t index_count = static_cast<uint32_t>(mMeshBuilder.getIndices().size()) - index_offset;
+
+	auto topology = mMeshBuilder.getTopology().value();
+
+	mScratchCommands.push_back(ScratchCommand{
+		.state = mState,
+		.topology = topology,
+		.index_count = index_count,
+		.index_offset = index_offset
+		});
 }

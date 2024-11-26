@@ -12,6 +12,8 @@ class IndexBufferD3D12;
 class UniformBufferD3D12;
 #endif // RENDER_D3D12
 
+constexpr const int NUM_BACK_BUFFERS = 2;
+
 enum class RenderFeature
 {
 	Raytracing

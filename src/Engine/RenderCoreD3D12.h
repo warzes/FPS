@@ -4,8 +4,6 @@
 
 #include "RenderCore.h"
 
-constexpr const int NUM_BACK_BUFFERS = 2;
-
 constexpr const DXGI_FORMAT MainRenderTargetColorAttachmentFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 constexpr const DXGI_FORMAT MainRenderTargetDepthStencilAttachmentFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 

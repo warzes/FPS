@@ -69,8 +69,10 @@
 #	include <Windows.h>
 #endif
 
+#define GLM_ENABLE_EXPERIMENTAL 1
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtx/fast_trigonometry.hpp>
 
 #include <stb/stb_image.h>
 

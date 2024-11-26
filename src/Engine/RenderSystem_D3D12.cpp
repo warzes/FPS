@@ -16,7 +16,7 @@ RenderContext gContext{};
 //=============================================================================
 bool RenderSystem::createAPI(const WindowPrivateData& data, const RenderSystemCreateInfo& createInfo)
 {
-#if defined(_DEBUG)
+#if defined(_DEBUG) && 0
 	ComPtr<ID3D12Debug6> debug;
 	D3D12GetDebugInterface(IID_PPV_ARGS(debug.GetAddressOf()));
 	debug->EnableDebugLayer();
@@ -35,7 +35,7 @@ bool RenderSystem::createAPI(const WindowPrivateData& data, const RenderSystemCr
 
 	D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(gContext.device.GetAddressOf()));
 
-#if defined(_DEBUG)
+#if defined(_DEBUG) && 0
 	ComPtr<ID3D12InfoQueue> info_queue;
 	gContext.device.As(&info_queue);
 	info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
@@ -286,6 +286,11 @@ void RenderSystem::SetTexture(uint32_t binding, TextureHandle* handle)
 	gContext.textures[binding] = (TextureD3D12*)handle;
 }
 //=============================================================================
+void RenderSystem::SetTexture(uint32_t binding, const TextureHandle* handle)
+{
+	gContext.textures[binding] = (TextureD3D12*)handle;
+}
+//=============================================================================
 void RenderSystem::SetRenderTarget(const RenderTarget** render_target, size_t count)
 {
 	std::vector<RenderTargetD3D12*> render_targets;
@@ -327,6 +332,11 @@ void RenderSystem::SetShader(ShaderHandle* handle)
 	gContext.pipelineState.shader = (ShaderD3D12*)handle;
 }
 //=============================================================================
+void RenderSystem::SetShader(const ShaderHandle* handle)
+{
+	gContext.pipelineState.shader = (ShaderD3D12*)handle;
+}
+//=============================================================================
 void RenderSystem::SetInputLayout(const std::vector<InputLayout>& value)
 {
 	gContext.pipelineState.inputLayouts = value;
@@ -344,6 +354,12 @@ void RenderSystem::SetVertexBuffer(const VertexBuffer** vertex_buffer, size_t co
 }
 //=============================================================================
 void RenderSystem::SetIndexBuffer(IndexBufferHandle* handle)
+{
+	gContext.indexBuffer = (IndexBufferD3D12*)handle;
+	gContext.indexBufferDirty = true;
+}
+//=============================================================================
+void RenderSystem::SetIndexBuffer(const IndexBufferHandle* handle)
 {
 	gContext.indexBuffer = (IndexBufferD3D12*)handle;
 	gContext.indexBufferDirty = true;

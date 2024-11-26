@@ -47,12 +47,14 @@ public:
 	void SetViewport(std::optional<Viewport> viewport);
 	void SetScissor(std::optional<Scissor> scissor);
 	void SetTexture(uint32_t binding, TextureHandle* handle);
+	void SetTexture(uint32_t binding, const TextureHandle* handle);
 	void SetTexture(uint32_t binding, Texture& texture);
 	void SetRenderTarget(const RenderTarget** render_target, size_t count);
 	void SetRenderTarget(const std::vector<const RenderTarget*>& value);
 	void SetRenderTarget(const RenderTarget& value);
 	void SetRenderTarget(std::nullopt_t value);
 	void SetShader(ShaderHandle* handle);
+	void SetShader(const ShaderHandle* handle);
 	void SetShader(Shader& shader);
 	void SetInputLayout(const InputLayout& value);
 	void SetInputLayout(const std::vector<InputLayout>& value);
@@ -73,6 +75,7 @@ public:
 	}
 
 	void SetIndexBuffer(IndexBufferHandle* handle);
+	void SetIndexBuffer(const IndexBufferHandle* handle);
 	void SetIndexBuffer(IndexBuffer& value);
 	void SetIndexBuffer(const void* memory, size_t size, size_t stride);
 	template<class T>

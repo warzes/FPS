@@ -14,6 +14,8 @@
 #include <variant>
 #include <string>
 #include <string_view>
+#include <ranges>
+#include <array>
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>

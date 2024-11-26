@@ -6,7 +6,7 @@
 #include "005_LightCube.h"
 #include "006_render_target.h"
 #include "007_instancing.h"
-
+#include "008_testImgui.h"
 
 #if defined(_MSC_VER)
 #	pragma comment( lib, "Engine.lib" )
@@ -24,7 +24,8 @@ int main(
 	//E004();
 	//E005();
 	//E006();
-	E007();
+	//E007();
+	E008();
 
 #else
 	EngineApp engine;

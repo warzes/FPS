@@ -27,6 +27,12 @@
     <ClInclude Include="007_instancing.h">
       <Filter>Examples</Filter>
     </ClInclude>
+    <ClInclude Include="008_testImgui.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="ImguiHelper.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Examples">

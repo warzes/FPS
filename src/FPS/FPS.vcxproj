@@ -109,6 +109,8 @@
     <ClInclude Include="005_LightCube.h" />
     <ClInclude Include="006_render_target.h" />
     <ClInclude Include="007_instancing.h" />
+    <ClInclude Include="008_testImgui.h" />
+    <ClInclude Include="ImguiHelper.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

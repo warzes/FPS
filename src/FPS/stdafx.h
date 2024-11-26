@@ -15,6 +15,7 @@
 #include "Engine/RenderResources.h"
 #include "Engine/RenderSystem.h"
 #include "Engine/Vertex.h"
+#include "Engine/RenderUtils.h"
 
 // App
 #include "Engine/EngineApp.h"

@@ -43,6 +43,9 @@
     <ClCompile Include="glslangLib3.cpp">
       <Filter>glslang</Filter>
     </ClCompile>
+    <ClCompile Include="stb\stb.cpp">
+      <Filter>stb</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="d3dx12">
@@ -53,6 +56,9 @@
     </Filter>
     <Filter Include="glslang">
       <UniqueIdentifier>{3fb3732a-0681-4c83-9b08-b9a9572f7a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="stb">
+      <UniqueIdentifier>{26492cf8-90c1-4d24-8a20-573da4d85a68}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +82,18 @@
     </ClInclude>
     <ClInclude Include="d3dx12\PlatformHelpers.h">
       <Filter>d3dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="stb\stb_image.h">
+      <Filter>stb</Filter>
+    </ClInclude>
+    <ClInclude Include="stb\stb_image_resize.h">
+      <Filter>stb</Filter>
+    </ClInclude>
+    <ClInclude Include="stb\stb_image_write.h">
+      <Filter>stb</Filter>
+    </ClInclude>
+    <ClInclude Include="stb\stb_truetype.h">
+      <Filter>stb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

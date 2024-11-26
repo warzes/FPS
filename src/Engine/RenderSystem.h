@@ -18,6 +18,7 @@ public:
 	void Destroy();
 
 	void Resize(uint32_t width, uint32_t height);
+	void SetSize(uint32_t width, uint32_t height);
 
 	TextureHandle* CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count);
 	void WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level, uint32_t offset_x, uint32_t offset_y);
@@ -87,7 +88,7 @@ public:
 	}
 
 	void SetUniformBuffer(uint32_t binding, UniformBufferHandle* handle);
-	void SetUniformBuffer(uint32_t binding, const UniformBuffer& value);
+	void SetUniformBuffer(uint32_t binding, UniformBuffer& value);
 	void SetUniformBuffer(uint32_t binding, const void* memory, size_t size);
 	template <class T>
 	void SetUniformBuffer(uint32_t binding, const T& value)

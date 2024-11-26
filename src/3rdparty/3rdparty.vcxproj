@@ -101,6 +101,7 @@
     <ClCompile Include="spirv-cross\spirv_hlsl.cpp" />
     <ClCompile Include="spirv-cross\spirv_parser.cpp" />
     <ClCompile Include="spirv-reflect\spirv_reflect.cpp" />
+    <ClCompile Include="stb\stb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx12\d3d12generatemips.h" />
@@ -110,6 +111,10 @@
     <ClInclude Include="d3dx12\LinearAllocator.h" />
     <ClInclude Include="d3dx12\pch.h" />
     <ClInclude Include="d3dx12\PlatformHelpers.h" />
+    <ClInclude Include="stb\stb_image.h" />
+    <ClInclude Include="stb\stb_image_resize.h" />
+    <ClInclude Include="stb\stb_image_write.h" />
+    <ClInclude Include="stb\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx12\GenerateMips_main.inc" />

@@ -43,6 +43,14 @@ void RenderSystem::Resize(uint32_t width, uint32_t height)
 	gSize = { width, height };
 }
 //=============================================================================
+void RenderSystem::SetSize(uint32_t width, uint32_t height)
+{
+	if (gSize.x != width || gSize.y != height)
+	{
+		Resize(width, height);
+	}
+}
+//=============================================================================
 void RenderSystem::Present()
 {
 	present();
@@ -138,9 +146,9 @@ void RenderSystem::SetIndexBuffer(const void* memory, size_t size, size_t stride
 	SetIndexBuffer(gIndexBuffer.value());
 }
 //=============================================================================
-void RenderSystem::SetUniformBuffer(uint32_t binding, const UniformBuffer& value)
+void RenderSystem::SetUniformBuffer(uint32_t binding, UniformBuffer& value)
 {
-	SetUniformBuffer(binding, (UniformBufferHandle*)&value);
+	SetUniformBuffer(binding, (UniformBufferHandle*)value);
 }
 //=============================================================================
 void RenderSystem::SetUniformBuffer(uint32_t binding, const void* memory, size_t size)

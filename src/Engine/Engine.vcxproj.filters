@@ -56,6 +56,9 @@
     <ClCompile Include="Vertex.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
+    <ClCompile Include="RenderUtils.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -123,6 +126,9 @@
       <Filter>RHI</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderUtils.h">
       <Filter>RHI</Filter>
     </ClInclude>
   </ItemGroup>

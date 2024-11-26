@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="001_triangle.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="002_uniform.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="003_texture.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="004_texture_mipmap.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="005_LightCube.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="006_render_target.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="007_instancing.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Examples">
+      <UniqueIdentifier>{dda4498d-23fd-427a-a098-edd61a53b775}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

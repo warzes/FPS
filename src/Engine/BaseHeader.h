@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cstdint>
 #include <optional>
+#include <variant>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -68,6 +69,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+
+#include <stb/stb_image.h>
 
 #include "PrivateHeader.h"
 

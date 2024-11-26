@@ -102,6 +102,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="001_triangle.h" />
+    <ClInclude Include="002_uniform.h" />
+    <ClInclude Include="003_texture.h" />
+    <ClInclude Include="004_texture_mipmap.h" />
+    <ClInclude Include="005_LightCube.h" />
+    <ClInclude Include="006_render_target.h" />
+    <ClInclude Include="007_instancing.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

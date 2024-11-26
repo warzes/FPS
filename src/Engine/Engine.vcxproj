@@ -108,6 +108,7 @@
     <ClInclude Include="RenderResources.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RenderTargetD3D12.h" />
+    <ClInclude Include="RenderUtils.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="ShaderD3D12.h" />
     <ClInclude Include="stdafx.h" />
@@ -130,6 +131,7 @@
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="RenderSystem_D3D12.cpp" />
     <ClCompile Include="RenderTargetD3D12.cpp" />
+    <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="ShaderD3D12.cpp" />
     <ClCompile Include="stdafx.cpp">

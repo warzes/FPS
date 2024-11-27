@@ -60,7 +60,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\physx\;$(SolutionDir)3rdparty\glslang\;$(SolutionDir)3rdparty\spirv-cross\;$(SolutionDir)3rdparty\spirv-reflect\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\physx\;$(SolutionDir)3rdparty\glslang\;$(SolutionDir)3rdparty\spirv-cross\;$(SolutionDir)3rdparty\spirv-reflect\;$(VULKAN_SDK)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -81,7 +81,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\physx\;$(SolutionDir)3rdparty\glslang\;$(SolutionDir)3rdparty\spirv-cross\;$(SolutionDir)3rdparty\spirv-reflect\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\physx\;$(SolutionDir)3rdparty\glslang\;$(SolutionDir)3rdparty\spirv-cross\;$(SolutionDir)3rdparty\spirv-reflect\;$(VULKAN_SDK)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -93,68 +93,100 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AccelerationStructureVK.h" />
     <ClInclude Include="BaseHeader.h" />
     <ClInclude Include="BaseMacros.h" />
+    <ClInclude Include="BufferD3D11.h" />
     <ClInclude Include="BufferD3D12.h" />
     <ClInclude Include="BufferOpenGL.h" />
+    <ClInclude Include="BufferVK.h" />
+    <ClInclude Include="ContextD3D11.h" />
     <ClInclude Include="ContextD3D12.h" />
     <ClInclude Include="ContextOpenGL.h" />
+    <ClInclude Include="ContextVK.h" />
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="HashCombine.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="LogSystem.h" />
+    <ClInclude Include="PipelineStateD3D11.h" />
     <ClInclude Include="PipelineStateD3D12.h" />
     <ClInclude Include="PipelineStateOpenGL.h" />
+    <ClInclude Include="PipelineStateVK.h" />
     <ClInclude Include="PrivateHeader.h" />
     <ClInclude Include="RenderCore.h" />
+    <ClInclude Include="RenderCoreD3D11.h" />
     <ClInclude Include="RenderCoreD3D12.h" />
     <ClInclude Include="RenderCoreOpenGL.h" />
+    <ClInclude Include="RenderCoreVK.h" />
     <ClInclude Include="RenderResources.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="RenderTargetD3D11.h" />
     <ClInclude Include="RenderTargetD3D12.h" />
     <ClInclude Include="RenderTargetOpenGL.h" />
+    <ClInclude Include="RenderTargetVK.h" />
     <ClInclude Include="RenderUtils.h" />
     <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="ShaderD3D11.h" />
     <ClInclude Include="ShaderD3D12.h" />
     <ClInclude Include="ShaderOpenGL.h" />
+    <ClInclude Include="ShaderVK.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="TextureD3D11.h" />
     <ClInclude Include="TextureD3D12.h" />
     <ClInclude Include="TextureOpenGL.h" />
+    <ClInclude Include="TextureVK.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="WindowPrivateData.h" />
     <ClInclude Include="WindowSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AccelerationStructureVK.cpp" />
+    <ClCompile Include="BufferD3D11.cpp" />
     <ClCompile Include="BufferD3D12.cpp" />
     <ClCompile Include="BufferOpenGL.cpp" />
+    <ClCompile Include="BufferVK.cpp" />
+    <ClCompile Include="ContextD3D11.cpp" />
     <ClCompile Include="ContextD3D12.cpp" />
     <ClCompile Include="ContextOpenGL.cpp" />
+    <ClCompile Include="ContextVK.cpp" />
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LogSystem.cpp" />
+    <ClCompile Include="PipelineStateD3D11.cpp" />
     <ClCompile Include="PipelineStateD3D12.cpp" />
     <ClCompile Include="PipelineStateOpenGL.cpp" />
+    <ClCompile Include="PipelineStateVK.cpp" />
     <ClCompile Include="RenderCore.cpp" />
+    <ClCompile Include="RenderCoreD3D11.cpp" />
     <ClCompile Include="RenderCoreD3D12.cpp" />
     <ClCompile Include="RenderCoreOpenGL.cpp" />
+    <ClCompile Include="RenderCoreVK.cpp" />
     <ClCompile Include="RenderResources.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="RenderSystem_D3D12.cpp" />
-    <ClCompile Include="RenderSystem_OpenGL.cpp" />
+    <ClCompile Include="RenderSystemD3D11.cpp" />
+    <ClCompile Include="RenderSystemD3D12.cpp" />
+    <ClCompile Include="RenderSystemOpenGL.cpp" />
+    <ClCompile Include="RenderSystemVK.cpp" />
+    <ClCompile Include="RenderTargetD3D11.cpp" />
     <ClCompile Include="RenderTargetD3D12.cpp" />
     <ClCompile Include="RenderTargetOpenGL.cpp" />
+    <ClCompile Include="RenderTargetVK.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="ShaderD3D11.cpp" />
     <ClCompile Include="ShaderD3D12.cpp" />
     <ClCompile Include="ShaderOpenGL.cpp" />
+    <ClCompile Include="ShaderVK.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="TextureD3D11.cpp" />
     <ClCompile Include="TextureD3D12.cpp" />
     <ClCompile Include="TextureOpenGL.cpp" />
+    <ClCompile Include="TextureVK.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="WindowSystem_Win32.cpp" />
   </ItemGroup>

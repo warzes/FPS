@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include "RenderCore.h"
+#if RENDER_D3D12
+
+#include "RenderCoreD3D12.h"
 
 struct RasterizerStateD3D12 final
 {
@@ -41,3 +43,5 @@ SE_MAKE_HASHABLE(PipelineStateD3D12,
 );
 
 ComPtr<ID3D12PipelineState> CreateGraphicsPipelineState(const PipelineStateD3D12& pipeline_state); // TODO:
+
+#endif // RENDER_D3D12

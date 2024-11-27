@@ -12,8 +12,8 @@
 class RenderContext final
 {
 public:
-	RenderContext();
-	~RenderContext();
+	bool Create();
+	void Destroy();
 
 	int max_vertex_attribs;
 
@@ -62,5 +62,7 @@ public:
 	uint32_t GetBackbufferHeight();
 	PixelFormat GetBackbufferFormat();
 };
+
+void EnsureGraphicsState(bool draw_indexed);
 
 #endif // RENDER_OPENGL

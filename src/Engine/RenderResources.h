@@ -8,6 +8,12 @@ using ShaderHandle = struct ShaderHandle;
 using VertexBufferHandle = struct VertexBufferHandle;
 using IndexBufferHandle = struct IndexBufferHandle;
 using UniformBufferHandle = struct UniformBufferHandle;
+#if RENDER_VULKAN
+using RaytracingShaderHandle = struct RaytracingShaderHandle;
+using StorageBufferHandle = struct StorageBufferHandle;
+using BottomLevelAccelerationStructureHandle = struct BottomLevelAccelerationStructureHandle;
+using TopLevelAccelerationStructureHandle = struct TopLevelAccelerationStructureHandle;
+#endif // RENDER_VULKAN
 
 class Noncopyable
 {
@@ -196,6 +202,84 @@ public:
 private:
 	UniformBufferHandle* m_uniformBufferHandle = nullptr;
 };
+
+#if RENDER_VULKAN
+class StorageBuffer : public Buffer
+{
+public:
+	StorageBuffer(size_t size);
+	StorageBuffer(const void* memory, size_t size);
+	StorageBuffer(StorageBuffer&& other) noexcept;
+	~StorageBuffer();
+
+	StorageBuffer& operator=(StorageBuffer&& other) noexcept;
+
+	template <class T>
+	explicit StorageBuffer(T value) : StorageBuffer(&value, sizeof(T)) {}
+
+	void Write(const void* memory, size_t size);
+
+	template <class T>
+	void Write(const T& value) { write(&const_cast<T&>(value), sizeof(T)); }
+
+	operator StorageBufferHandle* () { return mStorageBufferHandle; }
+
+private:
+	StorageBufferHandle* mStorageBufferHandle = nullptr;
+};
+
+class BottomLevelAccelerationStructure : public Noncopyable
+{
+public:
+	BottomLevelAccelerationStructure(const void* vertex_memory, uint32_t vertex_count, uint32_t vertex_offset,
+		uint32_t vertex_stride, const void* index_memory, uint32_t index_count, uint32_t index_offset,
+		uint32_t index_stride, const glm::mat4& transform);
+	~BottomLevelAccelerationStructure();
+
+	template<class Vertex, class Index>
+	explicit BottomLevelAccelerationStructure(const Vertex* vertex_memory, uint32_t vertex_count,
+		uint32_t vertex_offset, const Index* index_memory, uint32_t index_count, uint32_t index_offset,
+		const glm::mat4& transform) : BottomLevelAccelerationStructure(vertex_memory, vertex_count,
+			vertex_offset, sizeof(Vertex), index_memory, index_count, index_offset, sizeof(Index), transform)
+	{
+	}
+
+	template<class Vertex, class Index>
+	explicit BottomLevelAccelerationStructure(const std::vector<Vertex>& vertices, uint32_t vertex_offset,
+		const std::vector<Index>& indices, uint32_t index_offset, const glm::mat4& transform)
+		: BottomLevelAccelerationStructure(vertices.data(), (uint32_t)vertices.size(), vertex_offset,
+			indices.data(), (uint32_t)indices.size(), index_offset, transform)
+	{
+	}
+
+	operator BottomLevelAccelerationStructureHandle* () { return mBottomLevelAccelerationStructureHandle; }
+
+private:
+	BottomLevelAccelerationStructureHandle* mBottomLevelAccelerationStructureHandle = nullptr;
+};
+
+class TopLevelAccelerationStructure : public Noncopyable
+{
+public:
+	TopLevelAccelerationStructure(
+		const std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>& bottom_level_acceleration_structures);
+	TopLevelAccelerationStructure(
+		const std::vector<BottomLevelAccelerationStructureHandle*>& bottom_level_acceleration_structures);
+	~TopLevelAccelerationStructure();
+
+	operator TopLevelAccelerationStructureHandle* () { return mTopLevelAccelerationStructureHandle; }
+
+private:
+	std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>
+		CreateIndexedBlases(const std::vector<BottomLevelAccelerationStructureHandle*>& blases);
+
+private:
+	TopLevelAccelerationStructureHandle* mTopLevelAccelerationStructureHandle = nullptr;
+};
+
+using BLAS = BottomLevelAccelerationStructure;
+using TLAS = TopLevelAccelerationStructure;
+#endif // RENDER_VULKAN
 
 struct TransientRenderTargetDesc final
 {

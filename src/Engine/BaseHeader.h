@@ -28,7 +28,7 @@
 #	define NOMINMAX
 
 #	define NOBITMAP
-#	define NOGDI
+
 #	define NOGDICAPMASKS
 //#	define NOSYSMETRICS
 #	define NOMENUS
@@ -60,6 +60,10 @@
 #	define NOPROXYSTUB
 #	define NOIMAGE
 #	define NOTAPE
+
+#if !RENDER_OPENGL
+#	define NOGDI
+#endif
 
 #	include <winsdkver.h>
 //#	define _WIN32_WINNT 0x0601 // Windows 7

@@ -1,19 +1,12 @@
 ﻿#pragma once
 
-#if RENDER_D3D12
+#if RENDER_D3D11
 
 #include "RenderCore.h"
 
-class BufferD3D12;
-class ShaderD3D12;
-class TextureD3D12;
-class RenderTargetD3D12;
-class VertexBufferD3D12;
-class IndexBufferD3D12;
-class UniformBufferD3D12;
-
-constexpr const DXGI_FORMAT MainRenderTargetColorAttachmentFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-constexpr const DXGI_FORMAT MainRenderTargetDepthStencilAttachmentFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+class ShaderD3D11;
+class TextureD3D11;
+class RenderTargetD3D11;
 
 static const std::unordered_map<VertexFormat, DXGI_FORMAT> VertexFormatMap = {
 	{ VertexFormat::Float1, DXGI_FORMAT_R32_FLOAT },
@@ -22,11 +15,9 @@ static const std::unordered_map<VertexFormat, DXGI_FORMAT> VertexFormatMap = {
 	{ VertexFormat::Float4, DXGI_FORMAT_R32G32B32A32_FLOAT },
 	{ VertexFormat::UChar1Normalized, DXGI_FORMAT_R8_UNORM },
 	{ VertexFormat::UChar2Normalized, DXGI_FORMAT_R8G8_UNORM },
-	// { VertexFormat::UChar3Normalized, DXGI_FORMAT_R8G8B8_UNORM }, // TODO: wtf
 	{ VertexFormat::UChar4Normalized, DXGI_FORMAT_R8G8B8A8_UNORM },
-	{ VertexFormat::UChar4, DXGI_FORMAT_R8_UINT },
-	{ VertexFormat::UChar4, DXGI_FORMAT_R8G8_UINT },
-	// { VertexFormat::UChar4, DXGI_FORMAT_R8G8B8_UINT }, // TODO: wtf
+	{ VertexFormat::UChar1, DXGI_FORMAT_R8_UINT },
+	{ VertexFormat::UChar2, DXGI_FORMAT_R8G8_UINT },
 	{ VertexFormat::UChar4, DXGI_FORMAT_R8G8B8A8_UINT },
 };
 
@@ -37,8 +28,7 @@ static const std::unordered_map<PixelFormat, DXGI_FORMAT> PixelFormatMap = {
 	{ PixelFormat::RGBA32Float, DXGI_FORMAT_R32G32B32A32_FLOAT },
 	{ PixelFormat::R8UNorm, DXGI_FORMAT_R8_UNORM },
 	{ PixelFormat::RG8UNorm, DXGI_FORMAT_R8G8_UNORM },
-	// { PixelFormat::RGB8UNorm, DXGI_FORMAT_R8G8B8_UNORM }, // TODO: wtf
 	{ PixelFormat::RGBA8UNorm, DXGI_FORMAT_R8G8B8A8_UNORM }
 };
 
-#endif // RENDER_D3D12
+#endif // RENDER_D3D11

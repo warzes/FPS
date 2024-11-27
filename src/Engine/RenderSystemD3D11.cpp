@@ -1,13 +1,12 @@
 ﻿#include "stdafx.h"
-#if RENDER_D3D12
+#if RENDER_D3D11
 #include "RenderSystem.h"
-#include "ContextD3D12.h"
-#include "BufferD3D12.h"
-#include "RenderTargetD3D12.h"
-#include "TextureD3D12.h"
-#include "ShaderD3D12.h"
+#include "ContextD3D11.h"
+#include "RenderTargetD3D11.h"
+#include "BufferD3D11.h"
+#include "ShaderD3D11.h"
 //=============================================================================
-#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -16,15 +15,7 @@ RenderContext gContext{};
 //=============================================================================
 bool RenderSystem::createAPI(const WindowPrivateData& data, const RenderSystemCreateInfo& createInfo)
 {
-#if defined(_DEBUG) && 0
-	ComPtr<ID3D12Debug6> debug;
-	D3D12GetDebugInterface(IID_PPV_ARGS(debug.GetAddressOf()));
-	debug->EnableDebugLayer();
-	debug->SetEnableAutoName(true);
-	debug->SetEnableGPUBasedValidation(true);
-	debug->SetEnableSynchronizedCommandQueueValidation(true);
-	debug->SetForceLegacyBarrierValidation(true);
-#endif
+	gContext.vsync = createInfo.vsync;
 
 	ComPtr<IDXGIFactory6> dxgi_factory;
 	CreateDXGIFactory1(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
@@ -33,440 +24,422 @@ bool RenderSystem::createAPI(const WindowPrivateData& data, const RenderSystemCr
 	auto gpu_preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
 	dxgi_factory->EnumAdapterByGpuPreference(0, gpu_preference, IID_PPV_ARGS(&adapter));
 
-	D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(gContext.device.GetAddressOf()));
+	DXGI_SWAP_CHAIN_DESC sd = {};
+	sd.BufferCount = 2;
+	sd.BufferDesc.Width = data.width;
+	sd.BufferDesc.Height = data.height;
+	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Denominator = 5;
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sd.OutputWindow = data.hwnd;
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
+	sd.Windowed = TRUE;
+	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-#if defined(_DEBUG) && 0
-	ComPtr<ID3D12InfoQueue> info_queue;
-	gContext.device.As(&info_queue);
-	info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-	info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-	info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
-
-	std::vector<D3D12_MESSAGE_ID> filtered_messages = {
-		D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
-		D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE,
-		D3D12_MESSAGE_ID_DRAW_EMPTY_SCISSOR_RECTANGLE
-	};
-
-	D3D12_INFO_QUEUE_FILTER filter = {};
-	filter.DenyList.NumIDs = (UINT)filtered_messages.size();
-	filter.DenyList.pIDList = filtered_messages.data();
-	info_queue->AddStorageFilterEntries(&filter);
+#if defined(_DEBUG)
+	UINT flags = D3D11_CREATE_DEVICE_DEBUG;
+#else
+	UINT flags = 0;
 #endif
 
-	D3D12_COMMAND_QUEUE_DESC queue_desc = {};
-	queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	queue_desc.NodeMask = 1;
-	gContext.device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(gContext.commandQueue.GetAddressOf()));
+	D3D11CreateDeviceAndSwapChain(adapter, D3D_DRIVER_TYPE_UNKNOWN, NULL, flags, NULL, 0,
+		D3D11_SDK_VERSION, &sd, gContext.swapchain.GetAddressOf(), gContext.device.GetAddressOf(),
+		NULL, gContext.context.GetAddressOf());
 
-	gContext.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(gContext.commandAllocator.GetAddressOf()));
+#if defined(_DEBUG)
+	ComPtr<ID3D11InfoQueue> info_queue;
+	gContext.device->QueryInterface(IID_PPV_ARGS(info_queue.GetAddressOf()));
 
-	gContext.device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, gContext.commandAllocator.Get(), NULL, IID_PPV_ARGS(gContext.commandList.GetAddressOf()));
-
-	gContext.commandList->Close();
-
-	D3D12_DESCRIPTOR_HEAP_DESC heap_desc = {};
-	heap_desc.NumDescriptors = 1000; // TODO: make more dynamic
-	heap_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	heap_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	gContext.device->CreateDescriptorHeap(&heap_desc, IID_PPV_ARGS(gContext.descriptorHeap.GetAddressOf()));
-
-	gContext.descriptorHandleIncrementSize = gContext.device->GetDescriptorHandleIncrementSize(heap_desc.Type);
-
-	gContext.descriptorHeapCPUHandle = gContext.descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	gContext.descriptorHeapGPUHandle = gContext.descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-
-	DXGI_SWAP_CHAIN_DESC1 swapchain_desc = {};
-	swapchain_desc.BufferCount = NUM_BACK_BUFFERS;
-	swapchain_desc.Width = data.width;
-	swapchain_desc.Height = data.height;
-	swapchain_desc.Format = MainRenderTargetColorAttachmentFormat;
-	swapchain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapchain_desc.SampleDesc.Count = 1;
-	swapchain_desc.SampleDesc.Quality = 0;
-	swapchain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	swapchain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-	swapchain_desc.Scaling = DXGI_SCALING_NONE;
-	swapchain_desc.Stereo = FALSE;
-
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_swapchain_desc = { 0 };
-	fs_swapchain_desc.Windowed = TRUE;
-
-	ComPtr<IDXGISwapChain1> swapchain;
-	dxgi_factory->CreateSwapChainForHwnd(gContext.commandQueue.Get(), data.hwnd, &swapchain_desc, &fs_swapchain_desc, NULL, swapchain.GetAddressOf());
-
-	swapchain.As(&gContext.swapChain);
-
-	gContext.device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(gContext.fence.GetAddressOf()));
-	gContext.fenceValue = 1;
-	gContext.fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	assert(gContext.fenceEvent != NULL);
-
-	gContext.pipelineState.colorAttachmentFormats = { MainRenderTargetColorAttachmentFormat };
-	gContext.pipelineState.depthStencilFormat = MainRenderTargetDepthStencilAttachmentFormat;
+	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_INFO, true);
+	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_MESSAGE, true);
+	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
+#endif
 
 	CreateMainRenderTarget(data.width, data.height);
-	RenderBegin();
+	SetRenderTarget(nullptr, 0);
 
 	return true;
 }
 //=============================================================================
 void RenderSystem::destroyAPI()
 {
-	RenderEnd();
 	DestroyMainRenderTarget();
-	WaitForGpu();
+	// TODO: очистить gContext
 }
 //=============================================================================
 void RenderSystem::resize(uint32_t width, uint32_t height)
 {
-	RenderEnd();
 	DestroyMainRenderTarget();
-	WaitForGpu();
-	gContext.swapChain->ResizeBuffers(NUM_BACK_BUFFERS, (UINT)width, (UINT)height, MainRenderTargetColorAttachmentFormat, 0);
+	gContext.swapchain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 	CreateMainRenderTarget(width, height);
-	RenderBegin();
+	SetRenderTarget(nullptr, 0);
 
 	if (!gContext.viewport.has_value())
-		gContext.viewportDirty = true;
-
-	if (!gContext.scissor.has_value())
-		gContext.scissorDirty = true;
+		gContext.viewport_dirty = true;
 }
 //=============================================================================
 void RenderSystem::present()
 {
-	RenderEnd();
-	bool vsync = false;
-	gContext.swapChain->Present(vsync ? 1 : 0, 0);
-	gContext.frameIndex = gContext.swapChain->GetCurrentBackBufferIndex();
-	WaitForGpu();
-	RenderBegin();
+	gContext.swapchain->Present(gContext.vsync ? 1 : 0, 0);
 }
 //=============================================================================
 TextureHandle* RenderSystem::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
 {
-	auto texture = new TextureD3D12(width, height, format, mip_count);
+	auto texture = new TextureD3D11(width, height, format, mip_count);
 	return (TextureHandle*)texture;
 }
 //=============================================================================
 void RenderSystem::WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level, uint32_t offset_x, uint32_t offset_y)
 {
-	auto texture = (TextureD3D12*)handle;
+	auto texture = (TextureD3D11*)handle;
 	texture->Write(width, height, format, memory, mip_level, offset_x, offset_y);
 }
 //=============================================================================
 void RenderSystem::GenerateMips(TextureHandle* handle)
 {
-	auto texture = (TextureD3D12*)handle;
+	auto texture = (TextureD3D11*)handle;
 	texture->GenerateMips();
 }
 //=============================================================================
 void RenderSystem::DestroyTexture(TextureHandle* handle)
 {
-	auto texture = (TextureD3D12*)handle;
+	auto texture = (TextureD3D11*)handle;
 	delete texture;
 }
 //=============================================================================
 RenderTargetHandle* RenderSystem::CreateRenderTarget(uint32_t width, uint32_t height, TextureHandle* texture_handle)
 {
-	auto texture = (TextureD3D12*)texture_handle;
-	auto render_target = new RenderTargetD3D12(width, height, texture);
+	auto texture = (TextureD3D11*)texture_handle;
+	auto render_target = new RenderTargetD3D11(width, height, texture);
 	return (RenderTargetHandle*)render_target;
 }
 //=============================================================================
 void RenderSystem::DestroyRenderTarget(RenderTargetHandle* handle)
 {
-	auto render_target = (RenderTargetD3D12*)handle;
+	auto render_target = (RenderTargetD3D11*)handle;
 	delete render_target;
 }
 //=============================================================================
 ShaderHandle* RenderSystem::CreateShader(const std::string& vertex_code, const std::string& fragment_code, const std::vector<std::string>& defines)
 {
-	auto shader = new ShaderD3D12(vertex_code, fragment_code, defines);
+	auto shader = new ShaderD3D11(vertex_code, fragment_code, defines);
 	return (ShaderHandle*)shader;
 }
 //=============================================================================
 void RenderSystem::DestroyShader(ShaderHandle* handle)
 {
-	auto shader = (ShaderD3D12*)handle;
+	auto shader = (ShaderD3D11*)handle;
 	delete shader;
 }
 //=============================================================================
 VertexBufferHandle* RenderSystem::CreateVertexBuffer(size_t size, size_t stride)
 {
-	auto buffer = new VertexBufferD3D12(size, stride);
+	auto buffer = new VertexBufferD3D11(size, stride);
 	return (VertexBufferHandle*)buffer;
 }
 //=============================================================================
 void RenderSystem::DestroyVertexBuffer(VertexBufferHandle* handle)
 {
-	auto buffer = (VertexBufferD3D12*)handle;
+	auto buffer = (VertexBufferD3D11*)handle;
 	delete buffer;
 }
 //=============================================================================
 void RenderSystem::WriteVertexBufferMemory(VertexBufferHandle* handle, const void* memory, size_t size, size_t stride)
 {
-	auto buffer = (VertexBufferD3D12*)handle;
+	auto buffer = (VertexBufferD3D11*)handle;
 	buffer->Write(memory, size);
 	buffer->SetStride(stride);
-
-	for (auto vertex_buffer : gContext.vertexBuffers)
-	{
-		if (vertex_buffer != buffer)
-			continue;
-
-		gContext.vertexBuffersDirty = true;
-		break;
-	}
 }
 //=============================================================================
 IndexBufferHandle* RenderSystem::CreateIndexBuffer(size_t size, size_t stride)
 {
-	auto buffer = new IndexBufferD3D12(size, stride);
+	auto buffer = new IndexBufferD3D11(size, stride);
 	return (IndexBufferHandle*)buffer;
 }
 //=============================================================================
 void RenderSystem::DestroyIndexBuffer(IndexBufferHandle* handle)
 {
-	auto buffer = (IndexBufferD3D12*)handle;
+	auto buffer = (IndexBufferD3D11*)handle;
 	delete buffer;
 }
 //=============================================================================
 void RenderSystem::WriteIndexBufferMemory(IndexBufferHandle* handle, const void* memory, size_t size, size_t stride)
 {
-	auto buffer = (IndexBufferD3D12*)handle;
+	auto buffer = (IndexBufferD3D11*)handle;
 	buffer->Write(memory, size);
 	buffer->SetStride(stride);
-
-	if (gContext.indexBuffer == buffer)
-		gContext.indexBufferDirty = true;
 }
 //=============================================================================
 UniformBufferHandle* RenderSystem::CreateUniformBuffer(size_t size)
 {
-	auto buffer = new UniformBufferD3D12(size);
+	auto buffer = new UniformBufferD3D11(size);
 	return (UniformBufferHandle*)buffer;
 }
 //=============================================================================
 void RenderSystem::DestroyUniformBuffer(UniformBufferHandle* handle)
 {
-	auto buffer = (UniformBufferD3D12*)handle;
+	auto buffer = (UniformBufferD3D11*)handle;
 	delete buffer;
 }
 //=============================================================================
 void RenderSystem::WriteUniformBufferMemory(UniformBufferHandle* handle, const void* memory, size_t size)
 {
-	auto buffer = (UniformBufferD3D12*)handle;
+	auto buffer = (UniformBufferD3D11*)handle;
 	buffer->Write(memory, size);
 }
 //=============================================================================
 void RenderSystem::SetTopology(Topology topology)
 {
-	gContext.topology = topology;
-	gContext.topologyDirty = true;
-	gContext.pipelineState.topologyKind = GetTopologyKind(topology);
+	const static std::unordered_map<Topology, D3D11_PRIMITIVE_TOPOLOGY> TopologyMap = {
+	{ Topology::PointList, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST },
+	{ Topology::LineList, D3D11_PRIMITIVE_TOPOLOGY_LINELIST },
+	{ Topology::LineStrip, D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP },
+	{ Topology::TriangleList, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST },
+	{ Topology::TriangleStrip, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP }
+	};
+
+	gContext.context->IASetPrimitiveTopology(TopologyMap.at(topology));
 }
 //=============================================================================
 void RenderSystem::SetViewport(std::optional<Viewport> viewport)
 {
 	gContext.viewport = viewport;
-	gContext.viewportDirty = true;
+	gContext.viewport_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetScissor(std::optional<Scissor> scissor)
 {
-	gContext.scissor = scissor;
-	gContext.scissorDirty = true;
+	if (scissor.has_value())
+	{
+		auto value = scissor.value();
+
+		D3D11_RECT rect;
+		rect.left = static_cast<LONG>(value.position.x);
+		rect.top = static_cast<LONG>(value.position.y);
+		rect.right = static_cast<LONG>(value.position.x + value.size.x);
+		rect.bottom = static_cast<LONG>(value.position.y + value.size.y);
+		gContext.context->RSSetScissorRects(1, &rect);
+	}
+
+	gContext.rasterizer_state.scissor_enabled = scissor.has_value();
+	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetTexture(uint32_t binding, TextureHandle* handle)
 {
-	gContext.textures[binding] = (TextureD3D12*)handle;
+	auto texture = (TextureD3D11*)handle;
+	gContext.context->PSSetShaderResources((UINT)binding, 1, texture->GetD3D11ShaderResourceView().GetAddressOf());
+	gContext.textures[binding] = texture;
 }
 //=============================================================================
 void RenderSystem::SetTexture(uint32_t binding, const TextureHandle* handle)
 {
-	gContext.textures[binding] = (TextureD3D12*)handle;
+	auto texture = (TextureD3D11*)handle;
+	gContext.context->PSSetShaderResources((UINT)binding, 1, texture->GetD3D11ShaderResourceView().GetAddressOf());
+	gContext.textures[binding] = texture;
 }
 //=============================================================================
 void RenderSystem::SetRenderTarget(const RenderTarget** render_target, size_t count)
 {
-	std::vector<RenderTargetD3D12*> render_targets;
-	std::vector<DXGI_FORMAT> color_attachment_formats;
-	std::optional<DXGI_FORMAT> depth_stencil_format;
-
 	if (count == 0)
 	{
-		color_attachment_formats = { MainRenderTargetColorAttachmentFormat };
-		depth_stencil_format = MainRenderTargetDepthStencilAttachmentFormat;
+		gContext.context->OMSetRenderTargets(1, gContext.main_render_target->GetD3D11RenderTargetView().GetAddressOf(),
+			gContext.main_render_target->GetD3D11DepthStencilView().Get());
+
+		gContext.render_targets = { gContext.main_render_target };
+
+		if (!gContext.viewport.has_value())
+			gContext.viewport_dirty = true;
+
+		return;
 	}
-	else
+
+	ComPtr<ID3D11ShaderResourceView> prev_shader_resource_view;
+	gContext.context->PSGetShaderResources(0, 1, prev_shader_resource_view.GetAddressOf());
+
+	std::vector<ID3D11RenderTargetView*> render_target_views;
+	std::optional<ID3D11DepthStencilView*> depth_stencil_view;
+
+	gContext.render_targets.clear();
+
+	for (size_t i = 0; i < count; i++)
 	{
-		for (size_t i = 0; i < count; i++)
+		auto target = (RenderTargetD3D11*)(RenderTargetHandle*)*(RenderTarget*)render_target[i];
+
+		if (prev_shader_resource_view.Get() == target->GetTexture()->GetD3D11ShaderResourceView().Get())
 		{
-			auto target = (RenderTargetD3D12*)(RenderTargetHandle*)*(RenderTarget*)render_target[i];
-
-			render_targets.push_back(target);
-			color_attachment_formats.push_back(PixelFormatMap.at(target->GetTexture()->GetFormat()));
-
-			if (!depth_stencil_format.has_value())
-				depth_stencil_format = target->GetDepthStencilFormat();
+			ID3D11ShaderResourceView* null[] = { NULL };
+			gContext.context->PSSetShaderResources(0, 1, null); // remove old shader view
+			// TODO: here we removing only binding 0, 
+			// we should remove every binding with this texture
 		}
+
+		render_target_views.push_back(target->GetD3D11RenderTargetView().Get());
+
+		if (!depth_stencil_view.has_value())
+			depth_stencil_view = target->GetD3D11DepthStencilView().Get();
+
+		gContext.render_targets.push_back(target);
 	}
 
-	gContext.pipelineState.colorAttachmentFormats = color_attachment_formats;
-	gContext.pipelineState.depthStencilFormat = depth_stencil_format;
-	gContext.renderTargets = render_targets;
+	gContext.context->OMSetRenderTargets((UINT)render_target_views.size(),
+		render_target_views.data(), depth_stencil_view.value_or(nullptr));
 
 	if (!gContext.viewport.has_value())
-		gContext.viewportDirty = true;
-
-	if (!gContext.scissor.has_value())
-		gContext.scissorDirty = true;
+		gContext.viewport_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetShader(ShaderHandle* handle)
 {
-	gContext.pipelineState.shader = (ShaderD3D12*)handle;
+	gContext.shader = (ShaderD3D11*)handle;
+	gContext.shader_dirty = true;
+	gContext.input_layouts_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetShader(const ShaderHandle* handle)
 {
-	gContext.pipelineState.shader = (ShaderD3D12*)handle;
+	gContext.shader = (ShaderD3D11*)handle;
+	gContext.shader_dirty = true;
+	gContext.input_layouts_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetInputLayout(const std::vector<InputLayout>& value)
 {
-	gContext.pipelineState.inputLayouts = value;
+	gContext.input_layouts = value;
+	gContext.input_layouts_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetVertexBuffer(const VertexBuffer** vertex_buffer, size_t count)
 {
-	gContext.vertexBuffers.clear();
+	std::vector<ID3D11Buffer*> buffers;
+	std::vector<UINT> strides;
+	std::vector<UINT> offsets;
+
 	for (size_t i = 0; i < count; i++)
 	{
-		auto buffer = (VertexBufferD3D12*)(VertexBufferHandle*)*(VertexBuffer*)vertex_buffer[i];
-		gContext.vertexBuffers.push_back(buffer);
+		auto buffer = (VertexBufferD3D11*)(VertexBufferHandle*)*(VertexBuffer*)vertex_buffer[i];
+		buffers.push_back(buffer->GetD3D11Buffer().Get());
+		strides.push_back((UINT)buffer->GetStride());
+		offsets.push_back(0);
 	}
-	gContext.vertexBuffersDirty = true;
+
+	gContext.context->IASetVertexBuffers(0, (UINT)buffers.size(), buffers.data(), strides.data(), offsets.data());
 }
 //=============================================================================
 void RenderSystem::SetIndexBuffer(IndexBufferHandle* handle)
 {
-	gContext.indexBuffer = (IndexBufferD3D12*)handle;
-	gContext.indexBufferDirty = true;
+	auto buffer = (IndexBufferD3D11*)handle;
+	auto stride = (UINT)buffer->GetStride();
+	gContext.context->IASetIndexBuffer(buffer->GetD3D11Buffer().Get(), buffer->GetStride() == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
 }
 //=============================================================================
 void RenderSystem::SetIndexBuffer(const IndexBufferHandle* handle)
 {
-	gContext.indexBuffer = (IndexBufferD3D12*)handle;
-	gContext.indexBufferDirty = true;
+	auto buffer = (IndexBufferD3D11*)handle;
+	auto stride = (UINT)buffer->GetStride();
+	gContext.context->IASetIndexBuffer(buffer->GetD3D11Buffer().Get(), buffer->GetStride() == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
 }
 //=============================================================================
 void RenderSystem::SetUniformBuffer(uint32_t binding, UniformBufferHandle* handle)
 {
-	gContext.uniformBuffers[binding] = (UniformBufferD3D12*)handle;
+	auto buffer = (UniformBufferD3D11*)handle;
+	gContext.context->VSSetConstantBuffers(binding, 1, buffer->GetD3D11Buffer().GetAddressOf());
+	gContext.context->PSSetConstantBuffers(binding, 1, buffer->GetD3D11Buffer().GetAddressOf());
 }
 //=============================================================================
 void RenderSystem::SetBlendMode(const std::optional<BlendMode>& blend_mode)
 {
-	gContext.pipelineState.blendMode = blend_mode;
+	gContext.blend_mode = blend_mode;
+	gContext.blend_mode_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetDepthMode(const std::optional<DepthMode>& depth_mode)
 {
-	gContext.pipelineState.depthMode = depth_mode;
+	gContext.depth_stencil_state.depth_mode = depth_mode;
+	gContext.depth_stencil_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 {
+	gContext.depth_stencil_state.stencil_mode = stencil_mode;
+	gContext.depth_stencil_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetCullMode(CullMode cull_mode)
 {
-	gContext.pipelineState.rasterizerState.cullMode = cull_mode;
+	gContext.rasterizer_state.cull_mode = cull_mode;
+	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetSampler(Sampler value)
 {
+	gContext.sampler_state.sampler = value;
+	gContext.sampler_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetTextureAddress(TextureAddress value)
 {
+	gContext.sampler_state.texture_address = value;
+	gContext.sampler_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetFrontFace(FrontFace value)
 {
+	gContext.rasterizer_state.front_face = value;
+	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetDepthBias(const std::optional<DepthBias> depth_bias)
 {
+	gContext.rasterizer_state.depth_bias = depth_bias;
+	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::Clear(const std::optional<glm::vec4>& color, const std::optional<float>& depth, const std::optional<uint8_t>& stencil)
 {
-	auto targets = gContext.renderTargets;
-	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtv_descriptors;
-
-	if (targets.empty())
+	for (auto target : gContext.render_targets)
 	{
-		targets = { gContext.GetCurrentFrame().mainRenderTarget };
-		rtv_descriptors = { gContext.GetCurrentFrame().rtvDescriptor };
-	}
-	else
-	{
-		for (auto target : targets)
+		if (color.has_value())
 		{
-			rtv_descriptors.push_back(target->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart());
+			gContext.context->ClearRenderTargetView(target->GetD3D11RenderTargetView().Get(), (float*)&color.value());
 		}
-	}
 
-	for (auto target : targets)
-	{
-		target->GetTexture()->EnsureState(gContext.commandList.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET);
-	}
-
-	auto dsv_descriptor = targets.at(0)->GetDsvHeap()->GetCPUDescriptorHandleForHeapStart();
-
-	if (color.has_value())
-	{
-		for (auto rtv_descriptor : rtv_descriptors)
+		if (depth.has_value() || stencil.has_value())
 		{
-			gContext.commandList->ClearRenderTargetView(rtv_descriptor, (float*)&color.value(), 0, NULL);
+			UINT flags = 0;
+
+			if (depth.has_value())
+				flags |= D3D11_CLEAR_DEPTH;
+
+			if (stencil.has_value())
+				flags |= D3D11_CLEAR_STENCIL;
+
+			gContext.context->ClearDepthStencilView(target->GetD3D11DepthStencilView().Get(), flags,
+				depth.value_or(1.0f), stencil.value_or(0));
 		}
-	}
-
-	if (depth.has_value() || stencil.has_value())
-	{
-		D3D12_CLEAR_FLAGS flags = {};
-
-		if (depth.has_value())
-			flags |= D3D12_CLEAR_FLAG_DEPTH;
-
-		if (stencil.has_value())
-			flags |= D3D12_CLEAR_FLAG_STENCIL;
-
-		gContext.commandList->ClearDepthStencilView(dsv_descriptor, flags, depth.value_or(1.0f), stencil.value_or(0), 0, NULL);
 	}
 }
 //=============================================================================
 void RenderSystem::Draw(uint32_t vertex_count, uint32_t vertex_offset, uint32_t instance_count)
 {
 	EnsureGraphicsState(false);
-	gContext.commandList->DrawInstanced((UINT)vertex_count, (UINT)instance_count, (UINT)vertex_offset, 0);
+	gContext.context->DrawInstanced((UINT)vertex_count, (UINT)instance_count, (UINT)vertex_offset, 0);
 }
 //=============================================================================
 void RenderSystem::DrawIndexed(uint32_t index_count, uint32_t index_offset, uint32_t instance_count)
 {
 	EnsureGraphicsState(true);
-	gContext.commandList->DrawIndexedInstanced((UINT)index_count, (UINT)instance_count, (UINT)index_offset, 0, 0);
+	gContext.context->DrawIndexedInstanced((UINT)index_count, (UINT)instance_count, (UINT)index_offset, 0, 0);
 }
 //=============================================================================
 void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, TextureHandle* dst_texture_handle)
 {
-	auto dst_texture = (TextureD3D12*)dst_texture_handle;
+	auto dst_texture = (TextureD3D11*)dst_texture_handle;
 	auto format = gContext.GetBackbufferFormat();
 
 	assert(dst_texture->GetWidth() == size.x);
@@ -476,12 +449,16 @@ void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size,
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	auto src_texture = !gContext.renderTargets.empty() ?
-		gContext.renderTargets.at(0)->GetTexture() :
-		gContext.GetCurrentFrame().mainRenderTarget->GetTexture();
+	auto target = gContext.render_targets.at(0);
 
-	auto desc = src_texture->GetD3D12Texture()->GetDesc();
+	ComPtr<ID3D11Resource> rtv_resource;
+	target->GetD3D11RenderTargetView()->GetResource(rtv_resource.GetAddressOf());
 
+	ComPtr<ID3D11Texture2D> rtv_texture;
+	rtv_resource.As(&rtv_texture);
+
+	D3D11_TEXTURE2D_DESC desc = { 0 };
+	rtv_texture->GetDesc(&desc);
 	auto back_w = desc.Width;
 	auto back_h = desc.Height;
 
@@ -515,13 +492,7 @@ void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size,
 		dst_y = -pos.y;
 	}
 
-	if (pos.y >= (int)back_h || pos.x >= (int)back_w)
-		return;
-
-	src_w = glm::min(src_w, (UINT)back_w);
-	src_h = glm::min(src_h, (UINT)back_h);
-
-	D3D12_BOX box;
+	D3D11_BOX box;
 	box.left = src_x;
 	box.right = src_x + src_w;
 	box.top = src_y;
@@ -529,13 +500,11 @@ void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size,
 	box.front = 0;
 	box.back = 1;
 
-	src_texture->EnsureState(gContext.commandList.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE);
-	dst_texture->EnsureState(gContext.commandList.Get(), D3D12_RESOURCE_STATE_COPY_DEST);
-
-	auto src_location = CD3DX12_TEXTURE_COPY_LOCATION(src_texture->GetD3D12Texture().Get(), 0);
-	auto dst_location = CD3DX12_TEXTURE_COPY_LOCATION(dst_texture->GetD3D12Texture().Get(), 0);
-
-	gContext.commandList->CopyTextureRegion(&dst_location, dst_x, dst_y, 0, &src_location, &box);
+	if (pos.y < (int)back_h && pos.x < (int)back_w)
+	{
+		gContext.context->CopySubresourceRegion(dst_texture->GetD3D11Texture2D().Get(), 0, dst_x, dst_y, 0,
+			rtv_resource.Get(), 0, &box);
+	}
 }
 //=============================================================================
-#endif // RENDER_D3D12
+#endif // RENDER_D3D11

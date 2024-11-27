@@ -20,7 +20,7 @@
     <ClCompile Include="RenderSystem.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
-    <ClCompile Include="RenderSystem_D3D12.cpp">
+    <ClCompile Include="RenderSystemD3D12.cpp">
       <Filter>RHI\Direct3D12</Filter>
     </ClCompile>
     <ClCompile Include="RenderCore.cpp">
@@ -59,7 +59,7 @@
     <ClCompile Include="RenderUtils.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
-    <ClCompile Include="RenderSystem_OpenGL.cpp">
+    <ClCompile Include="RenderSystemOpenGL.cpp">
       <Filter>RHI\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="RenderCoreOpenGL.cpp">
@@ -82,6 +82,57 @@
     </ClCompile>
     <ClCompile Include="PipelineStateOpenGL.cpp">
       <Filter>RHI\OpenGL\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemD3D11.cpp">
+      <Filter>RHI\Direct3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderCoreD3D11.cpp">
+      <Filter>RHI\Direct3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextD3D11.cpp">
+      <Filter>RHI\Direct3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferD3D11.cpp">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="PipelineStateD3D11.cpp">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetD3D11.cpp">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderD3D11.cpp">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureD3D11.cpp">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ContextVK.cpp">
+      <Filter>RHI\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderCoreVK.cpp">
+      <Filter>RHI\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystemVK.cpp">
+      <Filter>RHI\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferVK.cpp">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="PipelineStateVK.cpp">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderVK.cpp">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureVK.cpp">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetVK.cpp">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="AccelerationStructureVK.cpp">
+      <Filter>RHI\Vulkan\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +227,51 @@
     <ClInclude Include="PipelineStateOpenGL.h">
       <Filter>RHI\OpenGL\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="RenderCoreD3D11.h">
+      <Filter>RHI\Direct3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextD3D11.h">
+      <Filter>RHI\Direct3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferD3D11.h">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="PipelineStateD3D11.h">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetD3D11.h">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderD3D11.h">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureD3D11.h">
+      <Filter>RHI\Direct3D11\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextVK.h">
+      <Filter>RHI\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderCoreVK.h">
+      <Filter>RHI\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferVK.h">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="PipelineStateVK.h">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderVK.h">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureVK.h">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetVK.h">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="AccelerationStructureVK.h">
+      <Filter>RHI\Vulkan\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -207,6 +303,18 @@
     </Filter>
     <Filter Include="RHI\OpenGL\Resources">
       <UniqueIdentifier>{af9d4c5d-8cfd-4c11-ade5-a611da732c1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\Direct3D11">
+      <UniqueIdentifier>{311120d2-6aa3-43f7-b8f6-73841a080ff2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\Direct3D11\Resources">
+      <UniqueIdentifier>{d06042d0-3544-4a77-8107-6244a880b836}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\Vulkan">
+      <UniqueIdentifier>{53008008-dc2f-4583-9fe3-3f9e1dae294c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\Vulkan\Resources">
+      <UniqueIdentifier>{45637898-001e-42ef-9def-96c18c1c28c1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

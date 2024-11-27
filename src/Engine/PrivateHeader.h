@@ -2,6 +2,16 @@
 
 #if defined(_ENGINE_PRIVATE_HEADER)
 
+#if RENDER_D3D11
+
+#	include <d3dcompiler.h>
+#	include <d3d11.h>
+#	include <dxgi1_6.h>
+
+#	include <wrl.h>
+using Microsoft::WRL::ComPtr;
+#endif // RENDER_D3D12
+
 #if RENDER_D3D12
 #	include <d3dcompiler.h>
 #	include <d3d12.h>
@@ -29,6 +39,12 @@ using Microsoft::WRL::ComPtr;
 #		include <GLES3/gl3.h>
 #	endif
 #endif // RENDER_OPENGL
+
+#if RENDER_VULKAN
+#	define VK_USE_PLATFORM_WIN32_KHR
+#	define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 0
+#	include <vulkan/vulkan_raii.hpp>
+#endif // RENDER_VULKAN
 
 
 #include <glslang/SPIRV/GlslangToSpv.h>

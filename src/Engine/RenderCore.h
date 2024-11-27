@@ -2,16 +2,6 @@
 
 #include "HashCombine.h"
 
-#if RENDER_D3D12
-class BufferD3D12;
-class ShaderD3D12;
-class TextureD3D12;
-class RenderTargetD3D12;
-class VertexBufferD3D12;
-class IndexBufferD3D12;
-class UniformBufferD3D12;
-#endif // RENDER_D3D12
-
 constexpr const int NUM_BACK_BUFFERS = 2;
 
 enum class RenderFeature
@@ -263,8 +253,6 @@ struct InputLayout final
 	bool operator==(const InputLayout&) const = default;
 };
 
-
-
 SE_MAKE_HASHABLE(InputLayout::Attribute,
 	t.format,
 	t.offset
@@ -348,3 +336,15 @@ public:
 private:
 	std::list<Func> mFuncs;
 };
+
+template<typename T>
+inline T AlignUp(T size, size_t alignment) noexcept
+{
+	if (alignment > 0)
+	{
+		assert(((alignment - 1) & alignment) == 0);
+		auto mask = static_cast<T>(alignment - 1);
+		return (size + mask) & ~mask;
+	}
+	return size;
+}

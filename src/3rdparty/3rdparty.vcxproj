@@ -103,6 +103,7 @@
     <ClCompile Include="spirv-cross\spirv_parser.cpp" />
     <ClCompile Include="spirv-reflect\spirv_reflect.cpp" />
     <ClCompile Include="stb\stb.cpp" />
+    <ClCompile Include="tinygltf\tiny_gltf.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx12\d3d12generatemips.h" />
@@ -116,6 +117,7 @@
     <ClInclude Include="stb\stb_image_resize.h" />
     <ClInclude Include="stb\stb_image_write.h" />
     <ClInclude Include="stb\stb_truetype.h" />
+    <ClInclude Include="tinygltf\tiny_gltf.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="d3dx12\GenerateMips_main.inc" />

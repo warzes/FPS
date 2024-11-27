@@ -3,6 +3,9 @@
 #include "Vertex.h"
 #include "RenderResources.h"
 
+template<class... Ts> struct cases : Ts... { using Ts::operator()...; };
+template<class... Ts> cases(Ts...) -> cases<Ts...>;
+
 namespace utils
 {
 	class Mesh

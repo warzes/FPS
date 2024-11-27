@@ -30,6 +30,9 @@
     <ClInclude Include="008_bloom.h">
       <Filter>Examples</Filter>
     </ClInclude>
+    <ClInclude Include="009_sponza.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Examples">

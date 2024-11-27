@@ -7,6 +7,7 @@
 #include "006_render_target.h"
 #include "007_instancing.h"
 #include "008_bloom.h"
+#include "009_sponza.h"
 
 #if defined(_MSC_VER)
 #	pragma comment( lib, "Engine.lib" )
@@ -24,8 +25,9 @@ int main(
 	//E004();
 	//E005();
 	//E006();
-	E007();
+	//E007();
 	//E008();
+	E009();
 
 #else
 	EngineApp engine;

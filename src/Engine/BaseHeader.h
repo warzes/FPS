@@ -79,6 +79,11 @@
 #include <glm/gtx/fast_trigonometry.hpp>
 
 #include <stb/stb_image.h>
+#include <stb/stb_truetype.h>
+
+#include <tinygltf/tiny_gltf.h>
+
+#include <rectpack2D/finders_interface.h>
 
 #include "PrivateHeader.h"
 

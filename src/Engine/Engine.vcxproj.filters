@@ -134,6 +134,18 @@
     <ClCompile Include="AccelerationStructureVK.cpp">
       <Filter>RHI\Vulkan\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="TextMesh.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -272,6 +284,18 @@
     <ClInclude Include="AccelerationStructureVK.h">
       <Filter>RHI\Vulkan\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="TextMesh.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -315,6 +339,9 @@
     </Filter>
     <Filter Include="RHI\Vulkan\Resources">
       <UniqueIdentifier>{45637898-001e-42ef-9def-96c18c1c28c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{85929439-afd3-4bc7-82fc-3e6fbba21b2f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

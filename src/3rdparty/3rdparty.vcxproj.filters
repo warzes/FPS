@@ -49,6 +49,9 @@
     <ClCompile Include="glew.c">
       <Filter>glew</Filter>
     </ClCompile>
+    <ClCompile Include="tinygltf\tiny_gltf.cc">
+      <Filter>tiny_gltf</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="d3dx12">
@@ -65,6 +68,9 @@
     </Filter>
     <Filter Include="glew">
       <UniqueIdentifier>{9bc2b3e4-d224-4e38-8185-938798cee4e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tiny_gltf">
+      <UniqueIdentifier>{24826174-fd5e-4f31-81bc-367fe3ae51e0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="stb\stb_truetype.h">
       <Filter>stb</Filter>
+    </ClInclude>
+    <ClInclude Include="tinygltf\tiny_gltf.h">
+      <Filter>tiny_gltf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,9 +2,6 @@
 #include "RenderUtils.h"
 #include "RenderSystem.h"
 
-template<class... Ts> struct cases : Ts... { using Ts::operator()...; };
-template<class... Ts> cases(Ts...) -> cases<Ts...>;
-
 utils::Mesh::Mesh(const Vertices& vertices)
 {
 	setVertices(vertices);

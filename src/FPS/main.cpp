@@ -9,6 +9,9 @@
 #include "008_bloom.h"
 #include "009_sponza.h"
 
+https://github.com/Immanuel-C/IWindow
+https://github.com/alaingalvan/CrossWindow
+
 #if defined(_MSC_VER)
 #	pragma comment( lib, "Engine.lib" )
 #	pragma comment( lib, "3rdparty.lib" )

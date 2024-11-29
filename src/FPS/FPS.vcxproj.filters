@@ -3,6 +3,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="GameApp.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -33,10 +36,16 @@
     <ClInclude Include="009_sponza.h">
       <Filter>Examples</Filter>
     </ClInclude>
+    <ClInclude Include="Temp.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Examples">
       <UniqueIdentifier>{dda4498d-23fd-427a-a098-edd61a53b775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{7349b314-9e02-4f96-a21f-fb620c533211}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -46,18 +46,46 @@ void InputSystem::ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam)
 	m_mouse.processMessage(message, wParam, lParam);
 }
 //=============================================================================
-bool InputSystem::IsKeyPress(Key key) const
+void InputSystem::SetMouseVisible(bool visible)
 {
-	return m_lastKeyboardState.IsKeyDown(key);
+	m_mouse.SetVisible(visible);
+}
+//=============================================================================
+glm::vec2 InputSystem::GetMousePosition() const
+{
+	return
+	{
+		static_cast<float>(m_lastMouseState.x),
+		static_cast<float>(m_lastMouseState.y)
+	};
 }
 //=============================================================================
 glm::vec2 InputSystem::GetDeltaMouse() const
 {
-	return 
+	return
 	{
 		static_cast<float>(m_lastMouseState.x) - static_cast<float>(m_lastBufferedMouseState.x),
 		static_cast<float>(m_lastMouseState.y) - static_cast<float>(m_lastBufferedMouseState.y),
 	};
+}
+//=============================================================================
+bool InputSystem::IsPress(Key key) const
+{
+	return m_lastKeyboardState.IsKeyDown(key);
+}
+//=============================================================================
+bool InputSystem::IsPress(MouseButton mouseKey) const
+{
+	switch (mouseKey)
+	{
+	case MouseButton::Left:     return m_lastMouseState.leftButton;
+	case MouseButton::Middle:   return m_lastMouseState.middleButton;
+	case MouseButton::Right:    return m_lastMouseState.rightButton;
+	case MouseButton::XButton1: return m_lastMouseState.xButton1;
+	case MouseButton::XButton2: return m_lastMouseState.xButton2;
+	}
+
+	return false;
 }
 //=============================================================================
 void InputSystem::onResuming()

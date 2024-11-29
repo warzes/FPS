@@ -34,7 +34,7 @@ namespace Graphics
 	public:
 		Camera3D();
 
-		virtual void OnFrame();
+		void Update();
 
 		void FrontMove(float offset);
 		void SideMove(float offset);

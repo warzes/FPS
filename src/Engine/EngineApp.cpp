@@ -53,6 +53,7 @@ void EngineApp::BeginFrame()
 		RequestExit();
 		return;
 	}
+	m_input.Update();
 }
 //=============================================================================
 void EngineApp::EndFrame()

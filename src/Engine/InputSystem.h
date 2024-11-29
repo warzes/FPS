@@ -27,9 +27,11 @@ public:
 	void ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 #endif
 
-	bool IsKeyPress(Key key) const;
-
+	void SetMouseVisible(bool visible);
+	glm::vec2 GetMousePosition() const;
 	glm::vec2 GetDeltaMouse() const;
+	bool IsPress(Key key) const;
+	bool IsPress(MouseButton mouseKey) const;
 
 private:
 	void onResuming();

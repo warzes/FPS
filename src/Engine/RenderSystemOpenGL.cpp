@@ -108,7 +108,7 @@ EGLConfig gEglConfig;
 //=============================================================================
 RenderContext gContext{};
 //=============================================================================
-bool RenderSystem::createAPI(const WindowPrivateData& data, const RenderSystemCreateInfo& createInfo)
+bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 #if PLATFORM_WINDOWS
 	gHDC = GetDC(data.hwnd);

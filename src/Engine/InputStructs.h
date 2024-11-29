@@ -401,6 +401,15 @@ enum class MouseMode : uint8_t
 	Relative
 };
 
+enum class MouseButton : uint8_t
+{
+	Left,
+	Middle,
+	Right,
+	XButton1,
+	XButton2,
+};
+
 struct MouseState final
 {
 	bool      leftButton;

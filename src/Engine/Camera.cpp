@@ -37,7 +37,7 @@ Camera3D::Camera3D()
 	//
 }
 
-void Camera3D::OnFrame()
+void Camera3D::Update()
 {
 	auto yaw = mYaw;// *(mWorldUp.y * -1.0f);
 	auto pitch = mPitch;// *(mWorldUp.y * -1.0f);

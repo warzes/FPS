@@ -14,7 +14,7 @@
 //=============================================================================
 RenderContext gContext{};
 //=============================================================================
-bool RenderSystem::createAPI(const WindowPrivateData& data, const RenderSystemCreateInfo& createInfo)
+bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 #if defined(_DEBUG) && 0
 	ComPtr<ID3D12Debug6> debug;

@@ -16,18 +16,18 @@ struct EngineAppCreateInfo final
 class EngineApp final
 {
 public:
-	bool Create(const EngineAppCreateInfo& createInfo);
+	[[nodiscard]] bool Create(const EngineAppCreateInfo& createInfo);
 	void Destroy();
 
-	bool IsShouldClose() const;
-	
+	[[nodiscard]] bool IsShouldClose() const;
+
 	void BeginFrame();
 	void EndFrame();
 
-	auto& GetLogSystem() { return m_log; }
-	auto& GetWindowSystem() { return m_window; }
-	auto& GetInputSystem() { return m_input; }
-	auto& GetRenderSystem() { return m_render; }
+	[[nodiscard]] auto& GetLogSystem() { return m_log; }
+	[[nodiscard]] auto& GetWindowSystem() { return m_window; }
+	[[nodiscard]] auto& GetInputSystem() { return m_input; }
+	[[nodiscard]] auto& GetRenderSystem() { return m_render; }
 
 private:
 	LogSystem    m_log{};

@@ -85,7 +85,7 @@ void main()
 
 			rhi.SetUniformBuffer(1, settings);
 
-			rhi.SetSize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
+			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
 			rhi.Clear();
 			rhi.DrawIndexed(static_cast<uint32_t>(indices.size()));
 			rhi.Present();

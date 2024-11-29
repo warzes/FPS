@@ -299,6 +299,9 @@ SE_MAKE_HASHABLE(DepthBias,
 	t.units
 )
 
+SE_MAKE_HASHABLE(std::vector<InputLayout>, t);
+
+
 TopologyKind GetTopologyKind(Topology topology);
 uint32_t GetFormatChannelsCount(PixelFormat format);
 uint32_t GetFormatChannelSize(PixelFormat format);

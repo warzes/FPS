@@ -12,13 +12,13 @@ void InputUpdate(InputSystem& input)
 		if (!cursor_is_interacting)
 		{
 			cursor_is_interacting = true;
-			input.SetMouseVisible(true);
+			input.SetMouseVisible(false);
 		}
 	}
 	else if (cursor_is_interacting)
 	{
 		cursor_is_interacting = false;
-		input.SetMouseVisible(false);
+		input.SetMouseVisible(true);
 	}
 
 	if (input.IsPress(Key::D1))
@@ -239,10 +239,11 @@ void GameStart()
 		while (!engine.IsShouldClose())
 		{
 			engine.BeginFrame();
-			//InputUpdate(input);
-			//UpdateCamera(input, 0.001f, camera);
+			InputUpdate(input);
+			UpdateCamera(input, 0.01f, camera);
+
+			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
 			
-			static float time = 0.0f;
 			time += 0.01f;
 
 			std::vector<utils::Light> lights = { directional_light };
@@ -253,6 +254,8 @@ void GameStart()
 				lights.push_back(moving_light.light);
 			}
 
+			options.technique = game::gTechnique;
+			options.use_normal_textures = game::gNormalMapping;
 			utils::DrawScene(nullptr, camera, models, lights, options);
 
 			if (show_normals)
@@ -260,6 +263,7 @@ void GameStart()
 
 			stage_viewer.show();
 
+			rhi.Present();
 			engine.EndFrame();
 		}
 	}

@@ -5,6 +5,7 @@
 #include "RenderTargetD3D11.h"
 #include "BufferD3D11.h"
 #include "ShaderD3D11.h"
+#include "Log.h"
 //=============================================================================
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
@@ -17,27 +18,34 @@ bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInf
 {
 	gContext.vsync = createInfo.vsync;
 
-	ComPtr<IDXGIFactory6> dxgi_factory;
-	CreateDXGIFactory1(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
+	ComPtr<IDXGIFactory6> dxgiFactory;
+	if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(dxgiFactory.GetAddressOf()))))
+	{
+		Fatal("CreateDXGIFactory1() failed");
+		return false;
+	}
 
-	IDXGIAdapter1* adapter;
-	auto gpu_preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
-	dxgi_factory->EnumAdapterByGpuPreference(0, gpu_preference, IID_PPV_ARGS(&adapter));
+	const auto gpuPreference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
+	if (FAILED(dxgiFactory->EnumAdapterByGpuPreference(0, gpuPreference, IID_PPV_ARGS(gContext.adapter.GetAddressOf()))))
+	{
+		Fatal("EnumAdapterByGpuPreference() failed");
+		return false;
+	}
 
-	DXGI_SWAP_CHAIN_DESC sd = {};
-	sd.BufferCount = 2;
-	sd.BufferDesc.Width = data.width;
-	sd.BufferDesc.Height = data.height;
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = 60;
-	sd.BufferDesc.RefreshRate.Denominator = 5;
-	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow = data.hwnd;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
-	sd.Windowed = TRUE;
-	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+	swapChainDesc.BufferCount = 2;
+	swapChainDesc.BufferDesc.Width = data.width;
+	swapChainDesc.BufferDesc.Height = data.height;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // TODO: DXGI_FORMAT_B8G8R8A8_UNORM?
+	swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
+	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.OutputWindow = data.hwnd;
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.Windowed = TRUE;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
 #if defined(_DEBUG)
 	UINT flags = D3D11_CREATE_DEVICE_DEBUG;
@@ -45,23 +53,35 @@ bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInf
 	UINT flags = 0;
 #endif
 
-	D3D11CreateDeviceAndSwapChain(adapter, D3D_DRIVER_TYPE_UNKNOWN, NULL, flags, NULL, 0,
-		D3D11_SDK_VERSION, &sd, gContext.swapchain.GetAddressOf(), gContext.device.GetAddressOf(),
-		NULL, gContext.context.GetAddressOf());
+	if (FAILED(D3D11CreateDeviceAndSwapChain(gContext.adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, flags, nullptr, 0,
+		D3D11_SDK_VERSION, &swapChainDesc, gContext.swapChain.GetAddressOf(), gContext.device.GetAddressOf(),
+		nullptr, gContext.context.GetAddressOf())))
+	{
+		Fatal("D3D11CreateDeviceAndSwapChain() failed");
+		return false;
+	}
 
 #if defined(_DEBUG)
-	ComPtr<ID3D11InfoQueue> info_queue;
-	gContext.device->QueryInterface(IID_PPV_ARGS(info_queue.GetAddressOf()));
+	ComPtr<ID3D11InfoQueue> infoQueue;
+	if (FAILED(gContext.device->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf()))))
+	{
+		Fatal("QueryInterface() failed");
+		return false;
+	}
 
-	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
-	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
-	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_INFO, true);
-	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_MESSAGE, true);
-	info_queue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
+	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_INFO, true);
+	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_MESSAGE, true);
+	infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
 #endif
 
-	CreateMainRenderTarget(data.width, data.height);
-	SetRenderTarget(nullptr, 0);
+	if (!CreateMainRenderTarget(data.width, data.height))
+	{
+		Fatal("CreateMainRenderTarget() failed");
+		return false;
+	}
+	SetRenderTarget(std::nullopt);
 
 	return true;
 }
@@ -70,12 +90,16 @@ void RenderSystem::destroyAPI()
 {
 	DestroyMainRenderTarget();
 	// TODO: очистить gContext
+	gContext.swapChain.Reset();
+	gContext.context.Reset();
+	gContext.device.Reset();
+	gContext.adapter.Reset();
 }
 //=============================================================================
 void RenderSystem::resize(uint32_t width, uint32_t height)
 {
 	DestroyMainRenderTarget();
-	gContext.swapchain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	gContext.swapChain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 	CreateMainRenderTarget(width, height);
 	SetRenderTarget(nullptr, 0);
 
@@ -85,7 +109,7 @@ void RenderSystem::resize(uint32_t width, uint32_t height)
 //=============================================================================
 void RenderSystem::present()
 {
-	gContext.swapchain->Present(gContext.vsync ? 1 : 0, 0);
+	gContext.swapChain->Present(gContext.vsync ? 1 : 0, 0);
 }
 //=============================================================================
 TextureHandle* RenderSystem::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
@@ -244,18 +268,21 @@ void RenderSystem::SetTexture(uint32_t binding, const TextureHandle* handle)
 	gContext.textures[binding] = texture;
 }
 //=============================================================================
+void RenderSystem::SetRenderTarget(std::nullopt_t)
+{
+	gContext.context->OMSetRenderTargets(1, gContext.mainRenderTarget->GetD3D11RenderTargetView().GetAddressOf(), gContext.mainRenderTarget->GetD3D11DepthStencilView().Get());
+
+	gContext.renderTargets = { gContext.mainRenderTarget };
+
+	if (!gContext.viewport.has_value())
+		gContext.viewport_dirty = true;
+}
+//=============================================================================
 void RenderSystem::SetRenderTarget(const RenderTarget** render_target, size_t count)
 {
 	if (count == 0)
 	{
-		gContext.context->OMSetRenderTargets(1, gContext.main_render_target->GetD3D11RenderTargetView().GetAddressOf(),
-			gContext.main_render_target->GetD3D11DepthStencilView().Get());
-
-		gContext.render_targets = { gContext.main_render_target };
-
-		if (!gContext.viewport.has_value())
-			gContext.viewport_dirty = true;
-
+		SetRenderTarget(std::nullopt);
 		return;
 	}
 
@@ -265,7 +292,7 @@ void RenderSystem::SetRenderTarget(const RenderTarget** render_target, size_t co
 	std::vector<ID3D11RenderTargetView*> render_target_views;
 	std::optional<ID3D11DepthStencilView*> depth_stencil_view;
 
-	gContext.render_targets.clear();
+	gContext.renderTargets.clear();
 
 	for (size_t i = 0; i < count; i++)
 	{
@@ -284,9 +311,8 @@ void RenderSystem::SetRenderTarget(const RenderTarget** render_target, size_t co
 		if (!depth_stencil_view.has_value())
 			depth_stencil_view = target->GetD3D11DepthStencilView().Get();
 
-		gContext.render_targets.push_back(target);
+		gContext.renderTargets.push_back(target);
 	}
-
 	gContext.context->OMSetRenderTargets((UINT)render_target_views.size(),
 		render_target_views.data(), depth_stencil_view.value_or(nullptr));
 
@@ -402,7 +428,7 @@ void RenderSystem::SetDepthBias(const std::optional<DepthBias> depth_bias)
 //=============================================================================
 void RenderSystem::Clear(const std::optional<glm::vec4>& color, const std::optional<float>& depth, const std::optional<uint8_t>& stencil)
 {
-	for (auto target : gContext.render_targets)
+	for (auto target : gContext.renderTargets)
 	{
 		if (color.has_value())
 		{
@@ -449,7 +475,7 @@ void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size,
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	auto target = gContext.render_targets.at(0);
+	auto target = gContext.renderTargets.at(0);
 
 	ComPtr<ID3D11Resource> rtv_resource;
 	target->GetD3D11RenderTargetView()->GetResource(rtv_resource.GetAddressOf());

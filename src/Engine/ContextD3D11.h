@@ -7,12 +7,16 @@
 class RenderContext final
 {
 public:
-	ComPtr<IDXGISwapChain> swapchain;
-	ComPtr<ID3D11Device> device;
-	ComPtr<ID3D11DeviceContext> context;
-	TextureD3D11* backbuffer_texture = nullptr;
-	RenderTargetD3D11* main_render_target = nullptr;
-	std::vector<RenderTargetD3D11*> render_targets;
+	ComPtr<IDXGIAdapter1>           adapter;
+	ComPtr<ID3D11Device>            device;
+	ComPtr<ID3D11DeviceContext>     context;
+	ComPtr<IDXGISwapChain>          swapChain;
+
+	TextureD3D11*                   backBufferTexture{ nullptr };
+	RenderTargetD3D11*              mainRenderTarget{ nullptr };
+	std::vector<RenderTargetD3D11*> renderTargets;
+	std::optional<Viewport>         viewport;
+
 	ShaderD3D11* shader = nullptr;
 	std::vector<InputLayout> input_layouts;
 
@@ -28,7 +32,7 @@ public:
 	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>> blend_modes;
 	std::optional<BlendMode> blend_mode;
 
-	std::optional<Viewport> viewport;
+
 
 	bool shader_dirty = true;
 	bool input_layouts_dirty = true;
@@ -48,7 +52,7 @@ public:
 
 extern RenderContext gContext;
 
-void CreateMainRenderTarget(uint32_t width, uint32_t height);
+bool CreateMainRenderTarget(uint32_t width, uint32_t height);
 void DestroyMainRenderTarget();
 
 void EnsureGraphicsState(bool draw_indexed);

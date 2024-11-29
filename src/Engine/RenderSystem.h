@@ -18,7 +18,6 @@ public:
 	void Destroy();
 
 	void Resize(uint32_t width, uint32_t height);
-	void SetSize(uint32_t width, uint32_t height);
 
 	TextureHandle* CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count);
 	void WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level, uint32_t offset_x, uint32_t offset_y);
@@ -49,10 +48,13 @@ public:
 	void SetTexture(uint32_t binding, TextureHandle* handle);
 	void SetTexture(uint32_t binding, const TextureHandle* handle);
 	void SetTexture(uint32_t binding, Texture& texture);
-	void SetRenderTarget(const RenderTarget** render_target, size_t count);
-	void SetRenderTarget(const std::vector<const RenderTarget*>& value);
+
+	void SetRenderTarget(std::nullopt_t);
 	void SetRenderTarget(const RenderTarget& value);
-	void SetRenderTarget(std::nullopt_t value);
+	void SetRenderTarget(const RenderTarget** renderTarget, size_t count);
+	void SetRenderTarget(const std::vector<const RenderTarget*>& value);
+
+
 	void SetShader(ShaderHandle* handle);
 	void SetShader(const ShaderHandle* handle);
 	void SetShader(Shader& shader);

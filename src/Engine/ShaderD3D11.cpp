@@ -2,46 +2,54 @@
 #if RENDER_D3D11
 #include "ShaderD3D11.h"
 #include "ContextD3D11.h"
+#include "Log.h"
 //=============================================================================
-ShaderD3D11::ShaderD3D11(const std::string& vertex_code, const std::string& fragment_code, std::vector<std::string> defines)
+ShaderD3D11::ShaderD3D11(const std::string& vertexCode, const std::string& fragmentCode, std::vector<std::string> defines)
 {
-	ComPtr<ID3DBlob> pixel_shader_blob;
+	auto vertexShaderSpirv   = CompileGlslToSpirv(ShaderStage::Vertex, vertexCode, defines);
+	auto fragmentShaderSpirv = CompileGlslToSpirv(ShaderStage::Fragment, fragmentCode, defines);
 
-	ComPtr<ID3DBlob> vertex_shader_error;
-	ComPtr<ID3DBlob> pixel_shader_error;
+	auto hlslVert = CompileSpirvToHlsl(vertexShaderSpirv, 40);
+	auto hlslFrag = CompileSpirvToHlsl(fragmentShaderSpirv, 40);
 
-	auto vertex_shader_spirv = CompileGlslToSpirv(ShaderStage::Vertex, vertex_code, defines);
-	auto fragment_shader_spirv = CompileGlslToSpirv(ShaderStage::Fragment, fragment_code, defines);
+	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if defined( _DEBUG )
+	flags |= D3DCOMPILE_DEBUG;
+#endif
 
-	auto hlsl_vert = CompileSpirvToHlsl(vertex_shader_spirv, 40);
-	auto hlsl_frag = CompileSpirvToHlsl(fragment_shader_spirv, 40);
+	ComPtr<ID3DBlob> vertexShaderError;
+	if (FAILED(D3DCompile(hlslVert.c_str(), hlslVert.size(), nullptr, nullptr, nullptr, "main", "vs_4_0", flags, 0, m_vertexShaderBlob.GetAddressOf(), vertexShaderError.GetAddressOf())))
+	{
+		std::string shaderErrorString = "";
+		if (vertexShaderError)
+			shaderErrorString = std::string((char*)vertexShaderError->GetBufferPointer(), vertexShaderError->GetBufferSize());
 
-	D3DCompile(hlsl_vert.c_str(), hlsl_vert.size(), NULL, NULL, NULL, "main", "vs_4_0", 0, 0,
-		mVertexShaderBlob.GetAddressOf(), vertex_shader_error.GetAddressOf());
+		Fatal("D3DCompile() failed: " + shaderErrorString);
+		return;
+	}
 
-	D3DCompile(hlsl_frag.c_str(), hlsl_frag.size(), NULL, NULL, NULL, "main", "ps_4_0", 0, 0,
-		pixel_shader_blob.GetAddressOf(), pixel_shader_error.GetAddressOf());
+	ComPtr<ID3DBlob> pixelShaderError;
+	ComPtr<ID3DBlob> pixelShaderBlob;
+	if (FAILED(D3DCompile(hlslFrag.c_str(), hlslFrag.size(), nullptr, nullptr, nullptr, "main", "ps_4_0", flags, 0, pixelShaderBlob.GetAddressOf(), pixelShaderError.GetAddressOf())))
+	{
+		std::string shaderErrorString = "";
+		if (pixelShaderError)
+			shaderErrorString = std::string((char*)pixelShaderError->GetBufferPointer(), pixelShaderError->GetBufferSize());
+		Fatal("D3DCompile() failed: " + shaderErrorString);
+		return;
+	}
+	
+	if (FAILED(gContext.device->CreateVertexShader(m_vertexShaderBlob->GetBufferPointer(), m_vertexShaderBlob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf())))
+	{
+		Fatal("CreateVertexShader() failed");
+		return;
+	}
 
-	std::string vertex_shader_error_string = "";
-	std::string pixel_shader_error_string = "";
-
-	if (vertex_shader_error != NULL)
-		vertex_shader_error_string = std::string((char*)vertex_shader_error->GetBufferPointer(), vertex_shader_error->GetBufferSize());
-
-	if (pixel_shader_error != NULL)
-		pixel_shader_error_string = std::string((char*)pixel_shader_error->GetBufferPointer(), pixel_shader_error->GetBufferSize());
-
-	if (mVertexShaderBlob == NULL)
-		throw std::runtime_error(vertex_shader_error_string);
-
-	if (pixel_shader_blob == NULL)
-		throw std::runtime_error(pixel_shader_error_string);
-
-	gContext.device->CreateVertexShader(mVertexShaderBlob->GetBufferPointer(), mVertexShaderBlob->GetBufferSize(),
-		NULL, mVertexShader.GetAddressOf());
-
-	gContext.device->CreatePixelShader(pixel_shader_blob->GetBufferPointer(), pixel_shader_blob->GetBufferSize(),
-		NULL, mPixelShader.GetAddressOf());
+	if (FAILED(gContext.device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, m_pixelShader.GetAddressOf())))
+	{
+		Fatal("CreatePixelShader() failed");
+		return;
+	}
 }
 //=============================================================================
 #endif // RENDER_D3D11

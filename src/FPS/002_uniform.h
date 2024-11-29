@@ -25,7 +25,8 @@ void main()
 {
 	Out.Color = aColor;
 	gl_Position = ubo.projection * ubo.view * ubo.model * vec4(aPosition, 1.0);
-})";
+}
+)";
 
 		const std::string fragment_shader_code = R"(
 #version 450 core
@@ -76,7 +77,7 @@ void main()
 			rhi.SetUniformBuffer(0, matrices);
 
 
-			rhi.SetSize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
+			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
 
 			rhi.Clear();
 			rhi.DrawIndexed(static_cast<uint32_t>(indices.size()));

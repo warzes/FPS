@@ -39,15 +39,10 @@ void RenderSystem::Destroy()
 //=============================================================================
 void RenderSystem::Resize(uint32_t width, uint32_t height)
 {
-	resize(width, height);
-	gSize = { width, height };
-}
-//=============================================================================
-void RenderSystem::SetSize(uint32_t width, uint32_t height)
-{
 	if (gSize.x != width || gSize.y != height)
 	{
-		Resize(width, height);
+		resize(width, height);
+		gSize = { width, height };
 	}
 }
 //=============================================================================
@@ -79,12 +74,7 @@ void RenderSystem::SetRenderTarget(const std::vector<const RenderTarget*>& value
 //=============================================================================
 void RenderSystem::SetRenderTarget(const RenderTarget& value)
 {
-	SetRenderTarget({ (RenderTarget*)&value });
-}
-//=============================================================================
-void RenderSystem::SetRenderTarget(std::nullopt_t)
-{
-	SetRenderTarget({});
+	SetRenderTarget({ &value });
 }
 //=============================================================================
 void RenderSystem::SetShader(Shader& shader)

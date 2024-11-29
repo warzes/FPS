@@ -3,37 +3,44 @@
 #include "ContextD3D11.h"
 #include "RenderTargetD3D11.h"
 #include "ShaderD3D11.h"
+#include "Log.h"
 //=============================================================================
 uint32_t RenderContext::GetBackbufferWidth()
 {
-	return render_targets.at(0)->GetTexture()->GetWidth();
+	return renderTargets.at(0)->GetTexture()->GetWidth();
 }
 //=============================================================================
 uint32_t RenderContext::GetBackbufferHeight()
 {
-	return render_targets.at(0)->GetTexture()->GetHeight();
+	return renderTargets.at(0)->GetTexture()->GetHeight();
 }
 //=============================================================================
 PixelFormat RenderContext::GetBackbufferFormat()
 {
-	return render_targets.at(0)->GetTexture()->GetFormat();
+	return renderTargets.at(0)->GetTexture()->GetFormat();
 }
 //=============================================================================
-void CreateMainRenderTarget(uint32_t width, uint32_t height)
+bool CreateMainRenderTarget(uint32_t width, uint32_t height)
 {
-	ComPtr<ID3D11Texture2D> backbuffer;
-	gContext.swapchain->GetBuffer(0, IID_PPV_ARGS(backbuffer.GetAddressOf()));
+	ComPtr<ID3D11Texture2D> backBuffer;
+	if (FAILED(gContext.swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()))))
+	{
+		Fatal("GetBuffer() failed");
+		return false;
+	}
 
-	gContext.backbuffer_texture = new TextureD3D11(width, height, PixelFormat::RGBA8UNorm, backbuffer);
-	gContext.main_render_target = new RenderTargetD3D11(width, height, gContext.backbuffer_texture);
+	gContext.backBufferTexture = new TextureD3D11(width, height, PixelFormat::RGBA8UNorm, backBuffer);
+	gContext.mainRenderTarget = new RenderTargetD3D11(width, height, gContext.backBufferTexture);
+
+	return true;
 }
 //=============================================================================
 void DestroyMainRenderTarget()
 {
-	delete gContext.backbuffer_texture;
-	delete gContext.main_render_target;
-	gContext.backbuffer_texture = nullptr;
-	gContext.main_render_target = nullptr;
+	delete gContext.backBufferTexture;
+	delete gContext.mainRenderTarget;
+	gContext.backBufferTexture = nullptr;
+	gContext.mainRenderTarget = nullptr;
 }
 //=============================================================================
 void EnsureShader()

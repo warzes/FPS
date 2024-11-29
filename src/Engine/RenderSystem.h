@@ -19,8 +19,8 @@ public:
 
 	void Resize(uint32_t width, uint32_t height);
 
-	TextureHandle* CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count);
-	void WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level, uint32_t offset_x, uint32_t offset_y);
+	TextureHandle* CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount);
+	void WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offsetX, uint32_t offsetY);
 	void GenerateMips(TextureHandle* handle);
 	void DestroyTexture(TextureHandle* handle);
 
@@ -166,6 +166,8 @@ private:
 	void destroyAPI();
 	void resize(uint32_t width, uint32_t height);
 	void present();
+
+	glm::u32vec2 m_frameSize = { 0, 0 };
 };
 
 extern RenderSystem* gRenderSystem;

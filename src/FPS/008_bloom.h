@@ -152,8 +152,6 @@ void E008()
 
 			stage_viewer.show();
 
-			rhi.Present();
-
 			engine.EndFrame();
 		}
 	}

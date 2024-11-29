@@ -81,7 +81,6 @@ void main()
 
 			rhi.Clear();
 			rhi.DrawIndexed(static_cast<uint32_t>(indices.size()));
-			rhi.Present();
 
 			engine.EndFrame();
 		}

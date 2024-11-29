@@ -167,7 +167,6 @@ void main()
 			model_matrices_buffer.Write(model_matrices);
 
 			rhi.DrawIndexed((uint32_t)indices.size(), 0, (uint32_t)model_matrices.size());
-			rhi.Present();
 
 			engine.EndFrame();
 		}

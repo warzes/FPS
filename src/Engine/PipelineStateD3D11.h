@@ -4,47 +4,47 @@
 
 #include "RenderCoreD3D11.h"
 
-struct DepthStencilStateD3D11
+struct DepthStencilStateD3D11 final
 {
-	std::optional<DepthMode> depth_mode;
-	std::optional<StencilMode> stencil_mode;
+	std::optional<DepthMode>   depthMode;
+	std::optional<StencilMode> stencilMode;
 
 	bool operator==(const DepthStencilStateD3D11&) const = default;
 };
 
 SE_MAKE_HASHABLE(DepthStencilStateD3D11,
-	t.depth_mode,
-	t.stencil_mode
+	t.depthMode,
+	t.stencilMode
 );
 
-struct RasterizerStateD3D11
+struct RasterizerStateD3D11 final
 {
-	bool scissor_enabled = false;
-	CullMode cull_mode = CullMode::None;
-	FrontFace front_face = FrontFace::Clockwise;
-	std::optional<DepthBias> depth_bias;
+	bool                     scissorEnabled = false;
+	CullMode                 cullMode = CullMode::None;
+	FrontFace                frontFace = FrontFace::Clockwise;
+	std::optional<DepthBias> depthBias;
 
 	bool operator==(const RasterizerStateD3D11&) const = default;
 };
 
 SE_MAKE_HASHABLE(RasterizerStateD3D11,
-	t.cull_mode,
-	t.scissor_enabled,
-	t.front_face,
-	t.depth_bias
+	t.cullMode,
+	t.scissorEnabled,
+	t.frontFace,
+	t.depthBias
 );
 
-struct SamplerStateD3D11
+struct SamplerStateD3D11 final
 {
-	Sampler sampler = Sampler::Linear;
-	TextureAddress texture_address = TextureAddress::Clamp;
+	Sampler        sampler = Sampler::Linear;
+	TextureAddress textureAddress = TextureAddress::Clamp;
 
 	bool operator==(const SamplerStateD3D11&) const = default;
 };
 
 SE_MAKE_HASHABLE(SamplerStateD3D11,
 	t.sampler,
-	t.texture_address
+	t.textureAddress
 );
 
 #endif // RENDER_D3D11

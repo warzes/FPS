@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #if RENDER_D3D11
 #include "ContextD3D11.h"
+#include "TextureD3D11.h"
 #include "RenderTargetD3D11.h"
 #include "ShaderD3D11.h"
 #include "Log.h"
@@ -107,8 +108,8 @@ void EnsureDepthStencilState()
 
 	const auto& depth_stencil_state = gContext.depth_stencil_state;
 
-	auto depth_mode = depth_stencil_state.depth_mode.value_or(DepthMode());
-	auto stencil_mode = depth_stencil_state.stencil_mode.value_or(StencilMode());
+	auto depth_mode = depth_stencil_state.depthMode.value_or(DepthMode());
+	auto stencil_mode = depth_stencil_state.stencilMode.value_or(StencilMode());
 
 	if (!gContext.depth_stencil_states.contains(depth_stencil_state))
 	{
@@ -135,11 +136,11 @@ void EnsureDepthStencilState()
 		};
 
 		auto desc = CD3D11_DEPTH_STENCIL_DESC(D3D11_DEFAULT);
-		desc.DepthEnable = depth_stencil_state.depth_mode.has_value();
+		desc.DepthEnable = depth_stencil_state.depthMode.has_value();
 		desc.DepthFunc = ComparisonFuncMap.at(depth_mode.func);
 		desc.DepthWriteMask = depth_mode.writeMask ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
 
-		desc.StencilEnable = depth_stencil_state.stencil_mode.has_value();
+		desc.StencilEnable = depth_stencil_state.stencilMode.has_value();
 		desc.StencilReadMask = stencil_mode.readMask;
 		desc.StencilWriteMask = stencil_mode.writeMask;
 
@@ -174,13 +175,13 @@ void EnsureRasterizerState()
 		};
 
 		auto desc = CD3D11_RASTERIZER_DESC(D3D11_DEFAULT);
-		desc.CullMode = CullMap.at(value.cull_mode);
-		desc.ScissorEnable = value.scissor_enabled;
-		desc.FrontCounterClockwise = value.front_face == FrontFace::CounterClockwise;
-		if (value.depth_bias.has_value())
+		desc.CullMode = CullMap.at(value.cullMode);
+		desc.ScissorEnable = value.scissorEnabled;
+		desc.FrontCounterClockwise = value.frontFace == FrontFace::CounterClockwise;
+		if (value.depthBias.has_value())
 		{
-			desc.SlopeScaledDepthBias = value.depth_bias->factor;
-			desc.DepthBias = (INT)value.depth_bias->units;
+			desc.SlopeScaledDepthBias = value.depthBias->factor;
+			desc.DepthBias = (INT)value.depthBias->units;
 		}
 		else
 		{
@@ -219,9 +220,9 @@ void EnsureSamplerState()
 
 		auto desc = CD3D11_SAMPLER_DESC(D3D11_DEFAULT);
 		desc.Filter = SamplerMap.at(value.sampler);
-		desc.AddressU = TextureAddressMap.at(value.texture_address);
-		desc.AddressV = TextureAddressMap.at(value.texture_address);
-		desc.AddressW = TextureAddressMap.at(value.texture_address);
+		desc.AddressU = TextureAddressMap.at(value.textureAddress);
+		desc.AddressV = TextureAddressMap.at(value.textureAddress);
+		desc.AddressW = TextureAddressMap.at(value.textureAddress);
 		gContext.device->CreateSamplerState(&desc, gContext.sampler_states[value].GetAddressOf());
 	}
 

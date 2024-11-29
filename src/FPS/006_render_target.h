@@ -232,7 +232,6 @@ void main()
 
 			rhi.Clear();
 			rhi.DrawIndexed(static_cast<uint32_t>(cube_indices.size()));
-			rhi.Present();
 
 			engine.EndFrame();
 		}

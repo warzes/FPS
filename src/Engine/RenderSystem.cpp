@@ -2,7 +2,6 @@
 #include "RenderSystem.h"
 //=============================================================================
 RenderSystem* gRenderSystem{ nullptr };
-glm::u32vec2 gSize = { 0, 0 };
 std::optional<glm::u32vec2> gRenderTargetSize;
 PixelFormat gBackbufferFormat;
 std::optional<VertexBuffer> gVertexBuffer;
@@ -20,7 +19,7 @@ bool RenderSystem::Create(const WindowData& data, const RenderSystemCreateInfo& 
 	gRenderSystem = this;
 	if (!createAPI(data, createInfo)) return false;
 
-	gSize = { data.width, data.height };
+	m_frameSize = { data.width, data.height };
 	gRenderTargetSize.reset();
 	gBackbufferFormat = PixelFormat::RGBA8UNorm;
 
@@ -39,10 +38,10 @@ void RenderSystem::Destroy()
 //=============================================================================
 void RenderSystem::Resize(uint32_t width, uint32_t height)
 {
-	if (gSize.x != width || gSize.y != height)
+	if (m_frameSize.x != width || m_frameSize.y != height)
 	{
 		resize(width, height);
-		gSize = { width, height };
+		m_frameSize = { width, height };
 	}
 }
 //=============================================================================
@@ -165,22 +164,22 @@ void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size,
 //=============================================================================
 uint32_t RenderSystem::GetWidth()
 {
-	return gSize.x;
+	return m_frameSize.x;
 }
 //=============================================================================
 uint32_t RenderSystem::GetHeight()
 {
-	return gSize.y;
+	return m_frameSize.y;
 }
 //=============================================================================
 uint32_t RenderSystem::GetBackbufferWidth()
 {
-	return gRenderTargetSize.value_or(gSize).x;
+	return gRenderTargetSize.value_or(m_frameSize).x;
 }
 //=============================================================================
 uint32_t RenderSystem::GetBackbufferHeight()
 {
-	return gRenderTargetSize.value_or(gSize).y;
+	return gRenderTargetSize.value_or(m_frameSize).y;
 }
 //=============================================================================
 PixelFormat RenderSystem::GetBackbufferFormat()

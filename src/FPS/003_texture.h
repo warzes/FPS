@@ -71,7 +71,6 @@ void main()
 			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
 			rhi.Clear();
 			rhi.DrawIndexed(static_cast<uint32_t>(indices.size()));
-			rhi.Present();
 
 			engine.EndFrame();
 		}

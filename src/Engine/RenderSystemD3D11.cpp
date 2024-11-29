@@ -2,6 +2,7 @@
 #if RENDER_D3D11
 #include "RenderSystem.h"
 #include "ContextD3D11.h"
+#include "TextureD3D11.h"
 #include "RenderTargetD3D11.h"
 #include "BufferD3D11.h"
 #include "ShaderD3D11.h"
@@ -99,17 +100,26 @@ void RenderSystem::destroyAPI()
 void RenderSystem::resize(uint32_t width, uint32_t height)
 {
 	DestroyMainRenderTarget();
-	gContext.swapChain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
-	CreateMainRenderTarget(width, height);
-	SetRenderTarget(nullptr, 0);
-
-	if (!gContext.viewport.has_value())
-		gContext.viewport_dirty = true;
+	if (FAILED(gContext.swapChain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0)))
+	{
+		Fatal("ResizeBuffers() failed");
+		return;
+	}
+	if (!CreateMainRenderTarget(width, height))
+	{
+		Fatal("CreateMainRenderTarget() failed");
+		return;
+	}
+	SetRenderTarget(std::nullopt);
 }
 //=============================================================================
 void RenderSystem::present()
 {
-	gContext.swapChain->Present(gContext.vsync ? 1 : 0, 0);
+	if (FAILED(gContext.swapChain->Present(gContext.vsync ? 1 : 0, 0)))
+	{
+		Fatal("Present() failed");
+		return;
+	}
 }
 //=============================================================================
 TextureHandle* RenderSystem::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
@@ -250,7 +260,7 @@ void RenderSystem::SetScissor(std::optional<Scissor> scissor)
 		gContext.context->RSSetScissorRects(1, &rect);
 	}
 
-	gContext.rasterizer_state.scissor_enabled = scissor.has_value();
+	gContext.rasterizer_state.scissorEnabled = scissor.has_value();
 	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================
@@ -386,19 +396,19 @@ void RenderSystem::SetBlendMode(const std::optional<BlendMode>& blend_mode)
 //=============================================================================
 void RenderSystem::SetDepthMode(const std::optional<DepthMode>& depth_mode)
 {
-	gContext.depth_stencil_state.depth_mode = depth_mode;
+	gContext.depth_stencil_state.depthMode = depth_mode;
 	gContext.depth_stencil_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 {
-	gContext.depth_stencil_state.stencil_mode = stencil_mode;
+	gContext.depth_stencil_state.stencilMode = stencil_mode;
 	gContext.depth_stencil_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetCullMode(CullMode cull_mode)
 {
-	gContext.rasterizer_state.cull_mode = cull_mode;
+	gContext.rasterizer_state.cullMode = cull_mode;
 	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================
@@ -410,19 +420,19 @@ void RenderSystem::SetSampler(Sampler value)
 //=============================================================================
 void RenderSystem::SetTextureAddress(TextureAddress value)
 {
-	gContext.sampler_state.texture_address = value;
+	gContext.sampler_state.textureAddress = value;
 	gContext.sampler_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetFrontFace(FrontFace value)
 {
-	gContext.rasterizer_state.front_face = value;
+	gContext.rasterizer_state.frontFace = value;
 	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetDepthBias(const std::optional<DepthBias> depth_bias)
 {
-	gContext.rasterizer_state.depth_bias = depth_bias;
+	gContext.rasterizer_state.depthBias = depth_bias;
 	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================

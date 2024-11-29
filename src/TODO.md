@@ -1,0 +1,1 @@
+﻿VROID model (есть в WickedEngine)

@@ -108,6 +108,7 @@
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="HashCombine.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="LogSystem.h" />
     <ClInclude Include="PipelineStateD3D11.h" />
@@ -157,6 +158,7 @@
     <ClCompile Include="ContextVK.cpp" />
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="Image.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LogSystem.cpp" />
     <ClCompile Include="PipelineStateD3D11.cpp" />

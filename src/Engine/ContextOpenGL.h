@@ -63,6 +63,8 @@ public:
 	PixelFormat GetBackbufferFormat();
 };
 
+extern RenderContext gContext;
+
 void EnsureGraphicsState(bool draw_indexed);
 
 #endif // RENDER_OPENGL

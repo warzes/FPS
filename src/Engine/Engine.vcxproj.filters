@@ -146,6 +146,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Render</Filter>
     </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -295,6 +298,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

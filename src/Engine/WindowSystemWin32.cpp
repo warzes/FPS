@@ -1,11 +1,12 @@
 ﻿#include "stdafx.h"
-#include "WindowSystem.h"
-#include "Log.h"
 #if PLATFORM_WINDOWS
+#include "WindowSystem.h"
+#include "InputSystem.h"
+#include "Log.h"
 //=============================================================================
 namespace
 {
-	constexpr auto windowClassName = L"Sapphire Window Class";
+	constexpr const auto windowClassName = L"Sapphire Window Class";
 }
 //=============================================================================
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) noexcept
@@ -124,6 +125,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		default:
 			break;
 		}
+
+		if (thisWindow->m_input)
+			thisWindow->m_input->ProcessMessage(message, wParam, lParam);
 	}
 
 	return DefWindowProc(hwnd, message, wParam, lParam);
@@ -132,13 +136,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 WindowSystem::~WindowSystem()
 {
 	assert(!m_hwnd);
+	assert(!m_input);
 }
 //=============================================================================
 bool WindowSystem::Create(const WindowSystemCreateInfo& createInfo)
 {
 	m_requestClose   = true;
 	m_handleInstance = GetModuleHandle(nullptr);
-	m_fullscreen = createInfo.fullscreen;
+	m_fullscreen = createInfo.fullScreen;
 
 	WNDCLASSEX windowClassInfo{ .cbSize = sizeof(WNDCLASSEX) };
 	windowClassInfo.style         = CS_HREDRAW | CS_VREDRAW;
@@ -193,8 +198,15 @@ bool WindowSystem::Create(const WindowSystemCreateInfo& createInfo)
 //=============================================================================
 void WindowSystem::Destroy()
 {
+	m_input = nullptr;
 	if (m_hwnd) DestroyWindow(m_hwnd);
 	m_hwnd = nullptr;
+}
+//=============================================================================
+void WindowSystem::ConnectInputSystem(InputSystem* input)
+{
+	m_input = input;
+	if (m_input) m_input->ConnectWindowSystem(this);
 }
 //=============================================================================
 bool WindowSystem::IsShouldClose() const
@@ -237,12 +249,14 @@ uint32_t WindowSystem::GetPositionY() const
 //=============================================================================
 void WindowSystem::displayChange()
 {
+	// TODO: dpi?
 }
 //=============================================================================
 void WindowSystem::windowSizeChanged(uint32_t width, uint32_t height)
 {
 	m_width = width;
 	m_height = height;
+	// TODO: dpi?
 }
 //=============================================================================
 void WindowSystem::suspending()
@@ -251,10 +265,12 @@ void WindowSystem::suspending()
 //=============================================================================
 void WindowSystem::resuming()
 {
+	if (m_input) m_input->onResuming();
 }
 //=============================================================================
 void WindowSystem::activated()
 {
+	if (m_input) m_input->onActivated();
 }
 //=============================================================================
 void WindowSystem::deactivated()

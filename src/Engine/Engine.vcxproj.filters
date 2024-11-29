@@ -11,7 +11,7 @@
     <ClCompile Include="EngineApp.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="WindowSystem_Win32.cpp">
+    <ClCompile Include="WindowSystemWin32.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
     <ClCompile Include="StringUtils.cpp">
@@ -146,15 +146,18 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="Keyboard.cpp">
+    <ClCompile Include="KeyboardWin32.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystemWin32.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseWin32.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="BaseHeader.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Log.h">
       <Filter>Debug</Filter>
     </ClInclude>
@@ -163,9 +166,6 @@
     </ClInclude>
     <ClInclude Include="EngineApp.h">
       <Filter>App</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseMacros.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="WindowSystem.h">
       <Filter>Platform</Filter>
@@ -176,14 +176,11 @@
     <ClInclude Include="RenderSystem.h">
       <Filter>RHI</Filter>
     </ClInclude>
-    <ClInclude Include="WindowPrivateData.h">
+    <ClInclude Include="WindowStructs.h">
       <Filter>Platform</Filter>
     </ClInclude>
     <ClInclude Include="RenderCore.h">
       <Filter>RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="PrivateHeader.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="ContextD3D12.h">
       <Filter>RHI\Direct3D12</Filter>
@@ -302,6 +299,27 @@
     <ClInclude Include="Keyboard.h">
       <Filter>Platform</Filter>
     </ClInclude>
+    <ClInclude Include="BaseHeader.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseMacros.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="PrivateHeader.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="InputStructs.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -348,6 +366,12 @@
     </Filter>
     <Filter Include="Render">
       <UniqueIdentifier>{85929439-afd3-4bc7-82fc-3e6fbba21b2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{f806912f-a7be-41d4-ada0-65eff7d8e9ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{64bd0bbb-2dfc-4d29-bd48-f174de52df58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

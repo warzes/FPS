@@ -2,16 +2,27 @@
 
 #if defined(_MSC_VER)
 #	pragma warning(push, 3)
+#	pragma warning(disable : 4061)
+#	pragma warning(disable : 4265)
+#	pragma warning(disable : 4365)
+#	pragma warning(disable : 4625)
+#	pragma warning(disable : 4626)
 #	pragma warning(disable : 4820)
 #	pragma warning(disable : 5039)
+#	pragma warning(disable : 5204)
+#	pragma warning(disable : 5219)
+#	pragma warning(disable : 5220)
 #endif
 
 #define _USE_MATH_DEFINES
 
 #include <cassert>
 #include <cstdint>
+
 #include <optional>
 #include <variant>
+#include <typeindex>
+
 #include <string>
 #include <string_view>
 #include <ranges>
@@ -19,7 +30,6 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
-#include <typeindex>
 
 #if PLATFORM_WINDOWS
 

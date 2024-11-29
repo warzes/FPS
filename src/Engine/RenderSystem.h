@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "WindowPrivateData.h"
+#include "WindowStructs.h"
 #include "RenderResources.h"
 
 struct RenderSystemCreateInfo final
@@ -14,7 +14,7 @@ class RenderSystem final
 public:
 	~RenderSystem();
 
-	bool Create(const WindowPrivateData& data, const RenderSystemCreateInfo& createInfo);
+	bool Create(const WindowData& data, const RenderSystemCreateInfo& createInfo);
 	void Destroy();
 
 	void Resize(uint32_t width, uint32_t height);
@@ -160,7 +160,7 @@ public:
 #endif // RENDER_VULKAN
 
 private:
-	bool createAPI(const WindowPrivateData& data, const RenderSystemCreateInfo& createInfo);
+	bool createAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo);
 	void destroyAPI();
 	void resize(uint32_t width, uint32_t height);
 	void present();

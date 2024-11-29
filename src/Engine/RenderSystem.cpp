@@ -15,7 +15,7 @@ RenderSystem::~RenderSystem()
 	assert(!gRenderSystem);
 }
 //=============================================================================
-bool RenderSystem::Create(const WindowPrivateData& data, const RenderSystemCreateInfo& createInfo)
+bool RenderSystem::Create(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 	gRenderSystem = this;
 	if (!createAPI(data, createInfo)) return false;

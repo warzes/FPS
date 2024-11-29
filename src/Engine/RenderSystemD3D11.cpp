@@ -13,7 +13,7 @@
 //=============================================================================
 RenderContext gContext{};
 //=============================================================================
-bool RenderSystem::createAPI(const WindowPrivateData& data, const RenderSystemCreateInfo& createInfo)
+bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 	gContext.vsync = createInfo.vsync;
 

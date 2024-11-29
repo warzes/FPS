@@ -1,37 +1,31 @@
 ﻿#pragma once
 
-#include "WindowPrivateData.h"
+#include "WindowStructs.h"
 
-struct WindowSystemCreateInfo final
-{
-	std::string_view title{ "Game" };
-	uint32_t         width{ 1600 };
-	uint32_t         height{ 900 };
-	bool             maximize{ true };
-	bool             resize{ true };
-	bool             fullscreen{ false };
-};
+class InputSystem;
 
 class WindowSystem final
 {
 public:
 	~WindowSystem();
 
-	bool Create(const WindowSystemCreateInfo& createInfo);
+	[[nodiscard]] bool Create(const WindowSystemCreateInfo& createInfo);
 	void Destroy();
 
-	bool IsShouldClose() const;
+	void ConnectInputSystem(InputSystem* input);
+
+	[[nodiscard]] bool IsShouldClose() const;
 	void PollEvent();
 
-	uint32_t GetWidth() const { assert(m_width); return m_width; }
-	uint32_t GetHeight() const { assert(m_height); return m_height; }
-	
 	uint32_t GetPositionX() const;
 	uint32_t GetPositionY() const;
 
+	auto GetWidth() const  { assert(m_width); return m_width; }
+	auto GetHeight() const { assert(m_height); return m_height; }
+
 #if PLATFORM_WINDOWS
-	HWND      GetHWND() const { return m_hwnd; }
-	HINSTANCE GetWindowInstance() const { return m_handleInstance; }
+	auto GetHWND() const           { assert(m_hwnd); return m_hwnd; }
+	auto GetWindowInstance() const { assert(m_handleInstance); return m_handleInstance; }
 #endif // PLATFORM_WINDOWS
 
 private:
@@ -44,6 +38,8 @@ private:
 
 #if PLATFORM_WINDOWS
 	friend LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM) noexcept;
+
+	InputSystem* m_input{ nullptr };
 
 	HINSTANCE m_handleInstance{ nullptr };
 	HWND      m_hwnd{ nullptr };

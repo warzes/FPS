@@ -11,11 +11,12 @@ bool EngineApp::Create(const EngineAppCreateInfo& createInfo)
 {
 	IsRequestExit = true;
 
-
 	if (!m_log.Create(createInfo.log)) return false;
 	if (!m_window.Create(createInfo.window)) return false;
+	m_window.ConnectInputSystem(&m_input);
+	if (!m_input.Create(createInfo.input)) return false;
 
-	WindowPrivateData data;
+	WindowData data;
 #if PLATFORM_WINDOWS
 	data.hwnd = m_window.GetHWND();
 	data.handleInstance = m_window.GetWindowInstance();
@@ -32,8 +33,10 @@ bool EngineApp::Create(const EngineAppCreateInfo& createInfo)
 void EngineApp::Destroy()
 {
 	m_render.Destroy();
+	m_input.Destroy();
 	m_window.Destroy();
 	m_log.Destroy();
+	IsRequestExit = true;
 }
 //=============================================================================
 bool EngineApp::IsShouldClose() const

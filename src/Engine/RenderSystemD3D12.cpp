@@ -146,123 +146,6 @@ void RenderSystem::present()
 	RenderBegin();
 }
 //=============================================================================
-TextureHandle* RenderSystem::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
-{
-	auto texture = new TextureD3D12(width, height, format, mip_count);
-	return (TextureHandle*)texture;
-}
-//=============================================================================
-void RenderSystem::WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level, uint32_t offset_x, uint32_t offset_y)
-{
-	auto texture = (TextureD3D12*)handle;
-	texture->Write(width, height, format, memory, mip_level, offset_x, offset_y);
-}
-//=============================================================================
-void RenderSystem::GenerateMips(TextureHandle* handle)
-{
-	auto texture = (TextureD3D12*)handle;
-	texture->GenerateMips();
-}
-//=============================================================================
-void RenderSystem::DestroyTexture(TextureHandle* handle)
-{
-	auto texture = (TextureD3D12*)handle;
-	delete texture;
-}
-//=============================================================================
-RenderTargetHandle* RenderSystem::CreateRenderTarget(uint32_t width, uint32_t height, TextureHandle* texture_handle)
-{
-	auto texture = (TextureD3D12*)texture_handle;
-	auto render_target = new RenderTargetD3D12(width, height, texture);
-	return (RenderTargetHandle*)render_target;
-}
-//=============================================================================
-void RenderSystem::DestroyRenderTarget(RenderTargetHandle* handle)
-{
-	auto render_target = (RenderTargetD3D12*)handle;
-	delete render_target;
-}
-//=============================================================================
-ShaderHandle* RenderSystem::CreateShader(const std::string& vertex_code, const std::string& fragment_code, const std::vector<std::string>& defines)
-{
-	auto shader = new ShaderD3D12(vertex_code, fragment_code, defines);
-	return (ShaderHandle*)shader;
-}
-//=============================================================================
-void RenderSystem::DestroyShader(ShaderHandle* handle)
-{
-	auto shader = (ShaderD3D12*)handle;
-	delete shader;
-}
-//=============================================================================
-VertexBufferHandle* RenderSystem::CreateVertexBuffer(size_t size, size_t stride)
-{
-	auto buffer = new VertexBufferD3D12(size, stride);
-	return (VertexBufferHandle*)buffer;
-}
-//=============================================================================
-void RenderSystem::DestroyVertexBuffer(VertexBufferHandle* handle)
-{
-	auto buffer = (VertexBufferD3D12*)handle;
-	delete buffer;
-}
-//=============================================================================
-void RenderSystem::WriteVertexBufferMemory(VertexBufferHandle* handle, const void* memory, size_t size, size_t stride)
-{
-	auto buffer = (VertexBufferD3D12*)handle;
-	buffer->Write(memory, size);
-	buffer->SetStride(stride);
-
-	for (auto vertex_buffer : gContext.vertexBuffers)
-	{
-		if (vertex_buffer != buffer)
-			continue;
-
-		gContext.vertexBuffersDirty = true;
-		break;
-	}
-}
-//=============================================================================
-IndexBufferHandle* RenderSystem::CreateIndexBuffer(size_t size, size_t stride)
-{
-	auto buffer = new IndexBufferD3D12(size, stride);
-	return (IndexBufferHandle*)buffer;
-}
-//=============================================================================
-void RenderSystem::DestroyIndexBuffer(IndexBufferHandle* handle)
-{
-	auto buffer = (IndexBufferD3D12*)handle;
-	delete buffer;
-}
-//=============================================================================
-void RenderSystem::WriteIndexBufferMemory(IndexBufferHandle* handle, const void* memory, size_t size, size_t stride)
-{
-	auto buffer = (IndexBufferD3D12*)handle;
-	buffer->Write(memory, size);
-	buffer->SetStride(stride);
-
-	if (gContext.indexBuffer == buffer)
-		gContext.indexBufferDirty = true;
-}
-//=============================================================================
-UniformBufferHandle* RenderSystem::CreateUniformBuffer(size_t size)
-{
-	auto buffer = new UniformBufferD3D12(size);
-	return (UniformBufferHandle*)buffer;
-}
-//=============================================================================
-void RenderSystem::DestroyUniformBuffer(UniformBufferHandle* handle)
-{
-	auto buffer = (UniformBufferD3D12*)handle;
-	delete buffer;
-}
-//=============================================================================
-void RenderSystem::WriteUniformBufferMemory(UniformBufferHandle* handle, const void* memory, size_t size)
-{
-	auto buffer = (UniformBufferD3D12*)handle;
-	buffer->Write(memory, size);
-}
-//=============================================================================
 void RenderSystem::SetTopology(Topology topology)
 {
 	gContext.topology = topology;
@@ -290,6 +173,11 @@ void RenderSystem::SetTexture(uint32_t binding, TextureHandle* handle)
 void RenderSystem::SetTexture(uint32_t binding, const TextureHandle* handle)
 {
 	gContext.textures[binding] = (TextureD3D12*)handle;
+}
+//=============================================================================
+void RenderSystem::SetRenderTarget(std::nullopt_t)
+{
+	SetRenderTarget({}); // TODO:
 }
 //=============================================================================
 void RenderSystem::SetRenderTarget(const RenderTarget** render_target, size_t count)

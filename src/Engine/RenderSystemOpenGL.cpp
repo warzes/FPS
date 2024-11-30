@@ -250,122 +250,6 @@ void RenderSystem::present()
 	gContext.execute_after_present.flush();
 }
 //=============================================================================
-//=============================================================================
-TextureHandle* RenderSystem::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
-{
-	auto texture = new TextureGL(width, height, format, mip_count);
-	return (TextureHandle*)texture;
-}
-//=============================================================================
-void RenderSystem::WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level, uint32_t offset_x, uint32_t offset_y)
-{
-	auto texture = (TextureGL*)handle;
-	texture->Write(width, height, format, memory, mip_level, offset_x, offset_y);
-}
-//=============================================================================
-void RenderSystem::GenerateMips(TextureHandle* handle)
-{
-	auto texture = (TextureGL*)handle;
-	texture->GenerateMips();
-}
-//=============================================================================
-void RenderSystem::DestroyTexture(TextureHandle* handle)
-{
-	auto texture = (TextureGL*)handle;
-	delete texture;
-}
-//=============================================================================
-RenderTargetHandle* RenderSystem::CreateRenderTarget(uint32_t width, uint32_t height, TextureHandle* texture_handle)
-{
-	auto texture = (TextureGL*)texture_handle;
-	auto render_target = new RenderTargetGL(texture);
-	return (RenderTargetHandle*)render_target;
-}
-//=============================================================================
-void RenderSystem::DestroyRenderTarget(RenderTargetHandle* handle)
-{
-	auto render_target = (RenderTargetGL*)handle;
-	delete render_target;
-}
-//=============================================================================
-ShaderHandle* RenderSystem::CreateShader(const std::string& vertex_code, const std::string& fragment_code, const std::vector<std::string>& defines)
-{
-	auto shader = new ShaderGL(vertex_code, fragment_code, defines);
-	return (ShaderHandle*)shader;
-}
-//=============================================================================
-void RenderSystem::DestroyShader(ShaderHandle* handle)
-{
-	auto shader = (ShaderGL*)handle;
-	delete shader;
-}
-//=============================================================================
-VertexBufferHandle* RenderSystem::CreateVertexBuffer(size_t size, size_t stride)
-{
-	auto buffer = new VertexBufferGL(size, stride);
-	return (VertexBufferHandle*)buffer;
-}
-//=============================================================================
-void RenderSystem::DestroyVertexBuffer(VertexBufferHandle* handle)
-{
-	gContext.execute_after_present.add([handle] {
-		auto buffer = (VertexBufferGL*)handle;
-		delete buffer;
-		});
-}
-//=============================================================================
-void RenderSystem::WriteVertexBufferMemory(VertexBufferHandle* handle, const void* memory, size_t size, size_t stride)
-{
-	auto buffer = (VertexBufferGL*)handle;
-	buffer->Write(memory, size);
-	buffer->SetStride(stride);
-}
-//=============================================================================
-IndexBufferHandle* RenderSystem::CreateIndexBuffer(size_t size, size_t stride)
-{
-	auto buffer = new IndexBufferGL(size, stride);
-	return (IndexBufferHandle*)buffer;
-}
-//=============================================================================
-void RenderSystem::DestroyIndexBuffer(IndexBufferHandle* handle)
-{
-	gContext.execute_after_present.add([handle] {
-		auto buffer = (IndexBufferGL*)handle;
-
-		if (gContext.index_buffer == buffer)
-			gContext.index_buffer = nullptr;
-
-		delete buffer;
-		});
-}
-//=============================================================================
-void RenderSystem::WriteIndexBufferMemory(IndexBufferHandle* handle, const void* memory, size_t size, size_t stride)
-{
-	auto buffer = (IndexBufferGL*)handle;
-	buffer->Write(memory, size);
-	buffer->SetStride(stride);
-}
-//=============================================================================
-UniformBufferHandle* RenderSystem::CreateUniformBuffer(size_t size)
-{
-	auto buffer = new UniformBufferGL(size);
-	return (UniformBufferHandle*)buffer;
-}
-//=============================================================================
-void RenderSystem::DestroyUniformBuffer(UniformBufferHandle* handle)
-{
-	gContext.execute_after_present.add([handle] {
-		auto buffer = (UniformBufferGL*)handle;
-		delete buffer;
-		});
-}
-//=============================================================================
-void RenderSystem::WriteUniformBufferMemory(UniformBufferHandle* handle, const void* memory, size_t size)
-{
-	auto buffer = (UniformBufferGL*)handle;
-	buffer->Write(memory, size);
-}
-//=============================================================================
 void RenderSystem::SetTopology(Topology topology)
 {
 	static const std::unordered_map<Topology, GLenum> TopologyMap = {
@@ -405,16 +289,20 @@ void RenderSystem::SetTexture(uint32_t binding, const TextureHandle* handle)
 	gContext.sampler_state_dirty = true;
 }
 //=============================================================================
+void RenderSystem::SetRenderTarget(std::nullopt_t)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	gContext.render_targets.clear();
+
+	if (!gContext.viewport.has_value())
+		gContext.viewport_dirty = true;
+}
+//=============================================================================
 void RenderSystem::SetRenderTarget(const RenderTarget** render_target, size_t count)
 {
 	if (count == 0)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		gContext.render_targets.clear();
-
-		if (!gContext.viewport.has_value())
-			gContext.viewport_dirty = true;
-
+		SetRenderTarget(std::nullopt);
 		return;
 	}
 	std::vector<RenderTargetGL*> render_targets;

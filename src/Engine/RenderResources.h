@@ -33,8 +33,7 @@ public:
 	Texture(Texture&& other) noexcept;
 	virtual ~Texture();
 
-	void Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory,
-		uint32_t mip_level = 0, uint32_t offset_x = 0, uint32_t offset_y = 0);
+	void Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level = 0, uint32_t offset_x = 0, uint32_t offset_y = 0);
 	void GenerateMips();
 
 	Texture& operator=(Texture&& other) noexcept;

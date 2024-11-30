@@ -155,6 +155,18 @@
     <ClCompile Include="MouseWin32.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
+    <ClCompile Include="GAPISystemD3D11.cpp">
+      <Filter>RHI\Direct3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="GAPISystemD3D12.cpp">
+      <Filter>RHI\Direct3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="GAPISystemVK.cpp">
+      <Filter>RHI\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="GAPISystemGL.cpp">
+      <Filter>RHI\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -319,6 +331,9 @@
     </ClInclude>
     <ClInclude Include="Mouse.h">
       <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="GAPISystem.h">
+      <Filter>RHI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

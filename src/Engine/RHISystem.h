@@ -2,7 +2,7 @@
 
 #include "RenderResources.h"
 
-namespace GAPISystem
+namespace RHISystem
 {
 	TextureHandle* CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount);
 	void WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offsetX, uint32_t offsetY);

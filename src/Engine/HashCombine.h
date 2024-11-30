@@ -31,7 +31,6 @@ inline void HashCombine(std::size_t& seed, const std::unordered_map<T, U>& value
 	HashCombine(seed, rest...);
 }
 
-
 #define SE_MAKE_HASHABLE(T, ...) \
 	namespace std {\
 		template<> struct hash<T> {\

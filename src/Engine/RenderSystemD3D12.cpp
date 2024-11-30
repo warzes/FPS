@@ -14,6 +14,31 @@
 //=============================================================================
 RenderContext gContext{};
 //=============================================================================
+void RenderSystem::SetTopology(Topology topology)
+{
+	gContext.topology = topology;
+	gContext.topologyDirty = true;
+	gContext.pipelineState.topologyKind = GetTopologyKind(topology);
+}
+//=============================================================================
+void RenderSystem::SetViewport(std::optional<Viewport> viewport)
+{
+	gContext.viewport = viewport;
+	gContext.viewportDirty = true;
+}
+//=============================================================================
+void RenderSystem::SetScissor(std::optional<Scissor> scissor)
+{
+	gContext.scissor = scissor;
+	gContext.scissorDirty = true;
+}
+//=============================================================================
+
+
+
+
+
+
 bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 #if defined(_DEBUG) && 0
@@ -145,25 +170,8 @@ void RenderSystem::present()
 	WaitForGpu();
 	RenderBegin();
 }
-//=============================================================================
-void RenderSystem::SetTopology(Topology topology)
-{
-	gContext.topology = topology;
-	gContext.topologyDirty = true;
-	gContext.pipelineState.topologyKind = GetTopologyKind(topology);
-}
-//=============================================================================
-void RenderSystem::SetViewport(std::optional<Viewport> viewport)
-{
-	gContext.viewport = viewport;
-	gContext.viewportDirty = true;
-}
-//=============================================================================
-void RenderSystem::SetScissor(std::optional<Scissor> scissor)
-{
-	gContext.scissor = scissor;
-	gContext.scissorDirty = true;
-}
+
+
 //=============================================================================
 void RenderSystem::SetTexture(uint32_t binding, TextureHandle* handle)
 {

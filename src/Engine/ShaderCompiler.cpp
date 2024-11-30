@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "ShaderCompiler.h"
-
+#include "Log.h"
+//=============================================================================
 std::vector<uint32_t> CompileGlslToSpirv(ShaderStage stage, const std::string& code, const std::vector<std::string>& defines)
 {
 	static const std::unordered_map<ShaderStage, EShLanguage> StageMap = {
@@ -34,7 +35,8 @@ std::vector<uint32_t> CompileGlslToSpirv(ShaderStage stage, const std::string& c
 	if (!shader.parse(GetDefaultResources(), 100, false, messages))
 	{
 		auto info_log = shader.getInfoLog();
-		throw std::runtime_error(info_log);
+		Fatal(info_log);
+		return {};
 	}
 
 	glslang::TProgram program;
@@ -43,7 +45,8 @@ std::vector<uint32_t> CompileGlslToSpirv(ShaderStage stage, const std::string& c
 	if (!program.link(messages))
 	{
 		auto info_log = shader.getInfoLog();
-		throw std::runtime_error(info_log);
+		Fatal(info_log);
+		return {};
 	}
 
 	auto intermediate = program.getIntermediate(_stage);
@@ -54,7 +57,7 @@ std::vector<uint32_t> CompileGlslToSpirv(ShaderStage stage, const std::string& c
 
 	return result;
 }
-
+//=============================================================================
 std::string CompileSpirvToHlsl(const std::vector<uint32_t>& spirv, uint32_t version)
 {
 	auto compiler = spirv_cross::CompilerHLSL(spirv);
@@ -66,7 +69,7 @@ std::string CompileSpirvToHlsl(const std::vector<uint32_t>& spirv, uint32_t vers
 
 	return compiler.compile();
 }
-
+//=============================================================================
 std::string CompileSpirvToGlsl(const std::vector<uint32_t>& spirv, bool es, uint32_t version, bool enable_420pack_extension, bool force_flattened_io_blocks)
 {
 	auto compiler = spirv_cross::CompilerGLSL(spirv);
@@ -107,7 +110,7 @@ std::string CompileSpirvToGlsl(const std::vector<uint32_t>& spirv, bool es, uint
 
 	return compiler.compile();
 }
-
+//=============================================================================
 ShaderReflection MakeSpirvReflection(const std::vector<uint32_t>& spirv)
 {
 	static const std::unordered_map<SpvReflectDescriptorType, ShaderReflection::DescriptorType> DescriptorTypeMap = {
@@ -181,3 +184,4 @@ ShaderReflection MakeSpirvReflection(const std::vector<uint32_t>& spirv)
 
 	return result;
 }
+//=============================================================================

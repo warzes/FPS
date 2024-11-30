@@ -8,8 +8,6 @@
 #include "AccelerationStructureVK.h"
 #include "Log.h"
 //=============================================================================
-RenderContext gContext{};
-//=============================================================================
 #if defined(_DEBUG)
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	VkDebugUtilsMessageTypeFlagsEXT messageTypes, VkDebugUtilsMessengerCallbackDataEXT const* pCallbackData,
@@ -67,6 +65,31 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessengerCallback(VkDebugUtilsMessageSe
 }
 #endif
 //=============================================================================
+RenderContext gContext{};
+//=============================================================================
+void RenderSystem::SetTopology(Topology topology)
+{
+	gContext.topology = topology;
+	gContext.topology_dirty = true;
+}
+//=============================================================================
+void RenderSystem::SetViewport(std::optional<Viewport> viewport)
+{
+	gContext.viewport = viewport;
+	gContext.viewport_dirty = true;
+}
+//=============================================================================
+void RenderSystem::SetScissor(std::optional<Scissor> scissor)
+{
+	gContext.scissor = scissor;
+	gContext.scissor_dirty = true;
+}
+//=============================================================================
+
+
+
+
+
 bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 	if (!gContext.Create()) return false;
@@ -335,23 +358,7 @@ void RenderSystem::present()
 	RenderBegin();
 }
 //=============================================================================
-void RenderSystem::SetTopology(Topology topology)
-{
-	gContext.topology = topology;
-	gContext.topology_dirty = true;
-}
-//=============================================================================
-void RenderSystem::SetViewport(std::optional<Viewport> viewport)
-{
-	gContext.viewport = viewport;
-	gContext.viewport_dirty = true;
-}
-//=============================================================================
-void RenderSystem::SetScissor(std::optional<Scissor> scissor)
-{
-	gContext.scissor = scissor;
-	gContext.scissor_dirty = true;
-}
+
 //=============================================================================
 void RenderSystem::SetTexture(uint32_t binding, TextureHandle* handle)
 {

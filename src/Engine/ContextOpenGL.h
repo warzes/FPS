@@ -22,8 +22,6 @@ public:
 	uint32_t width = 0;
 	uint32_t height = 0;
 
-	ExecuteList execute_after_present;
-
 	std::unordered_map<uint32_t, TextureGL*> textures;
 	std::unordered_set<uint32_t> dirty_textures;
 

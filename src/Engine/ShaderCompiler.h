@@ -23,7 +23,7 @@ struct ShaderReflection final
 		std::string type_name;
 	};
 
-	std::unordered_map<DescriptorType, std::unordered_map<uint32_t, Descriptor>> typed_descriptor_bindings;
+	std::unordered_map<DescriptorType, std::unordered_map<uint32_t, Descriptor>>  typed_descriptor_bindings;
 	std::unordered_map<uint32_t/*set*/, std::unordered_set<uint32_t>/*bindings*/> descriptor_sets;
 	ShaderStage stage;
 };

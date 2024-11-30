@@ -22,6 +22,12 @@ public:
 	void SetTopology(Topology topology);
 	void SetViewport(std::optional<Viewport> viewport);
 	void SetScissor(std::optional<Scissor> scissor);
+
+	void SetShader(ShaderHandle* handle);
+	void SetShader(const ShaderHandle* handle);
+	void SetShader(Shader& shader);
+
+
 	void SetTexture(uint32_t binding, TextureHandle* handle);
 	void SetTexture(uint32_t binding, const TextureHandle* handle);
 	void SetTexture(uint32_t binding, Texture& texture);
@@ -31,9 +37,7 @@ public:
 	void SetRenderTarget(const RenderTarget** renderTarget, size_t count);
 	void SetRenderTarget(const std::vector<const RenderTarget*>& value);
 
-	void SetShader(ShaderHandle* handle);
-	void SetShader(const ShaderHandle* handle);
-	void SetShader(Shader& shader);
+
 	void SetInputLayout(const InputLayout& value);
 	void SetInputLayout(const std::vector<InputLayout>& value);
 	
@@ -124,6 +128,8 @@ private:
 	void destroyAPI();
 	void resize(uint32_t width, uint32_t height);
 	void present();
+
+
 
 	glm::u32vec2 m_frameSize = { 0, 0 };
 };

@@ -108,6 +108,38 @@ EGLConfig gEglConfig;
 //=============================================================================
 RenderContext gContext{};
 //=============================================================================
+void RenderSystem::SetTopology(Topology topology)
+{
+	static const std::unordered_map<Topology, GLenum> TopologyMap = {
+		{ Topology::PointList, GL_POINTS },
+		{ Topology::LineList, GL_LINES },
+		{ Topology::LineStrip, GL_LINE_STRIP },
+		{ Topology::TriangleList, GL_TRIANGLES },
+		{ Topology::TriangleStrip, GL_TRIANGLE_STRIP }
+	};
+
+	gContext.topology = TopologyMap.at(topology);
+}
+//=============================================================================
+void RenderSystem::SetViewport(std::optional<Viewport> viewport)
+{
+	gContext.viewport = viewport;
+	gContext.viewport_dirty = true;
+}
+//=============================================================================
+void RenderSystem::SetScissor(std::optional<Scissor> scissor)
+{
+	gContext.scissor = scissor;
+	gContext.scissor_dirty = true;
+}
+//=============================================================================
+
+
+
+
+
+
+
 bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 #if PLATFORM_WINDOWS
@@ -247,33 +279,9 @@ void RenderSystem::present()
 #elif PLATFORM_EMSCRIPTEN
 	eglSwapBuffers(gEglDisplay, gEglSurface);
 #endif
-	gContext.execute_after_present.flush();
 }
 //=============================================================================
-void RenderSystem::SetTopology(Topology topology)
-{
-	static const std::unordered_map<Topology, GLenum> TopologyMap = {
-	{ Topology::PointList, GL_POINTS },
-	{ Topology::LineList, GL_LINES },
-	{ Topology::LineStrip, GL_LINE_STRIP },
-	{ Topology::TriangleList, GL_TRIANGLES },
-	{ Topology::TriangleStrip, GL_TRIANGLE_STRIP }
-	};
 
-	gContext.topology = TopologyMap.at(topology);
-}
-//=============================================================================
-void RenderSystem::SetViewport(std::optional<Viewport> viewport)
-{
-	gContext.viewport = viewport;
-	gContext.viewport_dirty = true;
-}
-//=============================================================================
-void RenderSystem::SetScissor(std::optional<Scissor> scissor)
-{
-	gContext.scissor = scissor;
-	gContext.scissor_dirty = true;
-}
 //=============================================================================
 void RenderSystem::SetTexture(uint32_t binding, TextureHandle* handle)
 {

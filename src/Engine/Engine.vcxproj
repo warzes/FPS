@@ -107,7 +107,7 @@
     <ClInclude Include="ContextOpenGL.h" />
     <ClInclude Include="ContextVK.h" />
     <ClInclude Include="EngineApp.h" />
-    <ClInclude Include="GAPISystem.h" />
+    <ClInclude Include="RHISystem.h" />
     <ClInclude Include="HashCombine.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="InputStructs.h" />
@@ -162,10 +162,10 @@
     <ClCompile Include="ContextOpenGL.cpp" />
     <ClCompile Include="ContextVK.cpp" />
     <ClCompile Include="EngineApp.cpp" />
-    <ClCompile Include="GAPISystemD3D11.cpp" />
-    <ClCompile Include="GAPISystemD3D12.cpp" />
-    <ClCompile Include="GAPISystemGL.cpp" />
-    <ClCompile Include="GAPISystemVK.cpp" />
+    <ClCompile Include="RHISystemD3D11.cpp" />
+    <ClCompile Include="RHISystemD3D12.cpp" />
+    <ClCompile Include="RHISystemGL.cpp" />
+    <ClCompile Include="RHISystemVK.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="InputSystemWin32.cpp" />
     <ClCompile Include="KeyboardWin32.cpp" />

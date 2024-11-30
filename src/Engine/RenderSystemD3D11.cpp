@@ -15,6 +15,54 @@
 //=============================================================================
 RenderContext gContext{};
 //=============================================================================
+void RenderSystem::SetTopology(Topology topology)
+{
+	const static std::unordered_map<Topology, D3D11_PRIMITIVE_TOPOLOGY> TopologyMap = {
+		{ Topology::PointList, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST },
+		{ Topology::LineList, D3D11_PRIMITIVE_TOPOLOGY_LINELIST },
+		{ Topology::LineStrip, D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP },
+		{ Topology::TriangleList, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST },
+		{ Topology::TriangleStrip, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP }
+	};
+
+	gContext.context->IASetPrimitiveTopology(TopologyMap.at(topology));
+}
+//=============================================================================
+void RenderSystem::SetViewport(std::optional<Viewport> viewport)
+{
+	gContext.viewport = viewport;
+	gContext.viewport_dirty = true;
+}
+//=============================================================================
+void RenderSystem::SetScissor(std::optional<Scissor> scissor)
+{
+	if (scissor.has_value())
+	{
+		auto& value = scissor.value();
+		D3D11_RECT rect =
+		{
+			.left   = static_cast<LONG>(value.position.x),
+			.top    = static_cast<LONG>(value.position.y),
+			.right  = static_cast<LONG>(value.position.x + value.size.x),
+			.bottom = static_cast<LONG>(value.position.y + value.size.y)
+		};
+		gContext.context->RSSetScissorRects(1, &rect);
+	}
+
+	gContext.rasterizer_state.scissorEnabled = scissor.has_value();
+	gContext.rasterizer_state_dirty = true;
+}
+//=============================================================================
+
+
+
+
+
+
+
+
+
+//=============================================================================
 bool RenderSystem::createAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 	gContext.vsync = createInfo.vsync;
@@ -120,43 +168,6 @@ void RenderSystem::present()
 		Fatal("Present() failed");
 		return;
 	}
-}
-//=============================================================================
-void RenderSystem::SetTopology(Topology topology)
-{
-	const static std::unordered_map<Topology, D3D11_PRIMITIVE_TOPOLOGY> TopologyMap = {
-	{ Topology::PointList, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST },
-	{ Topology::LineList, D3D11_PRIMITIVE_TOPOLOGY_LINELIST },
-	{ Topology::LineStrip, D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP },
-	{ Topology::TriangleList, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST },
-	{ Topology::TriangleStrip, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP }
-	};
-
-	gContext.context->IASetPrimitiveTopology(TopologyMap.at(topology));
-}
-//=============================================================================
-void RenderSystem::SetViewport(std::optional<Viewport> viewport)
-{
-	gContext.viewport = viewport;
-	gContext.viewport_dirty = true;
-}
-//=============================================================================
-void RenderSystem::SetScissor(std::optional<Scissor> scissor)
-{
-	if (scissor.has_value())
-	{
-		auto value = scissor.value();
-
-		D3D11_RECT rect;
-		rect.left = static_cast<LONG>(value.position.x);
-		rect.top = static_cast<LONG>(value.position.y);
-		rect.right = static_cast<LONG>(value.position.x + value.size.x);
-		rect.bottom = static_cast<LONG>(value.position.y + value.size.y);
-		gContext.context->RSSetScissorRects(1, &rect);
-	}
-
-	gContext.rasterizer_state.scissorEnabled = scissor.has_value();
-	gContext.rasterizer_state_dirty = true;
 }
 //=============================================================================
 void RenderSystem::SetTexture(uint32_t binding, TextureHandle* handle)

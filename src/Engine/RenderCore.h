@@ -22,9 +22,9 @@ enum class PixelFormat
 
 enum class CullMode
 {
-	None,   // No culling
-	Front,  // Cull front-facing primitives
-	Back,   // Cull back-facing primitives
+	None,  // No culling
+	Front, // Cull front-facing primitives
+	Back,  // Cull back-facing primitives
 };
 
 enum class FrontFace
@@ -47,14 +47,14 @@ enum class ComparisonFunc
 
 enum class StencilOp
 {
-	Keep, // Does not update the stencil buffer entry.
-	Zero, // Sets the stencil buffer entry to 0.
-	Replace, // Replaces the stencil buffer entry with a reference value.
-	Increment, // Increments the stencil buffer entry, wrapping to 0 if the new value exceeds the maximum value.
-	Decrement, // Decrements the stencil buffer entry, wrapping to the maximum value if the new value is less than 0.
+	Keep,                // Does not update the stencil buffer entry.
+	Zero,                // Sets the stencil buffer entry to 0.
+	Replace,             // Replaces the stencil buffer entry with a reference value.
+	Increment,           // Increments the stencil buffer entry, wrapping to 0 if the new value exceeds the maximum value.
+	Decrement,           // Decrements the stencil buffer entry, wrapping to the maximum value if the new value is less than 0.
 	IncrementSaturation, // Increments the stencil buffer entry, clamping to the maximum value.
 	DecrementSaturation, // Decrements the stencil buffer entry, clamping to 0.
-	Invert // Inverts the bits in the stencil buffer entry.
+	Invert               // Inverts the bits in the stencil buffer entry.
 };
 
 enum class Blend
@@ -76,11 +76,11 @@ enum class Blend
 
 enum class BlendFunction
 {
-	Add, // The function will adds destination to the source. (srcColor * srcBlend) + (destColor * destBlend)	
-	Subtract, // The function will subtracts destination from source. (srcColor * srcBlend) - (destColor * destBlend)
+	Add,             // The function will adds destination to the source. (srcColor * srcBlend) + (destColor * destBlend)	
+	Subtract,        // The function will subtracts destination from source. (srcColor * srcBlend) - (destColor * destBlend)
 	ReverseSubtract, // The function will subtracts source from destination. (destColor * destBlend) - (srcColor * srcBlend) 
-	Min, // The function will extracts minimum of the source and destination. min((srcColor * srcBlend),(destColor * destBlend))
-	Max // The function will extracts maximum of the source and destination. max((srcColor * srcBlend),(destColor * destBlend))
+	Min,             // The function will extracts minimum of the source and destination. min((srcColor * srcBlend),(destColor * destBlend))
+	Max              // The function will extracts maximum of the source and destination. max((srcColor * srcBlend),(destColor * destBlend))
 };
 
 enum class Topology
@@ -130,7 +130,7 @@ enum class Sampler
 
 enum class TextureAddress
 {
-	Wrap, // Texels outside range will form the tile at every integer junction.		
+	Wrap,  // Texels outside range will form the tile at every integer junction.		
 	Clamp, // Texels outside range will be set to color of 0.0 or 1.0 texel.
 	MirrorWrap
 };
@@ -166,15 +166,15 @@ struct DepthMode final
 
 struct StencilMode final
 {
-	uint8_t readMask = 255;
-	uint8_t writeMask = 255;
+	uint8_t        readMask = 255;
+	uint8_t        writeMask = 255;
 
-	StencilOp depthFailOp = StencilOp::Keep;
-	StencilOp failOp = StencilOp::Keep;
+	StencilOp      depthFailOp = StencilOp::Keep;
+	StencilOp      failOp = StencilOp::Keep;
 	ComparisonFunc func = ComparisonFunc::Always;
-	StencilOp passOp = StencilOp::Keep;
+	StencilOp      passOp = StencilOp::Keep;
 
-	uint8_t reference = 1;
+	uint8_t        reference = 1;
 
 	bool operator==(const StencilMode&) const = default;
 };
@@ -201,19 +201,18 @@ struct ColorMask final
 
 struct BlendMode final
 {
-	BlendMode(Blend color_src, Blend color_dst, Blend alpha_src, Blend alpha_dst) 
-		: colorSrc(color_src), colorDst(color_dst), alphaSrc(alpha_src), alphaDst(alpha_dst) {}
+	BlendMode(Blend color_src, Blend color_dst, Blend alpha_src, Blend alpha_dst)  : colorSrc(color_src), colorDst(color_dst), alphaSrc(alpha_src), alphaDst(alpha_dst) {}
 	BlendMode(Blend src, Blend dst) : BlendMode(src, dst, src, dst) {}
 
 	BlendFunction colorFunc = BlendFunction::Add;
-	Blend colorSrc;
-	Blend colorDst;
+	Blend         colorSrc;
+	Blend         colorDst;
 
 	BlendFunction alphaFunc = BlendFunction::Add;
-	Blend alphaSrc;
-	Blend alphaDst;
+	Blend         alphaSrc;
+	Blend         alphaDst;
 
-	ColorMask colorMask;
+	ColorMask     colorMask;
 
 	bool operator==(const BlendMode&) const = default;
 };
@@ -301,44 +300,12 @@ SE_MAKE_HASHABLE(DepthBias,
 
 SE_MAKE_HASHABLE(std::vector<InputLayout>, t);
 
-
 TopologyKind GetTopologyKind(Topology topology);
-uint32_t GetFormatChannelsCount(PixelFormat format);
-uint32_t GetFormatChannelSize(PixelFormat format);
-uint32_t GetMipCount(uint32_t width, uint32_t height);
-uint32_t GetMipWidth(uint32_t base_width, uint32_t mip_level);
-uint32_t GetMipHeight(uint32_t base_height, uint32_t mip_level);
-
-class ExecuteList
-{
-public:
-	using Func = std::function<void()>;
-
-public:
-	~ExecuteList()
-	{
-		flush();
-	}
-
-public:
-	void add(Func func)
-	{
-		mFuncs.push_back(func);
-	}
-
-	void flush()
-	{
-		for (auto func : mFuncs)
-		{
-			func();
-		}
-
-		mFuncs.clear();
-	}
-
-private:
-	std::list<Func> mFuncs;
-};
+uint32_t     GetFormatChannelsCount(PixelFormat format);
+uint32_t     GetFormatChannelSize(PixelFormat format);
+uint32_t     GetMipCount(uint32_t width, uint32_t height);
+uint32_t     GetMipWidth(uint32_t base_width, uint32_t mip_level);
+uint32_t     GetMipHeight(uint32_t base_height, uint32_t mip_level);
 
 template<typename T>
 inline T AlignUp(T size, size_t alignment) noexcept

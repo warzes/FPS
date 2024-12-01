@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "RenderSystem.h"
+#include "RHIBackend.h"
 //=============================================================================
 RenderSystem* gRenderSystem{ nullptr };
 std::optional<glm::u32vec2> gRenderTargetSize;
@@ -76,9 +77,9 @@ void RenderSystem::SetRenderTarget(const RenderTarget& value)
 	SetRenderTarget({ &value });
 }
 //=============================================================================
-void RenderSystem::SetShader(Shader& shader)
+void RenderSystem::SetShader(const Shader& shader)
 {
-	SetShader((ShaderHandle*)shader);
+	RHIBackend::SetShader(const_cast<Shader&>(shader));
 }
 //=============================================================================
 void RenderSystem::SetInputLayout(const InputLayout& value)

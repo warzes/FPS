@@ -12,9 +12,6 @@ namespace RHISystem
 	RenderTargetHandle* CreateRenderTarget(uint32_t width, uint32_t height, TextureHandle* texture);
 	void DestroyRenderTarget(RenderTargetHandle* handle);
 
-	ShaderHandle* CreateShader(const std::string& vertex_code, const std::string& fragment_code, const std::vector<std::string>& defines);
-	void DestroyShader(ShaderHandle* handle);
-
 	VertexBufferHandle* CreateVertexBuffer(size_t size, size_t stride);
 	void DestroyVertexBuffer(VertexBufferHandle* handle);
 	void WriteVertexBufferMemory(VertexBufferHandle* handle, const void* memory, size_t size, size_t stride);

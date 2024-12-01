@@ -143,9 +143,6 @@
     <ClCompile Include="MouseWin32.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="RHISystemD3D11.cpp">
-      <Filter>RHI\Direct3D11</Filter>
-    </ClCompile>
     <ClCompile Include="RHISystemD3D12.cpp">
       <Filter>RHI\Direct3D12</Filter>
     </ClCompile>
@@ -166,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="RenderUtils.cpp">
       <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RHIBackendD3D11.cpp">
+      <Filter>RHI\Direct3D11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -334,6 +334,9 @@
     </ClInclude>
     <ClInclude Include="RenderUtils.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RHIBackend.h">
+      <Filter>RHI\Private</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

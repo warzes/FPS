@@ -962,7 +962,7 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 			[&](const commands::SetDepthBias& cmd) { gRenderSystem->SetDepthBias(cmd.depth_bias); },
 			[&](const commands::SetDepthMode& cmd) { gRenderSystem->SetDepthMode(cmd.depth_mode); },
 			[&](const commands::SetStencilMode& cmd) { gRenderSystem->SetStencilMode(cmd.stencil_mode); },
-			[&](const commands::SetShader& cmd) { gRenderSystem->SetShader(cmd.shader->Get()); },
+			[&](const commands::SetShader& cmd) { gRenderSystem->SetShader(*cmd.shader); },
 			[&](const commands::SetVertexBuffer& cmd) { gRenderSystem->SetVertexBuffer(*cmd.buffer); },
 			[&](const commands::SetIndexBuffer& cmd) { gRenderSystem->SetIndexBuffer(cmd.buffer->Get()); },
 			[&](const commands::SetUniformBuffer& cmd) { gRenderSystem->SetUniformBuffer(cmd.binding, cmd.memory, cmd.size); },

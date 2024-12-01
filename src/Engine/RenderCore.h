@@ -318,3 +318,32 @@ inline T AlignUp(T size, size_t alignment) noexcept
 	}
 	return size;
 }
+
+using ShaderHandle = struct ShaderHandle;
+using TextureHandle = struct TextureHandle;
+using RenderTargetHandle = struct RenderTargetHandle;
+using VertexBufferHandle = struct VertexBufferHandle;
+using IndexBufferHandle = struct IndexBufferHandle;
+using UniformBufferHandle = struct UniformBufferHandle;
+#if RENDER_VULKAN
+using RaytracingShaderHandle = struct RaytracingShaderHandle;
+using StorageBufferHandle = struct StorageBufferHandle;
+using BottomLevelAccelerationStructureHandle = struct BottomLevelAccelerationStructureHandle;
+using TopLevelAccelerationStructureHandle = struct TopLevelAccelerationStructureHandle;
+#endif // RENDER_VULKAN
+
+class Noncopyable
+{
+protected:
+	Noncopyable() = default;
+
+private:
+	Noncopyable(const Noncopyable&) = delete;
+	Noncopyable& operator=(const Noncopyable&) = delete;
+};
+
+struct RenderSystemCreateInfo final
+{
+	std::unordered_set<RenderFeature> features{};
+	bool vsync{ false };
+};

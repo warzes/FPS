@@ -2,29 +2,6 @@
 
 #include "RenderCore.h"
 
-using TextureHandle = struct TextureHandle;
-using RenderTargetHandle = struct RenderTargetHandle;
-using ShaderHandle = struct ShaderHandle;
-using VertexBufferHandle = struct VertexBufferHandle;
-using IndexBufferHandle = struct IndexBufferHandle;
-using UniformBufferHandle = struct UniformBufferHandle;
-#if RENDER_VULKAN
-using RaytracingShaderHandle = struct RaytracingShaderHandle;
-using StorageBufferHandle = struct StorageBufferHandle;
-using BottomLevelAccelerationStructureHandle = struct BottomLevelAccelerationStructureHandle;
-using TopLevelAccelerationStructureHandle = struct TopLevelAccelerationStructureHandle;
-#endif // RENDER_VULKAN
-
-class Noncopyable
-{
-protected:
-	Noncopyable() = default;
-
-private:
-	Noncopyable(const Noncopyable&) = delete;
-	Noncopyable& operator=(const Noncopyable&) = delete;
-};
-
 class Texture : private Noncopyable
 {
 public:
@@ -65,7 +42,6 @@ public:
 	RenderTarget& operator=(RenderTarget&& other) noexcept;
 
 	operator RenderTargetHandle*() { return m_renderTargetHandle; }
-
 private:
 	RenderTargetHandle* m_renderTargetHandle = nullptr;
 };
@@ -78,8 +54,7 @@ public:
 	~Shader();
 
 	operator ShaderHandle*() { return m_shaderHandle; }
-	ShaderHandle* Get() { return m_shaderHandle; }
-	const ShaderHandle* Get() const { return m_shaderHandle; }
+	operator ShaderHandle*() const { return m_shaderHandle; }
 
 	Shader& operator=(Shader&& other) noexcept;
 

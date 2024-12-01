@@ -107,6 +107,7 @@
     <ClInclude Include="ContextOpenGL.h" />
     <ClInclude Include="ContextVK.h" />
     <ClInclude Include="EngineApp.h" />
+    <ClInclude Include="RHIBackend.h" />
     <ClInclude Include="RHISystem.h" />
     <ClInclude Include="HashCombine.h" />
     <ClInclude Include="Image.h" />
@@ -162,7 +163,7 @@
     <ClCompile Include="ContextOpenGL.cpp" />
     <ClCompile Include="ContextVK.cpp" />
     <ClCompile Include="EngineApp.cpp" />
-    <ClCompile Include="RHISystemD3D11.cpp" />
+    <ClCompile Include="RHIBackendD3D11.cpp" />
     <ClCompile Include="RHISystemD3D12.cpp" />
     <ClCompile Include="RHISystemGL.cpp" />
     <ClCompile Include="RHISystemVK.cpp" />

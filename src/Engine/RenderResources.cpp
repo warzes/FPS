@@ -2,6 +2,7 @@
 #include "RenderResources.h"
 #include "RenderSystem.h"
 #include "RHISystem.h"
+#include "RHIBackend.h"
 //=============================================================================
 Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
 	: m_width(width)
@@ -104,29 +105,26 @@ RenderTarget& RenderTarget::operator=(RenderTarget&& other) noexcept
 //=============================================================================
 Shader::Shader(const std::string& vertex_code, const std::string& fragment_code, const std::vector<std::string>& defines)
 {
-	m_shaderHandle = RHISystem::CreateShader(vertex_code, fragment_code, defines);
+	m_shaderHandle = RHIBackend::CreateShader(vertex_code, fragment_code, defines);
 }
 //=============================================================================
 Shader::Shader(Shader&& other) noexcept
 {
-	if (m_shaderHandle)
-		RHISystem::DestroyShader(m_shaderHandle);
+	RHIBackend::DestroyShader(m_shaderHandle);
 
 	m_shaderHandle = std::exchange(other.m_shaderHandle, nullptr);
 }
 //=============================================================================
 Shader::~Shader()
 {
-	RHISystem::DestroyShader(m_shaderHandle);
+	RHIBackend::DestroyShader(m_shaderHandle);
 }
 //=============================================================================
 Shader& Shader::operator=(Shader&& other) noexcept
 {
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
-	if (m_shaderHandle)
-		RHISystem::DestroyShader(m_shaderHandle);
+	RHIBackend::DestroyShader(m_shaderHandle);
 
 	m_shaderHandle = std::exchange(other.m_shaderHandle, nullptr);
 	return *this;

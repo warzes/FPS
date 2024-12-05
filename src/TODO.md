@@ -1,4 +1,5 @@
 ﻿VROID model (есть в WickedEngine)
+https://binebirk.itch.io/build-a-house
 
 ===============================================================================
 RHI System

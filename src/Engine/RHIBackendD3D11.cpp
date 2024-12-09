@@ -49,7 +49,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	swapChainDesc.Windowed = TRUE;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	UINT flags = D3D11_CREATE_DEVICE_DEBUG;
 #else
 	UINT flags = 0;
@@ -61,7 +61,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 		return false;
 	}
 
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	ComPtr<ID3D11InfoQueue> infoQueue;
 	if (FAILED(gContext.device->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf()))))
 	{

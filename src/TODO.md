@@ -1,4 +1,7 @@
-﻿VROID model (есть в WickedEngine)
+﻿https://github.com/jrouwe/JoltPhysics.js/
+либо Riemann
+
+VROID model (есть в WickedEngine)
 https://binebirk.itch.io/build-a-house
 
 ===============================================================================

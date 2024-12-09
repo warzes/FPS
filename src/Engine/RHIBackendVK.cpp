@@ -10,7 +10,7 @@
 #include "Log.h"
 #include "RenderResources.h"
 //=============================================================================
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	VkDebugUtilsMessageTypeFlagsEXT messageTypes, VkDebugUtilsMessengerCallbackDataEXT const* pCallbackData,
 	void* /*pUserData*/)
@@ -92,12 +92,12 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 #if PLATFORM_WINDOWS
 		VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #endif
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 		VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
 	};
 
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	auto layers = {
 		"VK_LAYER_KHRONOS_validation"
 	};
@@ -116,12 +116,12 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 
 	auto instance_create_info = vk::InstanceCreateInfo()
 		.setPEnabledExtensionNames(extensions)
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 		.setPEnabledLayerNames(layers)
 #endif
 		.setPApplicationInfo(&application_info);
 
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	auto debug_utils_messenger_create_info = vk::DebugUtilsMessengerCreateInfoEXT()
 		.setMessageSeverity(
 			vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
@@ -148,14 +148,14 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 
 	auto instance_create_info_chain = vk::StructureChain<
 		vk::InstanceCreateInfo
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 		,
 		vk::DebugUtilsMessengerCreateInfoEXT,
 		vk::ValidationFeaturesEXT
 #endif
 	>(
 		instance_create_info
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 		,
 		debug_utils_messenger_create_info,
 		validation_features
@@ -164,7 +164,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 
 	gContext.instance = gContext.context.createInstance(instance_create_info_chain.get<vk::InstanceCreateInfo>());
 
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	gContext.debug_utils_messenger = gContext.instance.createDebugUtilsMessengerEXT(debug_utils_messenger_create_info);
 #endif
 

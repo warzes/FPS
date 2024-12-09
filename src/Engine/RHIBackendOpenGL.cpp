@@ -246,7 +246,7 @@ void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 //=============================================================================
 void RHIBackend::Present()
 {
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	FlushErrors();
 #endif
 #if PLATFORM_WINDOWS
@@ -656,7 +656,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (GLenum)i, GL_TEXTURE_2D, render_targets.at(i)->GetTexture()->GetGLTexture(), 0);
 	}
 
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
 #endif

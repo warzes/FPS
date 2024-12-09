@@ -18,7 +18,7 @@ RenderContext gContext{};
 //=============================================================================
 bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	ComPtr<ID3D12Debug6> debug;
 	D3D12GetDebugInterface(IID_PPV_ARGS(debug.GetAddressOf()));
 	debug->EnableDebugLayer();
@@ -37,7 +37,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 
 	D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(gContext.device.GetAddressOf()));
 
-#if SE_GFX_VALIDATION_ENABLED
+#if RHI_VALIDATION_ENABLED
 	ComPtr<ID3D12InfoQueue> info_queue;
 	gContext.device.As(&info_queue);
 	info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);

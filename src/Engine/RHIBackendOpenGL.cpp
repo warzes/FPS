@@ -246,7 +246,9 @@ void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 //=============================================================================
 void RHIBackend::Present()
 {
+#if SE_GFX_VALIDATION_ENABLED
 	FlushErrors();
+#endif
 #if PLATFORM_WINDOWS
 	SwapBuffers(gHDC);
 #elif PLATFORM_EMSCRIPTEN
@@ -256,12 +258,17 @@ void RHIBackend::Present()
 //=============================================================================
 void RHIBackend::Clear(const std::optional<glm::vec4>& color, const std::optional<float>& depth, const std::optional<uint8_t>& stencil)
 {
-	auto scissor_was_enabled = glIsEnabled(GL_SCISSOR_TEST);
+	EnsureScissor();
+	EnsureDepthMode();
 
-	if (scissor_was_enabled)
-	{
+	auto scissor_enabled = gContext.scissor.has_value();
+	auto depth_mask_disabled = gContext.depth_mode && !gContext.depth_mode->writeMask;
+
+	if (scissor_enabled)
 		glDisable(GL_SCISSOR_TEST);
-	}
+
+	if (depth_mask_disabled)
+		glDepthMask(GL_TRUE);
 
 	GLbitfield flags = 0;
 
@@ -284,25 +291,13 @@ void RHIBackend::Clear(const std::optional<glm::vec4>& color, const std::optiona
 		glClearStencil(stencil.value());
 	}
 
-	GLboolean depth_mask;
-	glGetBooleanv(GL_DEPTH_WRITEMASK, &depth_mask);
-
-	if (!depth_mask)
-	{
-		glDepthMask(true);
-	}
-
 	glClear(flags);
 
-	if (!depth_mask)
-	{
+	if (depth_mask_disabled)
 		glDepthMask(GL_FALSE);
-	}
 
-	if (scissor_was_enabled)
-	{
+	if (scissor_enabled)
 		glEnable(GL_SCISSOR_TEST);
-	}
 }
 //=============================================================================
 void RHIBackend::Draw(uint32_t vertexCount, uint32_t vertexOffset, uint32_t instanceCount)
@@ -536,16 +531,8 @@ void RHIBackend::SetBlendMode(const std::optional<BlendMode>& blend_mode)
 //=============================================================================
 void RHIBackend::SetDepthMode(const std::optional<DepthMode>& depth_mode)
 {
-	if (!depth_mode.has_value())
-	{
-		glDisable(GL_DEPTH_TEST);
-		glDepthMask(true);
-		return;
-	}
-
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(ComparisonFuncMap.at(depth_mode.value().func));
-	glDepthMask(depth_mode.value().writeMask);
+	gContext.depth_mode = depth_mode;
+	gContext.depth_mode_dirty = true;
 }
 //=============================================================================
 void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
@@ -669,8 +656,10 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (GLenum)i, GL_TEXTURE_2D, render_targets.at(i)->GetTexture()->GetGLTexture(), 0);
 	}
 
+#if SE_GFX_VALIDATION_ENABLED
 	auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
+#endif
 
 	glDrawBuffers((GLsizei)render_targets.size(), gContext.draw_buffers.data());
 

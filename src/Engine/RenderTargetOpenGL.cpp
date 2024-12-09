@@ -18,8 +18,10 @@ RenderTargetGL::RenderTargetGL(TextureGL* texture) : m_texture(texture)
 	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthStencilRenderbuffer);
 
+#if SE_GFX_VALIDATION_ENABLED
 	auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	assert(status == GL_FRAMEBUFFER_COMPLETE);
+#endif
 
 	glBindFramebuffer(GL_FRAMEBUFFER, last_fbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, last_rbo);

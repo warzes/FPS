@@ -51,6 +51,51 @@ PixelFormat RenderContext::GetBackbufferFormat()
 	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetFormat() : PixelFormat::RGBA8UNorm;
 }
 //=============================================================================
+void EnsureScissor()
+{
+	if (!gContext.scissor_dirty)
+		return;
+
+	gContext.scissor_dirty = false;
+
+	const auto& scissor = gContext.scissor;
+
+	if (!scissor.has_value())
+	{
+		glDisable(GL_SCISSOR_TEST);
+		return;
+	}
+
+	glEnable(GL_SCISSOR_TEST);
+
+	auto x = (GLint)glm::round(scissor->position.x);
+	auto y = (GLint)glm::round(gContext.height - scissor->position.y - scissor->size.y); // TODO: need different calculations when render target
+	auto width = (GLint)glm::round(scissor->size.x);
+	auto height = (GLint)glm::round(scissor->size.y);
+	glScissor(x, y, width, height);
+}
+//=============================================================================
+void EnsureDepthMode()
+{
+	if (!gContext.depth_mode_dirty)
+		return;
+
+	gContext.depth_mode_dirty = false;
+
+	const auto& depth_mode = gContext.depth_mode;
+
+	if (!depth_mode.has_value())
+	{
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		return;
+	}
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(ComparisonFuncMap.at(depth_mode->func));
+	glDepthMask(depth_mode->writeMask);
+}
+//=============================================================================
 void EnsureGraphicsState(bool draw_indexed)
 {
 	if (gContext.shader_dirty)
@@ -201,26 +246,8 @@ void EnsureGraphicsState(bool draw_indexed)
 #endif
 	}
 
-	if (gContext.scissor_dirty)
-	{
-		gContext.scissor_dirty = false;
-
-		if (gContext.scissor.has_value())
-		{
-			auto value = gContext.scissor.value();
-
-			glEnable(GL_SCISSOR_TEST);
-			glScissor(
-				(GLint)glm::round(value.position.x),
-				(GLint)glm::round(gContext.height - value.position.y - value.size.y), // TODO: need different calculations when render target
-				(GLint)glm::round(value.size.x),
-				(GLint)glm::round(value.size.y));
-		}
-		else
-		{
-			glDisable(GL_SCISSOR_TEST);
-		}
-	}
+	EnsureScissor();
+	EnsureDepthMode();
 }
 //=============================================================================
 #endif // RENDER_OPENGL

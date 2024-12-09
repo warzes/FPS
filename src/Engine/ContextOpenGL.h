@@ -47,6 +47,7 @@ public:
 	std::optional<Scissor> scissor;
 	FrontFace front_face = FrontFace::Clockwise;
 	std::vector<InputLayout> input_layouts;
+	std::optional<DepthMode> depth_mode;
 
 	bool shader_dirty = false;
 	bool vertex_array_dirty = false;
@@ -55,6 +56,7 @@ public:
 	bool scissor_dirty = true;
 	bool sampler_state_dirty = true;
 	bool front_face_dirty = true;
+	bool depth_mode_dirty = true;
 
 	uint32_t GetBackbufferWidth();
 	uint32_t GetBackbufferHeight();
@@ -63,6 +65,8 @@ public:
 
 extern RenderContext gContext;
 
+void EnsureScissor();
+void EnsureDepthMode();
 void EnsureGraphicsState(bool draw_indexed);
 
 #endif // RENDER_OPENGL

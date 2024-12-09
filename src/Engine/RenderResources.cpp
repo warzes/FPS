@@ -271,3 +271,126 @@ void UniformBuffer::Write(const void* memory, size_t size)
 	RHIBackend::WriteUniformBufferMemory(m_uniformBufferHandle, memory, size);
 }
 //=============================================================================
+#if RENDER_VULKAN
+RaytracingShader::RaytracingShader(const std::string& raygen_code, const std::vector<std::string>& miss_code,
+	const std::string& closesthit_code, const std::vector<std::string>& defines)
+{
+	mRaytracingShaderHandle = RHIBackend::CreateRaytracingShader(raygen_code, miss_code, closesthit_code, defines);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+RaytracingShader::~RaytracingShader()
+{
+	RHIBackend::DestroyRaytracingShader(mRaytracingShaderHandle);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+StorageBuffer::StorageBuffer(size_t size) : Buffer(size)
+{
+	mStorageBufferHandle = RHIBackend::CreateStorageBuffer(size);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+StorageBuffer::StorageBuffer(const void* memory, size_t size) : StorageBuffer(size)
+{
+	Write(memory, size);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+
+StorageBuffer::StorageBuffer(StorageBuffer&& other) noexcept : Buffer(std::move(other))
+{
+	mStorageBufferHandle = std::exchange(other.mStorageBufferHandle, nullptr);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+StorageBuffer::~StorageBuffer()
+{
+	if (mStorageBufferHandle)
+		RHIBackend::DestroyStorageBuffer(mStorageBufferHandle);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+StorageBuffer& StorageBuffer::operator=(StorageBuffer&& other) noexcept
+{
+	Buffer::operator=(std::move(other));
+
+	if (this == &other)
+		return *this;
+
+	if (mStorageBufferHandle)
+		RHIBackend::DestroyStorageBuffer(mStorageBufferHandle);
+
+	mStorageBufferHandle = std::exchange(other.mStorageBufferHandle, nullptr);
+	return *this;
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+void StorageBuffer::Write(const void* memory, size_t size)
+{
+	RHIBackend::WriteStorageBufferMemory(mStorageBufferHandle, memory, size);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+BottomLevelAccelerationStructure::BottomLevelAccelerationStructure(const void* vertex_memory, uint32_t vertex_count,
+	uint32_t vertex_offset, uint32_t vertex_stride, const void* index_memory, uint32_t index_count,
+	uint32_t index_offset, uint32_t index_stride, const glm::mat4& transform)
+{
+	auto vertex_memory_with_offset = (void*)((size_t)vertex_memory + vertex_offset);
+	auto index_memory_with_offset = (void*)((size_t)index_memory + index_offset);
+
+	mBottomLevelAccelerationStructureHandle = RHIBackend::CreateBottomLevelAccelerationStructure(vertex_memory_with_offset,
+		vertex_count, vertex_stride, index_memory_with_offset, index_count, index_stride, transform);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+BottomLevelAccelerationStructure::~BottomLevelAccelerationStructure()
+{
+	if (mBottomLevelAccelerationStructureHandle)
+		RHIBackend::DestroyBottomLevelAccelerationStructure(mBottomLevelAccelerationStructureHandle);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+TopLevelAccelerationStructure::TopLevelAccelerationStructure(const std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>& bottom_level_acceleration_structures)
+{
+	mTopLevelAccelerationStructureHandle = RHIBackend::CreateTopLevelAccelerationStructure(bottom_level_acceleration_structures);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+TopLevelAccelerationStructure::TopLevelAccelerationStructure(const std::vector<BottomLevelAccelerationStructureHandle*>& bottom_level_acceleration_structures) : TopLevelAccelerationStructure(CreateIndexedBlases(bottom_level_acceleration_structures))
+{
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+TopLevelAccelerationStructure::~TopLevelAccelerationStructure()
+{
+	if (mTopLevelAccelerationStructureHandle)
+		RHIBackend::DestroyTopLevelAccelerationStructure(mTopLevelAccelerationStructureHandle);
+}
+#endif // RENDER_VULKAN
+//=============================================================================
+#if RENDER_VULKAN
+std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>
+TopLevelAccelerationStructure::CreateIndexedBlases(const std::vector<BottomLevelAccelerationStructureHandle*>& blases)
+{
+	std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>> result;
+	for (auto blas : blases)
+	{
+		result.push_back({ (uint32_t)result.size(), blas });
+	}
+	return result;
+}
+#endif // RENDER_VULKAN
+//=============================================================================

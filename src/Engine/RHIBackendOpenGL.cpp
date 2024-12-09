@@ -357,83 +357,118 @@ void RHIBackend::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, T
 	auto binding = TextureGL::ScopedBind(dst_texture->GetGLTexture());
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, gContext.pixel_buffer);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, TextureInternalFormatMap.at(format), width, height, 0,
-		TextureFormatMap.at(format), PixelFormatTypeMap.at(format), NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, TextureInternalFormatMap.at(format), width, height, 0, TextureFormatMap.at(format), PixelFormatTypeMap.at(format), NULL);
 
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
 //=============================================================================
 ShaderHandle* RHIBackend::CreateShader(const std::string& vertexCode, const std::string& fragmentCode, const std::vector<std::string>& defines)
 {
+	auto shader = new ShaderGL(vertexCode, fragmentCode, defines);
+	return (ShaderHandle*)shader;
 }
 //=============================================================================
 void RHIBackend::DestroyShader(ShaderHandle* handle)
 {
+	auto shader = (ShaderGL*)handle;
+	delete shader;
 }
 //=============================================================================
 TextureHandle* RHIBackend::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
 {
+	auto texture = new TextureGL(width, height, format, mip_count);
+	return (TextureHandle*)texture;
 }
 //=============================================================================
 void RHIBackend::WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level, uint32_t offset_x, uint32_t offset_y)
 {
+	auto texture = (TextureGL*)handle;
+	texture->Write(width, height, format, memory, mip_level, offset_x, offset_y);
 }
 //=============================================================================
 void RHIBackend::GenerateMips(TextureHandle* handle)
 {
+	auto texture = (TextureGL*)handle;
+	texture->GenerateMips();
 }
 //=============================================================================
 void RHIBackend::DestroyTexture(TextureHandle* handle)
 {
-
+	auto texture = (TextureGL*)handle;
+	delete texture;
 }
 //=============================================================================
 RenderTargetHandle* RHIBackend::CreateRenderTarget(uint32_t width, uint32_t height, TextureHandle* texture_handle)
 {
+	auto texture = (TextureGL*)texture_handle;
+	auto render_target = new RenderTargetGL(texture);
+	return (RenderTargetHandle*)render_target;
 }
 //=============================================================================
 void RHIBackend::DestroyRenderTarget(RenderTargetHandle* handle)
 {
-
+	auto render_target = (RenderTargetGL*)handle;
+	delete render_target;
 }
 //=============================================================================
 VertexBufferHandle* RHIBackend::CreateVertexBuffer(size_t size, size_t stride)
 {
+	auto buffer = new VertexBufferGL(size, stride);
+	return (VertexBufferHandle*)buffer;
 }
 //=============================================================================
 void RHIBackend::DestroyVertexBuffer(VertexBufferHandle* handle)
 {
-
+	auto buffer = (VertexBufferGL*)handle;
+	delete buffer;
 }
 //=============================================================================
 void RHIBackend::WriteVertexBufferMemory(VertexBufferHandle* handle, const void* memory, size_t size, size_t stride)
 {
+	auto buffer = (VertexBufferGL*)handle;
+	buffer->Write(memory, size);
+	buffer->SetStride(stride);
 }
 //=============================================================================
 IndexBufferHandle* RHIBackend::CreateIndexBuffer(size_t size, size_t stride)
 {
+	auto buffer = new IndexBufferGL(size, stride);
+	return (IndexBufferHandle*)buffer;
 }
 //=============================================================================
 void RHIBackend::DestroyIndexBuffer(IndexBufferHandle* handle)
 {
+	auto buffer = (IndexBufferGL*)handle;
+
+	if (gContext.index_buffer == buffer)
+		gContext.index_buffer = nullptr;
+
+	delete buffer;
 }
 //=============================================================================
 void RHIBackend::WriteIndexBufferMemory(IndexBufferHandle* handle, const void* memory, size_t size, size_t stride)
 {
+	auto buffer = (IndexBufferGL*)handle;
+	buffer->Write(memory, size);
+	buffer->SetStride(stride);
 }
 //=============================================================================
 UniformBufferHandle* RHIBackend::CreateUniformBuffer(size_t size)
 {
+	auto buffer = new UniformBufferGL(size);
+	return (UniformBufferHandle*)buffer;
 }
 //=============================================================================
 void RHIBackend::DestroyUniformBuffer(UniformBufferHandle* handle)
 {
-
+	auto buffer = (UniformBufferGL*)handle;
+	delete buffer;
 }
 //=============================================================================
 void RHIBackend::WriteUniformBufferMemory(UniformBufferHandle* handle, const void* memory, size_t size)
 {
-
+	auto buffer = (UniformBufferGL*)handle;
+	buffer->Write(memory, size);
 }
 //=============================================================================
 void RHIBackend::SetTopology(Topology topology)
@@ -611,7 +646,12 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 {
 	if (count == 0)
 	{
-		SetRenderTarget(std::nullopt);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		gContext.render_targets.clear();
+
+		if (!gContext.viewport.has_value())
+			gContext.viewport_dirty = true;
+
 		return;
 	}
 	std::vector<RenderTargetGL*> render_targets;
@@ -626,8 +666,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 
 	for (size_t i = 0; i < render_targets.size(); i++)
 	{
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (GLenum)i, GL_TEXTURE_2D,
-			render_targets.at(i)->GetTexture()->GetGLTexture(), 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (GLenum)i, GL_TEXTURE_2D, render_targets.at(i)->GetTexture()->GetGLTexture(), 0);
 	}
 
 	auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);

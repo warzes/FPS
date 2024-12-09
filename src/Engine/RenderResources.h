@@ -178,6 +178,19 @@ private:
 };
 
 #if RENDER_VULKAN
+
+class RaytracingShader : private Noncopyable
+{
+public:
+	RaytracingShader(const std::string& raygen_code, const std::vector<std::string>& miss_code, const std::string& closesthit_code, const std::vector<std::string>& defines = {});
+	~RaytracingShader();
+
+	operator RaytracingShaderHandle*() { return mRaytracingShaderHandle; }
+
+private:
+	RaytracingShaderHandle* mRaytracingShaderHandle = nullptr;
+};
+
 class StorageBuffer : public Buffer
 {
 public:

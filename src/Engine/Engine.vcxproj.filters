@@ -92,9 +92,6 @@
     <ClCompile Include="RenderCoreVK.cpp">
       <Filter>RHI\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="RenderSystemVK.cpp">
-      <Filter>RHI\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="BufferVK.cpp">
       <Filter>RHI\Vulkan\Resources</Filter>
     </ClCompile>
@@ -134,12 +131,6 @@
     <ClCompile Include="MouseWin32.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="RHISystemVK.cpp">
-      <Filter>RHI\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="RHISystemGL.cpp">
-      <Filter>RHI\OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="RenderCore.cpp">
       <Filter>RHI\Core</Filter>
     </ClCompile>
@@ -160,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="RHIBackendOpenGL.cpp">
       <Filter>RHI\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="RHIBackendVK.cpp">
+      <Filter>RHI\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 #include "WindowStructs.h"
 #include "RenderResources.h"
 
+class RaytracingShader;
 
 class RenderSystem final
 {

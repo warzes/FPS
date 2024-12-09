@@ -9,8 +9,8 @@
 // RenderAPI
 #define RENDER_D3D11 0
 #define RENDER_D3D12 0
-#define RENDER_VULKAN 0
-#define RENDER_OPENGL 1
+#define RENDER_VULKAN 1
+#define RENDER_OPENGL 0
 #define RENDER_WEBGPU 0
 
 #if defined(__ANDROID__) || defined(__android__) || defined(ANDROID) || defined(__ANDROID_API__)
@@ -33,6 +33,6 @@
 #define __CONCAT__(a, b) a##b
 #define CONCAT(a, b) __CONCAT__(a, b)
 
-#if defined(_DEBUG) /*&& 0*/
+#if defined(_DEBUG) && 0
 #	define SE_GFX_VALIDATION_ENABLED 1
 #endif

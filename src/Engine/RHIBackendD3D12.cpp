@@ -35,7 +35,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	auto gpu_preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE;
 	dxgi_factory->EnumAdapterByGpuPreference(0, gpu_preference, IID_PPV_ARGS(&adapter));
 
-	D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS(gContext.device.GetAddressOf()));
+	D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(gContext.device.GetAddressOf()));
 
 #if SE_GFX_VALIDATION_ENABLED
 	ComPtr<ID3D12InfoQueue> info_queue;

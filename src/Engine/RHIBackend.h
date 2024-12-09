@@ -69,20 +69,20 @@ namespace RHIBackend
 #if RENDER_VULKAN
 	RaytracingShaderHandle* CreateRaytracingShader(const std::string& raygen_code,
 		const std::vector<std::string>& miss_code, const std::string& closesthit_code,
-		const std::vector<std::string>& defines) = 0;
-	void DestroyRaytracingShader(RaytracingShaderHandle* handle) = 0;
+		const std::vector<std::string>& defines);
+	void DestroyRaytracingShader(RaytracingShaderHandle* handle);
 
 	BottomLevelAccelerationStructureHandle* CreateBottomLevelAccelerationStructure(const void* vertex_memory,
 		uint32_t vertex_count, uint32_t vertex_stride, const void* index_memory, uint32_t index_count,
-		uint32_t index_stride, const glm::mat4& transform) = 0;
-	void DestroyBottomLevelAccelerationStructure(BottomLevelAccelerationStructureHandle* handle) = 0;
+		uint32_t index_stride, const glm::mat4& transform);
+	void DestroyBottomLevelAccelerationStructure(BottomLevelAccelerationStructureHandle* handle);
 
-	TopLevelAccelerationStructureHandle* CreateTopLevelAccelerationStructure(const std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>& bottom_level_acceleration_structures) = 0;
-	void DestroyTopLevelAccelerationStructure(TopLevelAccelerationStructureHandle* handle) = 0;
+	TopLevelAccelerationStructureHandle* CreateTopLevelAccelerationStructure(const std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>& bottom_level_acceleration_structures);
+	void DestroyTopLevelAccelerationStructure(TopLevelAccelerationStructureHandle* handle);
 
-	StorageBufferHandle* CreateStorageBuffer(size_t size) = 0;
-	void DestroyStorageBuffer(StorageBufferHandle* handle) = 0;
-	void WriteStorageBufferMemory(StorageBufferHandle* handle, const void* memory, size_t size) = 0;
+	StorageBufferHandle* CreateStorageBuffer(size_t size);
+	void DestroyStorageBuffer(StorageBufferHandle* handle);
+	void WriteStorageBufferMemory(StorageBufferHandle* handle, const void* memory, size_t size);
 
 	void SetStorageBuffer(uint32_t binding, StorageBufferHandle* handle);
 	void SetRaytracingShader(RaytracingShaderHandle* handle);

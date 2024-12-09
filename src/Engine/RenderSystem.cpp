@@ -9,6 +9,9 @@ std::optional<VertexBuffer> gVertexBuffer;
 std::optional<IndexBuffer> gIndexBuffer;
 std::unordered_map<uint32_t, UniformBuffer> gUniformBuffers;
 std::unordered_map<TransientRenderTargetDesc, std::unordered_set<std::shared_ptr<TransientRenderTarget>>> gTransientRenderTargets;
+#if RENDER_VULKAN
+std::unordered_map<uint32_t, StorageBuffer> gStorageBuffers;
+#endif
 //=============================================================================
 RenderSystem::~RenderSystem()
 {
@@ -274,10 +277,10 @@ void RenderSystem::SetStorageBuffer(uint32_t binding, const void* memory, size_t
 
 	auto& buffer = gStorageBuffers.at(binding);
 
-	if (buffer.getSize() < size)
+	if (buffer.GetSize() < size)
 		buffer = StorageBuffer(size);
 
-	buffer.write(memory, size);
+	buffer.Write(memory, size);
 
 	SetStorageBuffer(binding, buffer);
 }

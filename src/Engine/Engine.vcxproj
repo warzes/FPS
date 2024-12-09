@@ -108,7 +108,6 @@
     <ClInclude Include="ContextVK.h" />
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="RHIBackend.h" />
-    <ClInclude Include="RHISystem.h" />
     <ClInclude Include="HashCombine.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="InputStructs.h" />
@@ -185,7 +184,6 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="RenderResources.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="RenderSystemD3D11.cpp" />
     <ClCompile Include="RenderSystemD3D12.cpp" />
     <ClCompile Include="RenderSystemOpenGL.cpp" />
     <ClCompile Include="RenderSystemVK.cpp" />

@@ -32,3 +32,7 @@
 
 #define __CONCAT__(a, b) a##b
 #define CONCAT(a, b) __CONCAT__(a, b)
+
+#if defined(_DEBUG) /*&& 0*/
+#	define SE_GFX_VALIDATION_ENABLED 1
+#endif

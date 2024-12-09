@@ -8,6 +8,11 @@ class VertexBuffer;
 
 namespace RHIBackend
 {
+	bool CreateAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo);
+	void DestroyAPI();
+	void ResizeFrameBuffer(uint32_t width, uint32_t height);
+	void Present();
+
 	void Clear(const std::optional<glm::vec4>& color, const std::optional<float>& depth, const std::optional<uint8_t>& stencil);
 	void Draw(uint32_t vertex_count, uint32_t vertex_offset, uint32_t instance_count);
 	void DrawIndexed(uint32_t index_count, uint32_t index_offset, uint32_t instance_count);

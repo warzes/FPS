@@ -964,9 +964,9 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 			[&](const commands::SetStencilMode& cmd) { gRenderSystem->SetStencilMode(cmd.stencil_mode); },
 			[&](const commands::SetShader& cmd) { gRenderSystem->SetShader(*cmd.shader); },
 			[&](const commands::SetVertexBuffer& cmd) { gRenderSystem->SetVertexBuffer(*cmd.buffer); },
-			[&](const commands::SetIndexBuffer& cmd) { gRenderSystem->SetIndexBuffer(cmd.buffer->Get()); },
+			[&](const commands::SetIndexBuffer& cmd) { gRenderSystem->SetIndexBuffer(*cmd.buffer); },
 			[&](const commands::SetUniformBuffer& cmd) { gRenderSystem->SetUniformBuffer(cmd.binding, cmd.memory, cmd.size); },
-			[&](const commands::SetTexture& cmd) { gRenderSystem->SetTexture(cmd.binding, cmd.texture->Get()); },
+			[&](const commands::SetTexture& cmd) { gRenderSystem->SetTexture(cmd.binding, *cmd.texture); },
 			[&](const commands::Draw& cmd) { gRenderSystem->Draw(cmd.vertex_count, cmd.vertex_offset, cmd.instance_count); },
 			[&](const commands::DrawIndexed& cmd) { gRenderSystem->DrawIndexed(cmd.index_count, cmd.index_offset, cmd.instance_count); },
 			[&](const commands::SetMesh& cmd) {

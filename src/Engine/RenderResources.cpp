@@ -1,7 +1,6 @@
 ﻿#include "stdafx.h"
 #include "RenderResources.h"
 #include "RenderSystem.h"
-#include "RHISystem.h"
 #include "RHIBackend.h"
 //=============================================================================
 Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
@@ -13,7 +12,7 @@ Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, uint32_t m
 	assert(width > 0);
 	assert(height > 0);
 	assert(mip_count > 0);
-	m_textureHandle = RHISystem::CreateTexture(width, height, format, mip_count);
+	m_textureHandle = RHIBackend::CreateTexture(width, height, format, mip_count);
 }
 //=============================================================================
 Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, const void* memory, bool generate_mips)
@@ -36,7 +35,7 @@ Texture::Texture(Texture&& other) noexcept
 //=============================================================================
 Texture::~Texture()
 {
-	RHISystem::DestroyTexture(m_textureHandle);
+	RHIBackend::DestroyTexture(m_textureHandle);
 }
 //=============================================================================
 void Texture::Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory,
@@ -48,12 +47,12 @@ void Texture::Write(uint32_t width, uint32_t height, PixelFormat format, const v
 	assert(offset_y + height <= GetMipHeight(m_height, mip_level));
 	assert(mip_level < m_mipCount);
 	assert(memory != nullptr);
-	RHISystem::WriteTexturePixels(m_textureHandle, width, height, format, memory, mip_level, offset_x, offset_y);
+	RHIBackend::WriteTexturePixels(m_textureHandle, width, height, format, memory, mip_level, offset_x, offset_y);
 }
 //=============================================================================
 void Texture::GenerateMips()
 {
-	RHISystem::GenerateMips(m_textureHandle);
+	RHIBackend::GenerateMips(m_textureHandle);
 }
 //=============================================================================
 Texture& Texture::operator=(Texture&& other) noexcept
@@ -62,7 +61,7 @@ Texture& Texture::operator=(Texture&& other) noexcept
 		return *this;
 
 	if (m_textureHandle)
-		RHISystem::DestroyTexture(m_textureHandle);
+		RHIBackend::DestroyTexture(m_textureHandle);
 
 	m_textureHandle = std::exchange(other.m_textureHandle, nullptr);
 	m_width = std::exchange(other.m_width, 0);
@@ -75,7 +74,7 @@ Texture& Texture::operator=(Texture&& other) noexcept
 //=============================================================================
 RenderTarget::RenderTarget(uint32_t width, uint32_t height, PixelFormat format) : Texture(width, height, format, 1)
 {
-	m_renderTargetHandle = RHISystem::CreateRenderTarget(width, height, *this);
+	m_renderTargetHandle = RHIBackend::CreateRenderTarget(width, height, *this);
 }
 //=============================================================================
 RenderTarget::RenderTarget(RenderTarget&& other) noexcept : Texture(std::move(other))
@@ -85,7 +84,7 @@ RenderTarget::RenderTarget(RenderTarget&& other) noexcept : Texture(std::move(ot
 //=============================================================================
 RenderTarget::~RenderTarget()
 {
-	RHISystem::DestroyRenderTarget(m_renderTargetHandle);
+	RHIBackend::DestroyRenderTarget(m_renderTargetHandle);
 }
 //=============================================================================
 RenderTarget& RenderTarget::operator=(RenderTarget&& other) noexcept
@@ -96,7 +95,7 @@ RenderTarget& RenderTarget::operator=(RenderTarget&& other) noexcept
 		return *this;
 
 	if (m_renderTargetHandle)
-		RHISystem::DestroyRenderTarget(m_renderTargetHandle);
+		RHIBackend::DestroyRenderTarget(m_renderTargetHandle);
 
 	m_renderTargetHandle = std::exchange(other.m_renderTargetHandle, nullptr);
 
@@ -151,7 +150,7 @@ Buffer& Buffer::operator=(Buffer&& other) noexcept
 //=============================================================================
 VertexBuffer::VertexBuffer(size_t size, size_t stride) : Buffer(size)
 {
-	m_vertexBufferHandle = RHISystem::CreateVertexBuffer(size, stride);
+	m_vertexBufferHandle = RHIBackend::CreateVertexBuffer(size, stride);
 }
 //=============================================================================
 VertexBuffer::VertexBuffer(const void* memory, size_t size, size_t stride) : VertexBuffer(size, stride)
@@ -162,7 +161,7 @@ VertexBuffer::VertexBuffer(const void* memory, size_t size, size_t stride) : Ver
 VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept : Buffer(std::move(other))
 {
 	if (m_vertexBufferHandle)
-		RHISystem::DestroyVertexBuffer(m_vertexBufferHandle);
+		RHIBackend::DestroyVertexBuffer(m_vertexBufferHandle);
 
 	m_vertexBufferHandle = std::exchange(other.m_vertexBufferHandle, nullptr);
 }
@@ -170,7 +169,7 @@ VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept : Buffer(std::move(oth
 VertexBuffer::~VertexBuffer()
 {
 	if (m_vertexBufferHandle)
-		RHISystem::DestroyVertexBuffer(m_vertexBufferHandle);
+		RHIBackend::DestroyVertexBuffer(m_vertexBufferHandle);
 }
 //=============================================================================
 VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept
@@ -181,7 +180,7 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept
 		return *this;
 
 	if (m_vertexBufferHandle)
-		RHISystem::DestroyVertexBuffer(m_vertexBufferHandle);
+		RHIBackend::DestroyVertexBuffer(m_vertexBufferHandle);
 
 	m_vertexBufferHandle = std::exchange(other.m_vertexBufferHandle, nullptr);
 	return *this;
@@ -189,12 +188,12 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept
 //=============================================================================
 void VertexBuffer::Write(const void* memory, size_t size, size_t stride)
 {
-	RHISystem::WriteVertexBufferMemory(m_vertexBufferHandle, memory, size, stride);
+	RHIBackend::WriteVertexBufferMemory(m_vertexBufferHandle, memory, size, stride);
 }
 //=============================================================================
 IndexBuffer::IndexBuffer(size_t size, size_t stride) : Buffer(size)
 {
-	m_indexBufferHandle = RHISystem::CreateIndexBuffer(size, stride);
+	m_indexBufferHandle = RHIBackend::CreateIndexBuffer(size, stride);
 }
 //=============================================================================
 IndexBuffer::IndexBuffer(const void* memory, size_t size, size_t stride) : IndexBuffer(size, stride)
@@ -210,7 +209,7 @@ IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept : Buffer(std::move(other)
 IndexBuffer::~IndexBuffer()
 {
 	if (m_indexBufferHandle)
-		RHISystem::DestroyIndexBuffer(m_indexBufferHandle);
+		RHIBackend::DestroyIndexBuffer(m_indexBufferHandle);
 }
 //=============================================================================
 IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
@@ -221,7 +220,7 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
 		return *this;
 
 	if (m_indexBufferHandle)
-		RHISystem::DestroyIndexBuffer(m_indexBufferHandle);
+		RHIBackend::DestroyIndexBuffer(m_indexBufferHandle);
 
 	m_indexBufferHandle = std::exchange(other.m_indexBufferHandle, nullptr);
 	return *this;
@@ -229,12 +228,12 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
 //=============================================================================
 void IndexBuffer::Write(const void* memory, size_t size, size_t stride)
 {
-	RHISystem::WriteIndexBufferMemory(m_indexBufferHandle, memory, size, stride);
+	RHIBackend::WriteIndexBufferMemory(m_indexBufferHandle, memory, size, stride);
 }
 //=============================================================================
 UniformBuffer::UniformBuffer(size_t size) : Buffer(size)
 {
-	m_uniformBufferHandle = RHISystem::CreateUniformBuffer(size);
+	m_uniformBufferHandle = RHIBackend::CreateUniformBuffer(size);
 }
 //=============================================================================
 UniformBuffer::UniformBuffer(const void* memory, size_t size) : UniformBuffer(size)
@@ -250,7 +249,7 @@ UniformBuffer::UniformBuffer(UniformBuffer&& other) noexcept : Buffer(std::move(
 UniformBuffer::~UniformBuffer()
 {
 	if (m_uniformBufferHandle)
-		RHISystem::DestroyUniformBuffer(m_uniformBufferHandle);
+		RHIBackend::DestroyUniformBuffer(m_uniformBufferHandle);
 }
 //=============================================================================
 UniformBuffer& UniformBuffer::operator=(UniformBuffer&& other) noexcept
@@ -261,7 +260,7 @@ UniformBuffer& UniformBuffer::operator=(UniformBuffer&& other) noexcept
 		return *this;
 
 	if (m_uniformBufferHandle)
-		RHISystem::DestroyUniformBuffer(m_uniformBufferHandle);
+		RHIBackend::DestroyUniformBuffer(m_uniformBufferHandle);
 
 	m_uniformBufferHandle = std::exchange(other.m_uniformBufferHandle, nullptr);
 	return *this;
@@ -269,6 +268,6 @@ UniformBuffer& UniformBuffer::operator=(UniformBuffer&& other) noexcept
 //=============================================================================
 void UniformBuffer::Write(const void* memory, size_t size)
 {
-	RHISystem::WriteUniformBufferMemory(m_uniformBufferHandle, memory, size);
+	RHIBackend::WriteUniformBufferMemory(m_uniformBufferHandle, memory, size);
 }
 //=============================================================================

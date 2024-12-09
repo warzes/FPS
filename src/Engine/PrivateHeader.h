@@ -13,6 +13,7 @@ using Microsoft::WRL::ComPtr;
 #endif // RENDER_D3D12
 
 #if RENDER_D3D12
+
 #	include <d3dcompiler.h>
 #	include <d3d12.h>
 #	include <dxgi1_6.h>

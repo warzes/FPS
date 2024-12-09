@@ -20,9 +20,6 @@
     <ClCompile Include="RenderSystem.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
-    <ClCompile Include="RenderSystemD3D12.cpp">
-      <Filter>RHI\Direct3D12</Filter>
-    </ClCompile>
     <ClCompile Include="ContextD3D12.cpp">
       <Filter>RHI\Direct3D12</Filter>
     </ClCompile>
@@ -140,9 +137,6 @@
     <ClCompile Include="MouseWin32.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="RHISystemD3D12.cpp">
-      <Filter>RHI\Direct3D12</Filter>
-    </ClCompile>
     <ClCompile Include="RHISystemVK.cpp">
       <Filter>RHI\Vulkan</Filter>
     </ClCompile>
@@ -163,6 +157,12 @@
     </ClCompile>
     <ClCompile Include="RHIBackendD3D11.cpp">
       <Filter>RHI\Direct3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="RHIBackendD3D12.cpp">
+      <Filter>RHI\Direct3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="RHIBackendOpenGL.cpp">
+      <Filter>RHI\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

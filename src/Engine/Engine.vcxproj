@@ -163,7 +163,8 @@
     <ClCompile Include="ContextVK.cpp" />
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="RHIBackendD3D11.cpp" />
-    <ClCompile Include="RHISystemD3D12.cpp" />
+    <ClCompile Include="RHIBackendD3D12.cpp" />
+    <ClCompile Include="RHIBackendOpenGL.cpp" />
     <ClCompile Include="RHISystemGL.cpp" />
     <ClCompile Include="RHISystemVK.cpp" />
     <ClCompile Include="Image.cpp" />
@@ -184,7 +185,6 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="RenderResources.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="RenderSystemD3D12.cpp" />
     <ClCompile Include="RenderSystemOpenGL.cpp" />
     <ClCompile Include="RenderSystemVK.cpp" />
     <ClCompile Include="RenderTargetD3D11.cpp" />

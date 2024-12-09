@@ -7,8 +7,8 @@
 #define PLATFORM_EMSCRIPTEN 0
 
 // RenderAPI
-#define RENDER_D3D11 1
-#define RENDER_D3D12 0
+#define RENDER_D3D11 0
+#define RENDER_D3D12 1
 #define RENDER_VULKAN 0
 #define RENDER_OPENGL 0
 #define RENDER_WEBGPU 0

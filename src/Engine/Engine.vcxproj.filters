@@ -44,9 +44,6 @@
     <ClCompile Include="RenderResources.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
-    <ClCompile Include="RenderSystemOpenGL.cpp">
-      <Filter>RHI\OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="RenderCoreOpenGL.cpp">
       <Filter>RHI\OpenGL</Filter>
     </ClCompile>

@@ -185,7 +185,6 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="RenderResources.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="RenderSystemOpenGL.cpp" />
     <ClCompile Include="RenderSystemVK.cpp" />
     <ClCompile Include="RenderTargetD3D11.cpp" />
     <ClCompile Include="RenderTargetD3D12.cpp" />

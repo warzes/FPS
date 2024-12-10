@@ -6,35 +6,30 @@
 #include "AccelerationStructureVK.h"
 #include "ShaderVK.h"
 //=============================================================================
-bool RenderContext::Create()
-{
-	return true;
-}
-//=============================================================================
-void RenderContext::Destroy()
+void RenderContext::Clear()
 {
 	for (auto object : objects)
 		delete object;
 }
 //=============================================================================
-uint32_t RenderContext::GetBackbufferWidth()
+uint32_t RenderContext::GetBackBufferWidth()
 {
 	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetWidth() : width;
 }
 //=============================================================================
-uint32_t RenderContext::GetBackbufferHeight()
+uint32_t RenderContext::GetBackBufferHeight()
 {
 	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetHeight() : height;
 }
 //=============================================================================
 vk::Format RenderContext::GetBackbufferFormat()
 {
-	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetFormat() : PixelFormatMap.at(PixelFormat::RGBA8UNorm); //gContext.surface_format.format;
+	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetFormat() : PixelFormatMap.at(PixelFormat::RGBA8UNorm); //gContext.surfaceFormat.format;
 }
 //=============================================================================
 uint32_t GetMemoryType(vk::MemoryPropertyFlags properties, uint32_t type_bits)
 {
-	auto prop = gContext.physical_device.getMemoryProperties();
+	auto prop = gContext.physicalDevice.getMemoryProperties();
 
 	for (uint32_t i = 0; i < prop.memoryTypeCount; i++)
 		if ((prop.memoryTypes[i].propertyFlags & properties) == properties && type_bits & (1 << i))
@@ -223,8 +218,8 @@ void BeginRenderPass()
 		}
 	}
 
-	auto width = gContext.GetBackbufferWidth();
-	auto height = gContext.GetBackbufferHeight();
+	auto width = gContext.GetBackBufferWidth();
+	auto height = gContext.GetBackBufferHeight();
 
 	auto rendering_info = vk::RenderingInfo()
 		.setRenderArea({ { 0, 0 }, { width, height } })
@@ -445,7 +440,7 @@ void OneTimeSubmit(std::function<void(const vk::raii::CommandBuffer&)> func)
 {
 	auto command_buffer_allocate_info = vk::CommandBufferAllocateInfo()
 		.setCommandBufferCount(1)
-		.setCommandPool(*gContext.command_pool)
+		.setCommandPool(*gContext.commandPool)
 		.setLevel(vk::CommandBufferLevel::ePrimary);
 
 	auto command_buffers = gContext.device.allocateCommandBuffers(command_buffer_allocate_info);
@@ -597,7 +592,7 @@ void PushDescriptors(vk::raii::CommandBuffer& cmdlist, vk::PipelineBindPoint pip
 //=============================================================================
 RaytracingShaderBindingTable CreateRaytracingShaderBindingTable(const vk::raii::Pipeline& pipeline)
 {
-	auto ray_tracing_pipeline_properties = gContext.physical_device.getProperties2<vk::PhysicalDeviceProperties2,
+	auto ray_tracing_pipeline_properties = gContext.physicalDevice.getProperties2<vk::PhysicalDeviceProperties2,
 		vk::PhysicalDeviceRayTracingPipelinePropertiesKHR>().get<vk::PhysicalDeviceRayTracingPipelinePropertiesKHR>();
 
 	auto handle_size = ray_tracing_pipeline_properties.shaderGroupHandleSize;
@@ -894,8 +889,8 @@ void EnsureViewport(vk::raii::CommandBuffer& cmdlist)
 
 	gContext.viewport_dirty = false;
 
-	auto width = static_cast<float>(gContext.GetBackbufferWidth());
-	auto height = static_cast<float>(gContext.GetBackbufferHeight());
+	auto width = static_cast<float>(gContext.GetBackBufferWidth());
+	auto height = static_cast<float>(gContext.GetBackBufferHeight());
 
 	auto value = gContext.viewport.value_or(Viewport{ { 0.0f, 0.0f }, { width, height } });
 
@@ -917,8 +912,8 @@ void EnsureScissor(vk::raii::CommandBuffer& cmdlist)
 
 	gContext.scissor_dirty = false;
 
-	auto width = static_cast<float>(gContext.GetBackbufferWidth());
-	auto height = static_cast<float>(gContext.GetBackbufferHeight());
+	auto width = static_cast<float>(gContext.GetBackBufferWidth());
+	auto height = static_cast<float>(gContext.GetBackBufferHeight());
 
 	auto value = gContext.scissor.value_or(Scissor{ { 0.0f, 0.0f }, { width, height } });
 
@@ -1181,7 +1176,7 @@ void WaitForGpu()
 //=============================================================================
 void CreateSwapchain(uint32_t width, uint32_t height)
 {
-	auto surface_capabilities = gContext.physical_device.getSurfaceCapabilitiesKHR(*gContext.surface);
+	auto surface_capabilities = gContext.physicalDevice.getSurfaceCapabilitiesKHR(*gContext.surface);
 
 	// https://github.com/nvpro-samples/nvpro_core/blob/f2c05e161bba9ab9a8c96c0173bf0edf7c168dfa/nvvk/swapchain_vk.cpp#L143
 	// Determine the number of VkImage's to use in the swap chain (we desire to
@@ -1206,27 +1201,27 @@ void CreateSwapchain(uint32_t width, uint32_t height)
 		.setWidth(gContext.width)
 		.setHeight(gContext.height);
 
-	auto format = gContext.surface_format.format;
+	auto format = gContext.surfaceFormat.format;
 
 	auto swapchain_info = vk::SwapchainCreateInfoKHR()
 		.setSurface(*gContext.surface)
 		.setMinImageCount(desired_number_of_swapchain_images)
 		.setImageFormat(format)
-		.setImageColorSpace(gContext.surface_format.colorSpace)
+		.setImageColorSpace(gContext.surfaceFormat.colorSpace)
 		.setImageExtent(image_extent)
 		.setImageUsage(vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc)
 		.setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
 		.setImageArrayLayers(1)
 		.setImageSharingMode(vk::SharingMode::eExclusive)
-		.setQueueFamilyIndices(gContext.queue_family_index)
+		.setQueueFamilyIndices(gContext.queueFamilyIndex)
 		.setPresentMode(vk::PresentModeKHR::eFifo)
 		.setClipped(true)
 		.setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
-		.setOldSwapchain(*gContext.swapchain);
+		.setOldSwapchain(*gContext.swapChain);
 
-	gContext.swapchain = gContext.device.createSwapchainKHR(swapchain_info);
+	gContext.swapChain = gContext.device.createSwapchainKHR(swapchain_info);
 
-	auto backbuffers = gContext.swapchain.getImages();
+	auto backbuffers = gContext.swapChain.getImages();
 
 	gContext.frames.clear();
 
@@ -1245,7 +1240,7 @@ void CreateSwapchain(uint32_t width, uint32_t height)
 		auto command_buffer_allocate_info = vk::CommandBufferAllocateInfo()
 			.setCommandBufferCount(1)
 			.setLevel(vk::CommandBufferLevel::ePrimary)
-			.setCommandPool(*gContext.command_pool);
+			.setCommandPool(*gContext.commandPool);
 
 		auto command_buffers = gContext.device.allocateCommandBuffers(command_buffer_allocate_info);
 
@@ -1265,7 +1260,7 @@ void MoveToNextFrame()
 {
 	const auto& image_acquired_semaphore = gContext.frames.at(gContext.semaphore_index).image_acquired_semaphore;
 
-	auto [result, image_index] = gContext.swapchain.acquireNextImage(UINT64_MAX, *image_acquired_semaphore);
+	auto [result, image_index] = gContext.swapChain.acquireNextImage(UINT64_MAX, *image_acquired_semaphore);
 
 	gContext.frame_index = image_index;
 }

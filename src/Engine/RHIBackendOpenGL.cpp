@@ -12,13 +12,6 @@
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
 //=============================================================================
-#if PLATFORM_WINDOWS
-extern "C" {
-	_declspec(dllexport) uint32_t NvOptimusEnablement = 1;
-	_declspec(dllexport) uint32_t AmdPowerXpressRequestHighPerformance = 1;
-}
-#endif
-//=============================================================================
 #if defined(_DEBUG)
 void GLAPIENTRY DebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
@@ -334,7 +327,7 @@ void RHIBackend::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, T
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	auto backbuffer_height = gContext.GetBackbufferHeight();
+	auto backbuffer_height = gContext.GetBackBufferHeight();
 
 	auto x = (GLint)pos.x;
 	auto y = (GLint)(backbuffer_height - pos.y - size.y);

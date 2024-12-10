@@ -2,6 +2,13 @@
 #include "RenderSystem.h"
 #include "RHIBackend.h"
 //=============================================================================
+#if PLATFORM_WINDOWS
+extern "C" {
+	_declspec(dllexport) uint32_t NvOptimusEnablement = 1;
+	_declspec(dllexport) uint32_t AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif // PLATFORM_WINDOWS
+//=============================================================================
 RenderSystem* gRenderSystem{ nullptr };
 //=============================================================================
 RenderSystem::~RenderSystem()

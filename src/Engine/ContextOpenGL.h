@@ -58,8 +58,8 @@ public:
 	bool front_face_dirty = true;
 	bool depth_mode_dirty = true;
 
-	uint32_t GetBackbufferWidth();
-	uint32_t GetBackbufferHeight();
+	uint32_t GetBackBufferWidth();
+	uint32_t GetBackBufferHeight();
 	PixelFormat GetBackbufferFormat();
 };
 

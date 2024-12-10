@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 //=============================================================================
-#define EXAMPLE 0
+#define EXAMPLE 1
 #if EXAMPLE
 #include "001_triangle.h"
 #include "002_uniform.h"
@@ -23,12 +23,12 @@ int main(
 	[[maybe_unused]] char* argv[])
 {
 #if EXAMPLE
-	//E001();
+	E001();
 	//E002();
 	//E003();
 	//E004();
 	//E005();
-	E006();
+	//E006();
 	//E007();
 	//E008();
 	//E009();

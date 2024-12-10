@@ -108,8 +108,8 @@ void E008()
 		};
 
 		Mesh cube_mesh;
-		cube_mesh.setVertices(vertices);
-		cube_mesh.setIndices(indices);
+		cube_mesh.SetVertices(vertices);
+		cube_mesh.SetIndices(indices);
 
 		float angle = 1.0f;
 		float speed = 1.0f;

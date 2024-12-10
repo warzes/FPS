@@ -140,7 +140,7 @@ void main()
 			static float time = 0.0f;
 			time += 0.01f;
 
-			std::tie(matrices.view, matrices.projection) = CalculatePerspectiveViewProjection(yaw, pitch, position, rhi.GetBackbufferWidth(), rhi.GetBackbufferHeight());
+			std::tie(matrices.view, matrices.projection) = CalculatePerspectiveViewProjection(yaw, pitch, position, rhi.GetBackBufferWidth(), rhi.GetBackBufferHeight());
 
 			rhi.SetUniformBuffer(0, matrices);
 

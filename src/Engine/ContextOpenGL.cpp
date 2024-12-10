@@ -36,12 +36,12 @@ void RenderContext::Destroy()
 	}
 }
 //=============================================================================
-uint32_t RenderContext::GetBackbufferWidth()
+uint32_t RenderContext::GetBackBufferWidth()
 {
 	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetWidth() : width;
 }
 //=============================================================================
-uint32_t RenderContext::GetBackbufferHeight()
+uint32_t RenderContext::GetBackBufferHeight()
 {
 	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetHeight() : height;
 }
@@ -228,8 +228,8 @@ void EnsureGraphicsState(bool draw_indexed)
 	{
 		gContext.viewport_dirty = false;
 
-		auto width = static_cast<float>(gContext.GetBackbufferWidth());
-		auto height = static_cast<float>(gContext.GetBackbufferHeight());
+		auto width = static_cast<float>(gContext.GetBackBufferWidth());
+		auto height = static_cast<float>(gContext.GetBackBufferHeight());
 
 		auto viewport = gContext.viewport.value_or(Viewport{ { 0.0f, 0.0f }, { width, height } });
 

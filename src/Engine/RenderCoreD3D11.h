@@ -3,6 +3,7 @@
 #if RENDER_D3D11
 
 #include "RHICore.h"
+#include "RenderCoreD3D.h"
 
 class ShaderD3D11;
 class TextureD3D11;

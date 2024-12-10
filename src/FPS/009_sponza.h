@@ -160,8 +160,8 @@ namespace e009
 				}
 
 				auto mesh = Mesh();
-				mesh.setIndices(indices);
-				mesh.setVertices(vertices);
+				mesh.SetIndices(indices);
+				mesh.SetVertices(vertices);
 
 				auto draw_command = utils::commands::DrawMesh::DrawIndexedVerticesCommand{
 					.index_count = (uint32_t)index_count,

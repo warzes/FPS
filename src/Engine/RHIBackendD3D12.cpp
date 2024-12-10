@@ -19,13 +19,24 @@ RenderContext gContext{};
 bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
 #if RHI_VALIDATION_ENABLED
-	ComPtr<ID3D12Debug6> debug;
-	D3D12GetDebugInterface(IID_PPV_ARGS(debug.GetAddressOf()));
-	debug->EnableDebugLayer();
-	debug->SetEnableAutoName(true);
-	debug->SetEnableGPUBasedValidation(true);
-	debug->SetEnableSynchronizedCommandQueueValidation(true);
-	debug->SetForceLegacyBarrierValidation(true);
+	ComPtr<ID3D12Debug6> debug6;
+	D3D12GetDebugInterface(IID_PPV_ARGS(debug6.GetAddressOf()));
+	if (debug6)
+	{
+		debug6->EnableDebugLayer();
+		debug6->SetEnableAutoName(true);
+		debug6->SetEnableGPUBasedValidation(true);
+		debug6->SetEnableSynchronizedCommandQueueValidation(true);
+		debug6->SetForceLegacyBarrierValidation(true);
+	}
+	else // TODO: пока так, на windows 10 у меня только ID3D12Debug3
+	{
+		ComPtr<ID3D12Debug3> debug3;
+		D3D12GetDebugInterface(IID_PPV_ARGS(debug3.GetAddressOf()));
+		debug3->EnableDebugLayer();
+		debug3->SetEnableGPUBasedValidation(true);
+		debug3->SetEnableSynchronizedCommandQueueValidation(true);
+	}
 #endif
 
 	ComPtr<IDXGIFactory6> dxgi_factory;
@@ -95,10 +106,10 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fs_swapchain_desc = { 0 };
 	fs_swapchain_desc.Windowed = TRUE;
 
-	ComPtr<IDXGISwapChain1> swapchain;
-	dxgi_factory->CreateSwapChainForHwnd(gContext.commandQueue.Get(), data.hwnd, &swapchain_desc, &fs_swapchain_desc, NULL, swapchain.GetAddressOf());
+	ComPtr<IDXGISwapChain1> swapChain;
+	dxgi_factory->CreateSwapChainForHwnd(gContext.commandQueue.Get(), data.hwnd, &swapchain_desc, &fs_swapchain_desc, NULL, swapChain.GetAddressOf());
 
-	swapchain.As(&gContext.swapChain);
+	swapChain.As(&gContext.swapChain);
 
 	gContext.device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(gContext.fence.GetAddressOf()));
 	gContext.fenceValue = 1;

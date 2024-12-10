@@ -108,6 +108,7 @@
     <ClInclude Include="ContextVK.h" />
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="RenderCoreD3D.h" />
     <ClInclude Include="RHIBackend.h" />
     <ClInclude Include="HashCombine.h" />
     <ClInclude Include="Image.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="ContextVK.cpp" />
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="RenderCoreD3D.cpp" />
     <ClCompile Include="RHIBackendD3D11.cpp" />
     <ClCompile Include="RHIBackendD3D12.cpp" />
     <ClCompile Include="RHIBackendOpenGL.cpp" />

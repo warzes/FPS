@@ -6,12 +6,21 @@
 #include "ShaderD3D11.h"
 #include "Log.h"
 //=============================================================================
-uint32_t RenderContext::GetBackbufferWidth()
+void RenderContext::Clear()
+{
+	swapChain.Reset();
+	context.Reset();
+	annotation.Reset();
+	device.Reset();
+	adapter.Reset();
+}
+//=============================================================================
+uint32_t RenderContext::GetBackBufferWidth()
 {
 	return renderTargets.at(0)->GetTexture()->GetWidth();
 }
 //=============================================================================
-uint32_t RenderContext::GetBackbufferHeight()
+uint32_t RenderContext::GetBackBufferHeight()
 {
 	return renderTargets.at(0)->GetTexture()->GetHeight();
 }
@@ -324,8 +333,8 @@ void EnsureViewport()
 
 	gContext.viewport_dirty = false;
 
-	auto width = static_cast<float>(gContext.GetBackbufferWidth());
-	auto height = static_cast<float>(gContext.GetBackbufferHeight());
+	auto width = static_cast<float>(gContext.GetBackBufferWidth());
+	auto height = static_cast<float>(gContext.GetBackBufferHeight());
 
 	auto viewport = gContext.viewport.value_or(Viewport{ { 0.0f, 0.0f }, { width, height } });
 

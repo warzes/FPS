@@ -7,10 +7,13 @@
 class RenderContext final
 {
 public:
-	ComPtr<IDXGIAdapter1>           adapter;
-	ComPtr<ID3D11Device>            device;
-	ComPtr<ID3D11DeviceContext>     context;
-	ComPtr<IDXGISwapChain>          swapChain;
+	void Clear();
+
+	ComPtr<IDXGIAdapter4>             adapter{ nullptr };
+	ComPtr<ID3D11Device5>             device{ nullptr };
+	ComPtr<ID3D11DeviceContext4>      context{ nullptr };
+	ComPtr<ID3DUserDefinedAnnotation> annotation{ nullptr };
+	ComPtr<IDXGISwapChain4>           swapChain{ nullptr };
 
 	TextureD3D11*                   backBufferTexture{ nullptr };
 	RenderTargetD3D11*              mainRenderTarget{ nullptr };
@@ -43,8 +46,8 @@ public:
 	bool vsync = false;
 	std::unordered_map<uint32_t, TextureD3D11*> textures;
 
-	uint32_t GetBackbufferWidth();
-	uint32_t GetBackbufferHeight();
+	uint32_t GetBackBufferWidth();
+	uint32_t GetBackBufferHeight();
 	PixelFormat GetBackbufferFormat();
 };
 

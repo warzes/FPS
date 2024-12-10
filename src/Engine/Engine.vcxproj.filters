@@ -158,6 +158,9 @@
     <ClCompile Include="Vertex.cpp">
       <Filter>Render</Filter>
     </ClCompile>
+    <ClCompile Include="RenderCoreD3D.cpp">
+      <Filter>RHI\D3DCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -329,6 +332,9 @@
     <ClInclude Include="Vertex.h">
       <Filter>Render</Filter>
     </ClInclude>
+    <ClInclude Include="RenderCoreD3D.h">
+      <Filter>RHI\D3DCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -384,6 +390,9 @@
     </Filter>
     <Filter Include="Render\Core">
       <UniqueIdentifier>{f0ba48df-c31e-47a1-8c52-da2404fd6af6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RHI\D3DCore">
+      <UniqueIdentifier>{7baf3ec2-2a3f-43f5-a8dc-2e4b15d9390f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

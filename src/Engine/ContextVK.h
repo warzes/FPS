@@ -8,22 +8,21 @@
 class RenderContext final
 {
 public:
-	bool Create();
-	void Destroy();
+	void Clear();
 
-	vk::raii::Context context;
-	vk::raii::Instance instance = nullptr;
+	vk::raii::Context                context;
+	vk::raii::Instance               instance{ nullptr };
 #if defined(_DEBUG)
-	vk::raii::DebugUtilsMessengerEXT debug_utils_messenger = nullptr;
+	vk::raii::DebugUtilsMessengerEXT debugUtilsMessenger{ nullptr };
 #endif
-	vk::raii::PhysicalDevice physical_device = nullptr;
-	vk::raii::Queue queue = nullptr;
-	vk::raii::Device device = nullptr;
-	uint32_t queue_family_index = -1;
-	vk::SurfaceFormatKHR surface_format;
-	vk::raii::SurfaceKHR surface = nullptr;
-	vk::raii::SwapchainKHR swapchain = nullptr;
-	vk::raii::CommandPool command_pool = nullptr;
+	vk::raii::PhysicalDevice         physicalDevice{ nullptr };
+	vk::raii::Queue                  queue{ nullptr };
+	vk::raii::Device                 device{ nullptr };
+	uint32_t                         queueFamilyIndex = -1;
+	vk::SurfaceFormatKHR             surfaceFormat;
+	vk::raii::SurfaceKHR             surface{ nullptr };
+	vk::raii::SwapchainKHR           swapChain{ nullptr };
+	vk::raii::CommandPool            commandPool{ nullptr };
 
 	bool working = false;
 
@@ -89,8 +88,8 @@ public:
 
 	std::unordered_set<uint32_t> graphics_pipeline_ignore_bindings;
 
-	uint32_t GetBackbufferWidth();
-	uint32_t GetBackbufferHeight();
+	uint32_t GetBackBufferWidth();
+	uint32_t GetBackBufferHeight();
 	vk::Format GetBackbufferFormat();
 
 	bool render_pass_active = false;

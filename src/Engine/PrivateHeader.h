@@ -42,8 +42,11 @@ using Microsoft::WRL::ComPtr;
 #endif // RENDER_OPENGL
 
 #if RENDER_VULKAN
-#	define VK_USE_PLATFORM_WIN32_KHR
+#	if PLATFORM_WINDOWS
+#		define VK_USE_PLATFORM_WIN32_KHR
+#	endif
 #	define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 0
+//#	define VULKAN_HPP_NO_EXCEPTIONS 1 // TODO: позже сделать с этим
 #	include <vulkan/vulkan_raii.hpp>
 #endif // RENDER_VULKAN
 

@@ -2,7 +2,12 @@
 
 #include "HashCombine.h"
 
-constexpr const int NUM_BACK_BUFFERS = 2;
+// TODO: сделать общее для всех
+#if RENDER_D3D11
+constexpr const int RHI_BACKBUFFER_COUNT = 3;
+#else
+constexpr const int RHI_BACKBUFFER_COUNT = 2;
+#endif
 
 enum class RenderFeature
 {

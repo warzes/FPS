@@ -59,8 +59,8 @@ public:
 
 	std::vector<ComPtr<ID3D12DeviceChild>> stagingObjects;
 
-	uint32_t    GetBackbufferWidth();
-	uint32_t    GetBackbufferHeight();
+	uint32_t    GetBackBufferWidth();
+	uint32_t    GetBackBufferHeight();
 	PixelFormat GetBackbufferFormat();
 private:
 };

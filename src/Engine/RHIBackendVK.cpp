@@ -8,7 +8,6 @@
 #include "BufferVK.h"
 #include "AccelerationStructureVK.h"
 #include "Log.h"
-#include "RHIResources.h"
 //=============================================================================
 #if RHI_VALIDATION_ENABLED
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -71,22 +70,6 @@ RenderContext gContext{};
 //=============================================================================
 bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
-	if (!gContext.Create()) return false;
-
-	auto all_extensions = gContext.context.enumerateInstanceExtensionProperties();
-
-	for (auto extension : all_extensions)
-	{
-		//	std::cout << extension.extensionName << std::endl;
-	}
-
-	auto all_layers = gContext.context.enumerateInstanceLayerProperties();
-
-	for (auto layer : all_layers)
-	{
-		//	std::cout << layer.layerName << std::endl;
-	}
-
 	auto extensions = {
 		VK_KHR_SURFACE_EXTENSION_NAME,
 #if PLATFORM_WINDOWS
@@ -109,7 +92,10 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	auto minor_version = VK_API_VERSION_MINOR(version);
 	auto patch_version = VK_API_VERSION_PATCH(version);
 
-	//std::cout << "available vulkan version: " << major_version << "." << minor_version << std::endl;
+	Print("Available vulkan version: "
+		+ std::to_string(major_version) + "."
+		+ std::to_string(minor_version) + "."
+		+ std::to_string(patch_version));
 
 	auto application_info = vk::ApplicationInfo()
 		.setApiVersion(VK_API_VERSION_1_3);
@@ -165,7 +151,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	gContext.instance = gContext.context.createInstance(instance_create_info_chain.get<vk::InstanceCreateInfo>());
 
 #if RHI_VALIDATION_ENABLED
-	gContext.debug_utils_messenger = gContext.instance.createDebugUtilsMessengerEXT(debug_utils_messenger_create_info);
+	gContext.debugUtilsMessenger = gContext.instance.createDebugUtilsMessengerEXT(debug_utils_messenger_create_info);
 #endif
 
 	auto devices = gContext.instance.enumeratePhysicalDevices();
@@ -181,20 +167,20 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 		}
 	}
 
-	gContext.physical_device = std::move(devices.at(device_index));
+	gContext.physicalDevice = std::move(devices.at(device_index));
 
-	auto properties = gContext.physical_device.getQueueFamilyProperties();
+	auto properties = gContext.physicalDevice.getQueueFamilyProperties();
 
 	for (size_t i = 0; i < properties.size(); i++)
 	{
 		if (properties[i].queueFlags & vk::QueueFlagBits::eGraphics)
 		{
-			gContext.queue_family_index = static_cast<uint32_t>(i);
+			gContext.queueFamilyIndex = static_cast<uint32_t>(i);
 			break;
 		}
 	}
 
-	auto all_device_extensions = gContext.physical_device.enumerateDeviceExtensionProperties();
+	auto all_device_extensions = gContext.physicalDevice.enumerateDeviceExtensionProperties();
 
 	for (auto device_extension : all_device_extensions)
 	{
@@ -219,16 +205,16 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	auto queue_priority = { 1.0f };
 
 	auto queue_info = vk::DeviceQueueCreateInfo()
-		.setQueueFamilyIndex(gContext.queue_family_index)
+		.setQueueFamilyIndex(gContext.queueFamilyIndex)
 		.setQueuePriorities(queue_priority);
 
-	auto default_device_features = gContext.physical_device.getFeatures2<
+	auto default_device_features = gContext.physicalDevice.getFeatures2<
 		vk::PhysicalDeviceFeatures2,
 		vk::PhysicalDeviceVulkan13Features,
 		vk::PhysicalDeviceExtendedDynamicState3FeaturesEXT
 	>();
 
-	auto raytracing_device_features = gContext.physical_device.getFeatures2<
+	auto raytracing_device_features = gContext.physicalDevice.getFeatures2<
 		vk::PhysicalDeviceFeatures2,
 		vk::PhysicalDeviceVulkan13Features,
 		vk::PhysicalDeviceExtendedDynamicState3FeaturesEXT,
@@ -247,9 +233,9 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	else
 		device_info.setPNext(&default_device_features.get<vk::PhysicalDeviceFeatures2>());
 
-	gContext.device = gContext.physical_device.createDevice(device_info);
+	gContext.device = gContext.physicalDevice.createDevice(device_info);
 
-	gContext.queue = gContext.device.getQueue(gContext.queue_family_index, 0);
+	gContext.queue = gContext.device.getQueue(gContext.queueFamilyIndex, 0);
 
 #if PLATFORM_WINDOWS
 	auto surface_info = vk::Win32SurfaceCreateInfoKHR()
@@ -258,11 +244,11 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 
 	gContext.surface = vk::raii::SurfaceKHR(gContext.instance, surface_info);
 
-	auto formats = gContext.physical_device.getSurfaceFormatsKHR(*gContext.surface);
+	auto formats = gContext.physicalDevice.getSurfaceFormatsKHR(*gContext.surface);
 
 	if ((formats.size() == 1) && (formats.at(0).format == vk::Format::eUndefined))
 	{
-		gContext.surface_format = {
+		gContext.surfaceFormat = {
 			vk::Format::eB8G8R8A8Unorm,
 			formats.at(0).colorSpace
 		};
@@ -274,24 +260,24 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 		{
 			if (format.format == vk::Format::eB8G8R8A8Unorm)
 			{
-				gContext.surface_format = format;
+				gContext.surfaceFormat = format;
 				found = true;
 				break;
 			}
 		}
 		if (!found)
 		{
-			gContext.surface_format = formats.at(0);
+			gContext.surfaceFormat = formats.at(0);
 		}
 	}
 
 	auto command_pool_info = vk::CommandPoolCreateInfo()
 		.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
-		.setQueueFamilyIndex(gContext.queue_family_index);
+		.setQueueFamilyIndex(gContext.queueFamilyIndex);
 
-	gContext.command_pool = gContext.device.createCommandPool(command_pool_info);
+	gContext.commandPool = gContext.device.createCommandPool(command_pool_info);
 
-	gContext.pipeline_state.color_attachment_formats = { gContext.surface_format.format };
+	gContext.pipeline_state.color_attachment_formats = { gContext.surfaceFormat.format };
 	gContext.pipeline_state.depth_stencil_format = DefaultDepthStencilFormat;
 
 	CreateSwapchain(data.width, data.height);
@@ -305,7 +291,7 @@ void RHIBackend::DestroyAPI()
 {
 	RenderEnd();
 	WaitForGpu();
-	gContext.Destroy();
+	gContext.Clear();
 }
 //=============================================================================
 void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
@@ -325,7 +311,7 @@ void RHIBackend::Present()
 
 	auto present_info = vk::PresentInfoKHR()
 		.setWaitSemaphores(*render_complete_semaphore)
-		.setSwapchains(*gContext.swapchain)
+		.setSwapchains(*gContext.swapChain)
 		.setImageIndices(gContext.frame_index);
 
 	auto present_result = gContext.queue.presentKHR(present_info);
@@ -341,8 +327,8 @@ void RHIBackend::Clear(const std::optional<glm::vec4>& color, const std::optiona
 {
 	EnsureRenderPassActivated();
 
-	auto width = gContext.GetBackbufferWidth();
-	auto height = gContext.GetBackbufferHeight();
+	auto width = gContext.GetBackBufferWidth();
+	auto height = gContext.GetBackBufferHeight();
 
 	auto clear_rect = vk::ClearRect()
 		.setBaseArrayLayer(0)
@@ -694,7 +680,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 
 	if (count == 0)
 	{
-		color_attachment_formats = { gContext.surface_format.format };
+		color_attachment_formats = { gContext.surfaceFormat.format };
 		depth_stencil_format = DefaultDepthStencilFormat;
 	}
 	else

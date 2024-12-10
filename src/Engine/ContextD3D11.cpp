@@ -8,6 +8,7 @@
 //=============================================================================
 void RenderContext::Clear()
 {
+	DestroyMainRenderTargetD3D11();
 	swapChain.Reset();
 	context.Reset();
 	annotation.Reset();
@@ -30,12 +31,15 @@ PixelFormat RenderContext::GetBackbufferFormat()
 	return renderTargets.at(0)->GetTexture()->GetFormat();
 }
 //=============================================================================
-bool CreateMainRenderTarget(uint32_t width, uint32_t height)
+bool CreateMainRenderTargetD3D11(uint32_t width, uint32_t height)
 {
+	HRESULT hr = E_FAIL;
+
 	ComPtr<ID3D11Texture2D> backBuffer;
-	if (FAILED(gContext.swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()))))
+	hr = gContext.swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
+	if (FAILED(hr))
 	{
-		Fatal("GetBuffer() failed");
+		Fatal("GetBuffer() failed: " + DXErrorToStr(hr));
 		return false;
 	}
 
@@ -45,8 +49,14 @@ bool CreateMainRenderTarget(uint32_t width, uint32_t height)
 	return true;
 }
 //=============================================================================
-void DestroyMainRenderTarget()
+void DestroyMainRenderTargetD3D11()
 {
+	if (gContext.context)
+	{
+		gContext.context->OMSetRenderTargets(0, nullptr, nullptr);
+		gContext.context->Flush();
+	}
+
 	delete gContext.backBufferTexture;
 	delete gContext.mainRenderTarget;
 	gContext.backBufferTexture = nullptr;

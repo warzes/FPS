@@ -124,7 +124,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	}
 #endif
 
-	if (!CreateMainRenderTarget(data.width, data.height))
+	if (!CreateMainRenderTargetD3D11(data.width, data.height))
 	{
 		Fatal("CreateMainRenderTarget() failed");
 		return false;
@@ -136,19 +136,20 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 //=============================================================================
 void RHIBackend::DestroyAPI()
 {
-	DestroyMainRenderTarget();
 	gContext.Clear();
 }
 //=============================================================================
 void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 {
-	DestroyMainRenderTarget();
-	if (FAILED(gContext.swapChain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0)))
+	DestroyMainRenderTargetD3D11();
+	HRESULT hr = E_FAIL;
+	hr = gContext.swapChain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	if (FAILED(hr))
 	{
-		Fatal("ResizeBuffers() failed");
+		Fatal("ResizeBuffers() failed: " + DXErrorToStr(hr));
 		return;
 	}
-	if (!CreateMainRenderTarget(width, height))
+	if (!CreateMainRenderTargetD3D11(width, height))
 	{
 		Fatal("CreateMainRenderTarget() failed");
 		return;
@@ -160,9 +161,10 @@ void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 //=============================================================================
 void RHIBackend::Present()
 {
-	if (FAILED(gContext.swapChain->Present(gContext.vsync ? 1 : 0, 0)))
+	HRESULT hr = gContext.swapChain->Present(gContext.vsync ? 1 : 0, 0);
+	if (FAILED(hr))
 	{
-		Fatal("Present() failed");
+		Fatal("Present() failed: " + DXErrorToStr(hr));
 		return;
 	}
 }
@@ -186,8 +188,7 @@ void RHIBackend::Clear(const std::optional<glm::vec4>& color, const std::optiona
 			if (stencil.has_value())
 				flags |= D3D11_CLEAR_STENCIL;
 
-			gContext.context->ClearDepthStencilView(target->GetD3D11DepthStencilView().Get(), flags,
-				depth.value_or(1.0f), stencil.value_or(0));
+			gContext.context->ClearDepthStencilView(target->GetD3D11DepthStencilView().Get(), flags, depth.value_or(1.0f), stencil.value_or(0));
 		}
 	}
 }

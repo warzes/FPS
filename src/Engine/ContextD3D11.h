@@ -15,8 +15,11 @@ public:
 	ComPtr<ID3DUserDefinedAnnotation> annotation{ nullptr };
 	ComPtr<IDXGISwapChain4>           swapChain{ nullptr };
 
-	TextureD3D11*                   backBufferTexture{ nullptr };
-	RenderTargetD3D11*              mainRenderTarget{ nullptr };
+	TextureD3D11*                     backBufferTexture{ nullptr };
+	RenderTargetD3D11*                mainRenderTarget{ nullptr };
+
+
+
 	std::vector<RenderTargetD3D11*> renderTargets;
 	std::optional<Viewport>         viewport;
 
@@ -53,8 +56,8 @@ public:
 
 extern RenderContext gContext;
 
-bool CreateMainRenderTarget(uint32_t width, uint32_t height);
-void DestroyMainRenderTarget();
+bool CreateMainRenderTargetD3D11(uint32_t width, uint32_t height);
+void DestroyMainRenderTargetD3D11();
 
 void EnsureGraphicsState(bool draw_indexed);
 

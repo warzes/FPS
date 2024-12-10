@@ -21,10 +21,10 @@ namespace e009
 	{
 		struct DrawData
 		{
-			utils::Mesh::Vertices vertices; // for normals debug
-			utils::Mesh::Indices indices; // for normals debug
+			Mesh::Vertices vertices; // for normals debug
+			Mesh::Indices indices; // for normals debug
 			Topology topology;
-			utils::Mesh mesh;
+			Mesh mesh;
 			utils::commands::DrawMesh::DrawCommand draw_command;
 		};
 
@@ -129,7 +129,7 @@ namespace e009
 				auto tangents_ptr = (glm::vec3*)(((size_t)tangents_buffer.data.data()) + tangents_buffer_view.byteOffset);
 				//auto bitangents_ptr = (glm::vec3*)(((size_t)bitangents_buffer.data.data()) + bitangents_buffer_view.byteOffset);
 
-				auto indices = utils::Mesh::Indices();
+				auto indices = Mesh::Indices();
 
 				for (int i = 0; i < index_buffer_accessor.count; i++)
 				{
@@ -143,11 +143,11 @@ namespace e009
 					indices.push_back(index);
 				}
 
-				utils::Mesh::Vertices vertices;
+				Mesh::Vertices vertices;
 
 				for (int i = 0; i < positions_buffer_accessor.count; i++)
 				{
-					utils::Mesh::Vertex vertex;
+					Mesh::Vertex vertex;
 
 					vertex.pos = positions_ptr[i];
 					vertex.normal = normal_ptr[i];
@@ -159,7 +159,7 @@ namespace e009
 					vertices.push_back(vertex);
 				}
 
-				auto mesh = utils::Mesh();
+				auto mesh = Mesh();
 				mesh.setIndices(indices);
 				mesh.setVertices(vertices);
 
@@ -219,7 +219,7 @@ namespace e009
 
 	static int gDrawcalls = 0;
 
-	utils::Mesh CreateNormalsDebugMesh(const RenderBuffer& render_buffer)
+	Mesh CreateNormalsDebugMesh(const RenderBuffer& render_buffer)
 	{
 		utils::MeshBuilder mesh_builder;
 
@@ -227,7 +227,7 @@ namespace e009
 		{
 			for (const auto& draw_data : draw_datas)
 			{
-				auto draw_vertex = [&](const utils::Mesh::Vertex& vertex) {
+				auto draw_vertex = [&](const Mesh::Vertex& vertex) {
 					mesh_builder.begin(utils::MeshBuilder::Mode::Lines);
 					mesh_builder.vertex({ .pos = vertex.pos, .color = { 0.0f, 1.0f, 0.0f, 1.0f } });
 					mesh_builder.vertex({ .pos = vertex.pos + (vertex.normal * 25.0f), .color = { 0.0f, 1.0f, 0.0f, 1.0f } });
@@ -260,7 +260,7 @@ namespace e009
 			}
 		}
 
-		utils::Mesh mesh;
+		Mesh mesh;
 		mesh_builder.setToMesh(mesh);
 
 		return mesh;
@@ -360,7 +360,7 @@ void E009()
 			for (const auto& draw_data : draw_datas)
 			{
 				utils::Model model;
-				model.mesh = (utils::Mesh*)&draw_data.mesh;
+				model.mesh = (Mesh*)&draw_data.mesh;
 				model.draw_command = draw_data.draw_command;
 				model.color = material->color;
 				model.color_texture = material->color_texture.get();

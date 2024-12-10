@@ -2,7 +2,7 @@
 
 #if RENDER_D3D11
 
-#include "RenderCore.h"
+#include "RHICore.h"
 
 class ShaderD3D11;
 class TextureD3D11;

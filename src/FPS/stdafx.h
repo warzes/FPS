@@ -11,8 +11,8 @@
 #include "Engine/WindowSystem.h"
 
 // Render
-#include "Engine/RenderCore.h"
-#include "Engine/RenderResources.h"
+#include "Engine/RHICore.h"
+#include "Engine/RHIResources.h"
 #include "Engine/RenderSystem.h"
 #include "Engine/Vertex.h"
 #include "Engine/RenderUtils.h"

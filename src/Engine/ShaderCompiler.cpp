@@ -70,18 +70,18 @@ std::string CompileSpirvToHlsl(const std::vector<uint32_t>& spirv, uint32_t vers
 	return compiler.compile();
 }
 //=============================================================================
-std::string CompileSpirvToGlsl(const std::vector<uint32_t>& spirv, bool es, uint32_t version, bool enable_420pack_extension, bool force_flattened_io_blocks)
+std::string CompileSpirvToGlsl(const std::vector<uint32_t>& spirv, bool es, uint32_t version, bool enable420packExtension, bool forceFlattenedIOBlocks)
 {
 	auto compiler = spirv_cross::CompilerGLSL(spirv);
 
 	spirv_cross::CompilerGLSL::Options options;
 	options.es = es;
 	options.version = version;
-	options.enable_420pack_extension = enable_420pack_extension;
-	options.force_flattened_io_blocks = force_flattened_io_blocks;
+	options.enable_420pack_extension = enable420packExtension;
+	options.force_flattened_io_blocks = forceFlattenedIOBlocks;
 	compiler.set_common_options(options);
 
-	bool fix_varyings = (es && version <= 300) || force_flattened_io_blocks;
+	bool fix_varyings = (es && version <= 300) || forceFlattenedIOBlocks;
 
 	if (fix_varyings)
 	{
@@ -159,7 +159,7 @@ ShaderReflection MakeSpirvReflection(const std::vector<uint32_t>& spirv)
 		auto binding = descriptor_binding->binding;
 		auto type = DescriptorTypeMap.at(descriptor_binding->descriptor_type);
 
-		auto& typed_bindings = result.typed_descriptor_bindings[type];
+		auto& typed_bindings = result.typedDescriptorBindings[type];
 		assert(!typed_bindings.contains(binding));
 
 		auto& descriptor = typed_bindings[binding];
@@ -178,7 +178,7 @@ ShaderReflection MakeSpirvReflection(const std::vector<uint32_t>& spirv)
 			auto descriptor_binding = descriptor_set->bindings[i];
 			auto binding = descriptor_binding->binding;
 
-			result.descriptor_sets[set].insert(binding);
+			result.descriptorSets[set].insert(binding);
 		}
 	}
 

@@ -3,7 +3,7 @@
 #if RENDER_VULKAN
 
 #include "RenderCoreVK.h"
-#include "RenderResources.h"
+#include "RHIResources.h"
 
 class BottomLevelAccelerationStructureVK : public ObjectVK
 {

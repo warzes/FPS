@@ -1,36 +1,35 @@
 ﻿#include "stdafx.h"
-#include "RenderResources.h"
-#include "RenderSystem.h"
+#include "RHIResources.h"
 #include "RHIBackend.h"
 //=============================================================================
-Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
+Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount)
 	: m_width(width)
 	, m_height(height)
 	, m_format(format)
-	, m_mipCount(mip_count)
+	, m_mipCount(mipCount)
 {
-	assert(width > 0);
-	assert(height > 0);
-	assert(mip_count > 0);
-	m_textureHandle = RHIBackend::CreateTexture(width, height, format, mip_count);
+	assert(m_width > 0);
+	assert(m_height > 0);
+	assert(m_mipCount > 0);
+	m_textureHandle = RHIBackend::CreateTexture(m_width, m_height, m_format, m_mipCount);
 }
 //=============================================================================
-Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, const void* memory, bool generate_mips)
-	: Texture(width, height, format, generate_mips ? ::GetMipCount(width, height) : 1)
+Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, const void* memory, bool generateMips)
+	: Texture(width, height, format, generateMips ? ::GetMipCount(width, height) : 1)
 {
 	Write(width, height, format, memory);
 
-	if (generate_mips)
+	if (generateMips)
 		GenerateMips();
 }
 //=============================================================================
 Texture::Texture(Texture&& other) noexcept
 {
 	m_textureHandle = std::exchange(other.m_textureHandle, nullptr);
-	m_width = std::exchange(other.m_width, 0);
-	m_height = std::exchange(other.m_height, 0);
-	m_format = std::exchange(other.m_format, {});
-	m_mipCount = std::exchange(other.m_mipCount, 0);
+	m_width         = std::exchange(other.m_width, 0);
+	m_height        = std::exchange(other.m_height, 0);
+	m_format        = std::exchange(other.m_format, {});
+	m_mipCount      = std::exchange(other.m_mipCount, 0);
 }
 //=============================================================================
 Texture::~Texture()
@@ -38,16 +37,15 @@ Texture::~Texture()
 	RHIBackend::DestroyTexture(m_textureHandle);
 }
 //=============================================================================
-void Texture::Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory,
-	uint32_t mip_level, uint32_t offset_x, uint32_t offset_y)
+void Texture::Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offsetX, uint32_t offsetY)
 {
 	assert(width > 0);
 	assert(height > 0);
-	assert(offset_x + width <= GetMipWidth(m_width, mip_level));
-	assert(offset_y + height <= GetMipHeight(m_height, mip_level));
-	assert(mip_level < m_mipCount);
+	assert(offsetX + width <= GetMipWidth(m_width, mipLevel));
+	assert(offsetY + height <= GetMipHeight(m_height, mipLevel));
+	assert(mipLevel < m_mipCount);
 	assert(memory != nullptr);
-	RHIBackend::WriteTexturePixels(m_textureHandle, width, height, format, memory, mip_level, offset_x, offset_y);
+	RHIBackend::WriteTexturePixels(m_textureHandle, width, height, format, memory, mipLevel, offsetX, offsetY);
 }
 //=============================================================================
 void Texture::GenerateMips()
@@ -57,27 +55,28 @@ void Texture::GenerateMips()
 //=============================================================================
 Texture& Texture::operator=(Texture&& other) noexcept
 {
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
 	if (m_textureHandle)
 		RHIBackend::DestroyTexture(m_textureHandle);
 
 	m_textureHandle = std::exchange(other.m_textureHandle, nullptr);
-	m_width = std::exchange(other.m_width, 0);
-	m_height = std::exchange(other.m_height, 0);
-	m_format = std::exchange(other.m_format, {});
-	m_mipCount = std::exchange(other.m_mipCount, 0);
+	m_width         = std::exchange(other.m_width, 0);
+	m_height        = std::exchange(other.m_height, 0);
+	m_format        = std::exchange(other.m_format, {});
+	m_mipCount      = std::exchange(other.m_mipCount, 0);
 
 	return *this;
 }
 //=============================================================================
-RenderTarget::RenderTarget(uint32_t width, uint32_t height, PixelFormat format) : Texture(width, height, format, 1)
+RenderTarget::RenderTarget(uint32_t width, uint32_t height, PixelFormat format) 
+	: Texture(width, height, format, 1)
 {
 	m_renderTargetHandle = RHIBackend::CreateRenderTarget(width, height, *this);
 }
 //=============================================================================
-RenderTarget::RenderTarget(RenderTarget&& other) noexcept : Texture(std::move(other))
+RenderTarget::RenderTarget(RenderTarget&& other) noexcept 
+	: Texture(std::move(other))
 {
 	m_renderTargetHandle = std::exchange(other.m_renderTargetHandle, nullptr);
 }
@@ -91,8 +90,7 @@ RenderTarget& RenderTarget::operator=(RenderTarget&& other) noexcept
 {
 	Texture::operator=(std::move(other));
 
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
 	if (m_renderTargetHandle)
 		RHIBackend::DestroyRenderTarget(m_renderTargetHandle);
@@ -102,15 +100,14 @@ RenderTarget& RenderTarget::operator=(RenderTarget&& other) noexcept
 	return *this;
 }
 //=============================================================================
-Shader::Shader(const std::string& vertex_code, const std::string& fragment_code, const std::vector<std::string>& defines)
+Shader::Shader(const std::string& vertexCode, const std::string& fragmentCode, const std::vector<std::string>& defines)
 {
-	m_shaderHandle = RHIBackend::CreateShader(vertex_code, fragment_code, defines);
+	m_shaderHandle = RHIBackend::CreateShader(vertexCode, fragmentCode, defines);
 }
 //=============================================================================
 Shader::Shader(Shader&& other) noexcept
 {
 	RHIBackend::DestroyShader(m_shaderHandle);
-
 	m_shaderHandle = std::exchange(other.m_shaderHandle, nullptr);
 }
 //=============================================================================
@@ -141,8 +138,7 @@ Buffer::Buffer(Buffer&& other) noexcept
 //=============================================================================
 Buffer& Buffer::operator=(Buffer&& other) noexcept
 {
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
 	m_size = std::exchange(other.m_size, 0);
 	return *this;
@@ -176,8 +172,7 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept
 {
 	Buffer::operator=(std::move(other));
 
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
 	if (m_vertexBufferHandle)
 		RHIBackend::DestroyVertexBuffer(m_vertexBufferHandle);
@@ -216,8 +211,7 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
 {
 	Buffer::operator=(std::move(other));
 
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
 	if (m_indexBufferHandle)
 		RHIBackend::DestroyIndexBuffer(m_indexBufferHandle);
@@ -256,8 +250,7 @@ UniformBuffer& UniformBuffer::operator=(UniformBuffer&& other) noexcept
 {
 	Buffer::operator=(std::move(other));
 
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
 	if (m_uniformBufferHandle)
 		RHIBackend::DestroyUniformBuffer(m_uniformBufferHandle);
@@ -272,24 +265,23 @@ void UniformBuffer::Write(const void* memory, size_t size)
 }
 //=============================================================================
 #if RENDER_VULKAN
-RaytracingShader::RaytracingShader(const std::string& raygen_code, const std::vector<std::string>& miss_code,
-	const std::string& closesthit_code, const std::vector<std::string>& defines)
+RaytracingShader::RaytracingShader(const std::string& raygenCode, const std::vector<std::string>& missCode, const std::string& closesthitCode, const std::vector<std::string>& defines)
 {
-	mRaytracingShaderHandle = RHIBackend::CreateRaytracingShader(raygen_code, miss_code, closesthit_code, defines);
+	m_raytracingShaderHandle = RHIBackend::CreateRaytracingShader(raygenCode, missCode, closesthitCode, defines);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
 #if RENDER_VULKAN
 RaytracingShader::~RaytracingShader()
 {
-	RHIBackend::DestroyRaytracingShader(mRaytracingShaderHandle);
+	RHIBackend::DestroyRaytracingShader(m_raytracingShaderHandle);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
 #if RENDER_VULKAN
 StorageBuffer::StorageBuffer(size_t size) : Buffer(size)
 {
-	mStorageBufferHandle = RHIBackend::CreateStorageBuffer(size);
+	m_storageBufferHandle = RHIBackend::CreateStorageBuffer(size);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
@@ -304,15 +296,14 @@ StorageBuffer::StorageBuffer(const void* memory, size_t size) : StorageBuffer(si
 
 StorageBuffer::StorageBuffer(StorageBuffer&& other) noexcept : Buffer(std::move(other))
 {
-	mStorageBufferHandle = std::exchange(other.mStorageBufferHandle, nullptr);
+	m_storageBufferHandle = std::exchange(other.m_storageBufferHandle, nullptr);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
 #if RENDER_VULKAN
 StorageBuffer::~StorageBuffer()
 {
-	if (mStorageBufferHandle)
-		RHIBackend::DestroyStorageBuffer(mStorageBufferHandle);
+	RHIBackend::DestroyStorageBuffer(m_storageBufferHandle);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
@@ -321,13 +312,12 @@ StorageBuffer& StorageBuffer::operator=(StorageBuffer&& other) noexcept
 {
 	Buffer::operator=(std::move(other));
 
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
-	if (mStorageBufferHandle)
-		RHIBackend::DestroyStorageBuffer(mStorageBufferHandle);
+	if (m_storageBufferHandle)
+		RHIBackend::DestroyStorageBuffer(m_storageBufferHandle);
 
-	mStorageBufferHandle = std::exchange(other.mStorageBufferHandle, nullptr);
+	m_storageBufferHandle = std::exchange(other.m_storageBufferHandle, nullptr);
 	return *this;
 }
 #endif // RENDER_VULKAN
@@ -335,40 +325,37 @@ StorageBuffer& StorageBuffer::operator=(StorageBuffer&& other) noexcept
 #if RENDER_VULKAN
 void StorageBuffer::Write(const void* memory, size_t size)
 {
-	RHIBackend::WriteStorageBufferMemory(mStorageBufferHandle, memory, size);
+	RHIBackend::WriteStorageBufferMemory(m_storageBufferHandle, memory, size);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
 #if RENDER_VULKAN
-BottomLevelAccelerationStructure::BottomLevelAccelerationStructure(const void* vertex_memory, uint32_t vertex_count,
-	uint32_t vertex_offset, uint32_t vertex_stride, const void* index_memory, uint32_t index_count,
-	uint32_t index_offset, uint32_t index_stride, const glm::mat4& transform)
+BottomLevelAccelerationStructure::BottomLevelAccelerationStructure(const void* vertexMemory, uint32_t vertexCount, uint32_t vertexOffset, uint32_t vertexStride, const void* indexMemory, uint32_t indexCount, uint32_t indexOffset, uint32_t indexStride, const glm::mat4& transform)
 {
-	auto vertex_memory_with_offset = (void*)((size_t)vertex_memory + vertex_offset);
-	auto index_memory_with_offset = (void*)((size_t)index_memory + index_offset);
+	auto vertexMemoryWithOffset = (void*)((size_t)vertexMemory + vertexOffset);
+	auto indexMemoryWithOffset = (void*)((size_t)indexMemory + indexOffset);
 
-	mBottomLevelAccelerationStructureHandle = RHIBackend::CreateBottomLevelAccelerationStructure(vertex_memory_with_offset,
-		vertex_count, vertex_stride, index_memory_with_offset, index_count, index_stride, transform);
+	m_bottomLevelAccelerationStructureHandle = RHIBackend::CreateBottomLevelAccelerationStructure(vertexMemoryWithOffset, vertexCount, vertexStride, indexMemoryWithOffset, indexCount, indexStride, transform);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
 #if RENDER_VULKAN
 BottomLevelAccelerationStructure::~BottomLevelAccelerationStructure()
 {
-	if (mBottomLevelAccelerationStructureHandle)
-		RHIBackend::DestroyBottomLevelAccelerationStructure(mBottomLevelAccelerationStructureHandle);
+	if (m_bottomLevelAccelerationStructureHandle)
+		RHIBackend::DestroyBottomLevelAccelerationStructure(m_bottomLevelAccelerationStructureHandle);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
 #if RENDER_VULKAN
-TopLevelAccelerationStructure::TopLevelAccelerationStructure(const std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>& bottom_level_acceleration_structures)
+TopLevelAccelerationStructure::TopLevelAccelerationStructure(const std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>& bottomLevelAccelerationStructures)
 {
-	mTopLevelAccelerationStructureHandle = RHIBackend::CreateTopLevelAccelerationStructure(bottom_level_acceleration_structures);
+	m_topLevelAccelerationStructureHandle = RHIBackend::CreateTopLevelAccelerationStructure(bottomLevelAccelerationStructures);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
 #if RENDER_VULKAN
-TopLevelAccelerationStructure::TopLevelAccelerationStructure(const std::vector<BottomLevelAccelerationStructureHandle*>& bottom_level_acceleration_structures) : TopLevelAccelerationStructure(CreateIndexedBlases(bottom_level_acceleration_structures))
+TopLevelAccelerationStructure::TopLevelAccelerationStructure(const std::vector<BottomLevelAccelerationStructureHandle*>& bottomLevelAccelerationStructures) : TopLevelAccelerationStructure(createIndexedBlases(bottomLevelAccelerationStructures))
 {
 }
 #endif // RENDER_VULKAN
@@ -376,14 +363,14 @@ TopLevelAccelerationStructure::TopLevelAccelerationStructure(const std::vector<B
 #if RENDER_VULKAN
 TopLevelAccelerationStructure::~TopLevelAccelerationStructure()
 {
-	if (mTopLevelAccelerationStructureHandle)
-		RHIBackend::DestroyTopLevelAccelerationStructure(mTopLevelAccelerationStructureHandle);
+	if (m_topLevelAccelerationStructureHandle)
+		RHIBackend::DestroyTopLevelAccelerationStructure(m_topLevelAccelerationStructureHandle);
 }
 #endif // RENDER_VULKAN
 //=============================================================================
 #if RENDER_VULKAN
 std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>>
-TopLevelAccelerationStructure::CreateIndexedBlases(const std::vector<BottomLevelAccelerationStructureHandle*>& blases)
+TopLevelAccelerationStructure::createIndexedBlases(const std::vector<BottomLevelAccelerationStructureHandle*>& blases)
 {
 	std::vector<std::tuple<uint32_t, BottomLevelAccelerationStructureHandle*>> result;
 	for (auto blas : blases)

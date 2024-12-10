@@ -15,8 +15,8 @@ namespace Graphics
 		};
 
 		Topology topology = Topology::TriangleList;
-		utils::Mesh::Vertices vertices;
-		utils::Mesh::Indices indices;
+		Mesh::Vertices vertices;
+		Mesh::Indices indices;
 
 		std::vector<glm::vec2> symbol_positions;
 		std::vector<glm::vec2> symbol_sizes;

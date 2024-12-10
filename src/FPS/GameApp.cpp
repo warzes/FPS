@@ -209,7 +209,7 @@ void GameStart()
 			for (const auto& draw_data : draw_datas)
 			{
 				utils::Model model;
-				model.mesh = (utils::Mesh*)&draw_data.mesh;
+				model.mesh = (Mesh*)&draw_data.mesh;
 				model.draw_command = draw_data.draw_command;
 				model.color = material->color;
 				model.color_texture = material->color_texture.get();

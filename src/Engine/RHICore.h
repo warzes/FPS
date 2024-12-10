@@ -201,8 +201,9 @@ struct ColorMask final
 
 struct BlendMode final
 {
-	BlendMode(Blend color_src, Blend color_dst, Blend alpha_src, Blend alpha_dst)  : colorSrc(color_src), colorDst(color_dst), alphaSrc(alpha_src), alphaDst(alpha_dst) {}
-	BlendMode(Blend src, Blend dst) : BlendMode(src, dst, src, dst) {}
+	constexpr BlendMode(Blend color_src, Blend color_dst, Blend alpha_src, Blend alpha_dst) 
+		: colorSrc(color_src), colorDst(color_dst), alphaSrc(alpha_src), alphaDst(alpha_dst) {}
+	constexpr BlendMode(Blend src, Blend dst) : BlendMode(src, dst, src, dst) {}
 
 	BlendFunction colorFunc = BlendFunction::Add;
 	Blend         colorSrc;
@@ -219,10 +220,10 @@ struct BlendMode final
 
 namespace BlendStates
 {
-	inline const BlendMode Opaque = BlendMode(Blend::One, Blend::Zero);
-	inline const BlendMode AlphaBlend = BlendMode(Blend::One, Blend::InvSrcAlpha);
-	inline const BlendMode Additive = BlendMode(Blend::SrcAlpha, Blend::One);
-	inline const BlendMode NonPremultiplied = BlendMode(Blend::SrcAlpha, Blend::InvSrcAlpha);
+	constexpr BlendMode Opaque           = BlendMode(Blend::One, Blend::Zero);
+	constexpr BlendMode AlphaBlend       = BlendMode(Blend::One, Blend::InvSrcAlpha);
+	constexpr BlendMode Additive         = BlendMode(Blend::SrcAlpha, Blend::One);
+	constexpr BlendMode NonPremultiplied = BlendMode(Blend::SrcAlpha, Blend::InvSrcAlpha);
 }
 
 struct InputLayout final
@@ -233,12 +234,12 @@ struct InputLayout final
 		Instance
 	};
 
-	struct Attribute
+	struct Attribute final
 	{
 		Attribute(VertexFormat format, size_t offset);
 
 		VertexFormat format;
-		size_t offset;
+		size_t       offset;
 
 		bool operator==(const Attribute&) const = default;
 	};
@@ -246,7 +247,7 @@ struct InputLayout final
 	InputLayout(Rate rate, std::unordered_map<uint32_t, Attribute> attributes);
 	InputLayout(Rate rate, const std::vector<Attribute>& attributes);
 
-	Rate rate;
+	Rate                                    rate;
 	std::unordered_map<uint32_t, Attribute> attributes;
 
 	bool operator==(const InputLayout&) const = default;
@@ -345,5 +346,5 @@ private:
 struct RenderSystemCreateInfo final
 {
 	std::unordered_set<RenderFeature> features{};
-	bool vsync{ false };
+	bool                              vsync{ false };
 };

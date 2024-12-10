@@ -18,10 +18,10 @@ namespace game
 	{
 		struct DrawData
 		{
-			utils::Mesh::Vertices vertices; // for normals debug
-			utils::Mesh::Indices indices; // for normals debug
+			Mesh::Vertices vertices; // for normals debug
+			Mesh::Indices indices; // for normals debug
 			Topology topology;
-			utils::Mesh mesh;
+			Mesh mesh;
 			utils::commands::DrawMesh::DrawCommand draw_command;
 		};
 
@@ -126,7 +126,7 @@ namespace game
 				auto tangents_ptr = (glm::vec3*)(((size_t)tangents_buffer.data.data()) + tangents_buffer_view.byteOffset);
 				//auto bitangents_ptr = (glm::vec3*)(((size_t)bitangents_buffer.data.data()) + bitangents_buffer_view.byteOffset);
 
-				auto indices = utils::Mesh::Indices();
+				auto indices = Mesh::Indices();
 
 				for (int i = 0; i < index_buffer_accessor.count; i++)
 				{
@@ -140,11 +140,11 @@ namespace game
 					indices.push_back(index);
 				}
 
-				utils::Mesh::Vertices vertices;
+				Mesh::Vertices vertices;
 
 				for (int i = 0; i < positions_buffer_accessor.count; i++)
 				{
-					utils::Mesh::Vertex vertex;
+					Mesh::Vertex vertex;
 
 					vertex.pos = positions_ptr[i];
 					vertex.normal = normal_ptr[i];
@@ -156,9 +156,9 @@ namespace game
 					vertices.push_back(vertex);
 				}
 
-				auto mesh = utils::Mesh();
-				mesh.setIndices(indices);
-				mesh.setVertices(vertices);
+				auto mesh = Mesh();
+				mesh.SetIndices(indices);
+				mesh.SetVertices(vertices);
 
 				auto draw_command = utils::commands::DrawMesh::DrawIndexedVerticesCommand{
 					.index_count = (uint32_t)index_count,
@@ -216,7 +216,7 @@ namespace game
 
 	static int gDrawcalls = 0;
 
-	utils::Mesh CreateNormalsDebugMesh(const RenderBuffer& render_buffer)
+	Mesh CreateNormalsDebugMesh(const RenderBuffer& render_buffer)
 	{
 		utils::MeshBuilder mesh_builder;
 
@@ -224,7 +224,7 @@ namespace game
 		{
 			for (const auto& draw_data : draw_datas)
 			{
-				auto draw_vertex = [&](const utils::Mesh::Vertex& vertex) {
+				auto draw_vertex = [&](const Mesh::Vertex& vertex) {
 					mesh_builder.begin(utils::MeshBuilder::Mode::Lines);
 					mesh_builder.vertex({ .pos = vertex.pos, .color = { 0.0f, 1.0f, 0.0f, 1.0f } });
 					mesh_builder.vertex({ .pos = vertex.pos + (vertex.normal * 25.0f), .color = { 0.0f, 1.0f, 0.0f, 1.0f } });
@@ -257,7 +257,7 @@ namespace game
 			}
 		}
 
-		utils::Mesh mesh;
+		Mesh mesh;
 		mesh_builder.setToMesh(mesh);
 
 		return mesh;

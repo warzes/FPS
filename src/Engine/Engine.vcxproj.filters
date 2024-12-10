@@ -41,7 +41,7 @@
     <ClCompile Include="BufferD3D12.cpp">
       <Filter>RHI\Direct3D12\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="RenderResources.cpp">
+    <ClCompile Include="RHIResources.cpp">
       <Filter>RHI</Filter>
     </ClCompile>
     <ClCompile Include="RenderCoreOpenGL.cpp">
@@ -131,15 +131,6 @@
     <ClCompile Include="MouseWin32.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="RenderCore.cpp">
-      <Filter>RHI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>RHI\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderCompiler.cpp">
-      <Filter>RHI\Core</Filter>
-    </ClCompile>
     <ClCompile Include="RenderUtils.cpp">
       <Filter>Render</Filter>
     </ClCompile>
@@ -154,6 +145,18 @@
     </ClCompile>
     <ClCompile Include="RHIBackendVK.cpp">
       <Filter>RHI\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="RHICore.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderCompiler.cpp">
+      <Filter>RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,7 +206,7 @@
     <ClInclude Include="BufferD3D12.h">
       <Filter>RHI\Direct3D12\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="RenderResources.h">
+    <ClInclude Include="RHIResources.h">
       <Filter>RHI</Filter>
     </ClInclude>
     <ClInclude Include="RenderCoreOpenGL.h">
@@ -308,20 +311,23 @@
     <ClInclude Include="Mouse.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="RenderCore.h">
-      <Filter>RHI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>RHI\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
-      <Filter>RHI\Core</Filter>
-    </ClInclude>
     <ClInclude Include="RenderUtils.h">
       <Filter>Render</Filter>
     </ClInclude>
+    <ClInclude Include="RHICore.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCompiler.h">
+      <Filter>RHI</Filter>
+    </ClInclude>
     <ClInclude Include="RHIBackend.h">
-      <Filter>RHI\Private</Filter>
+      <Filter>RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -376,11 +382,8 @@
     <Filter Include="Math">
       <UniqueIdentifier>{64bd0bbb-2dfc-4d29-bd48-f174de52df58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RHI\Core">
-      <UniqueIdentifier>{ef241f23-7022-41b3-aa88-3023370f3626}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RHI\Private">
-      <UniqueIdentifier>{e5b67bc0-c1db-452a-9c99-4b7f91e2266e}</UniqueIdentifier>
+    <Filter Include="Render\Core">
+      <UniqueIdentifier>{f0ba48df-c31e-47a1-8c52-da2404fd6af6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

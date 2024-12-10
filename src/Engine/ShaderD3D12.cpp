@@ -45,7 +45,7 @@ ShaderD3D12::ShaderD3D12(const std::string& vertex_code, const std::string& frag
 
 	for (const auto& reflection : { vertex_shader_reflection, fragment_shader_reflection })
 	{
-		for (const auto& [type, descriptor_bindings] : reflection.typed_descriptor_bindings)
+		for (const auto& [type, descriptor_bindings] : reflection.typedDescriptorBindings)
 		{
 			for (const auto& [binding, descriptor] : descriptor_bindings)
 			{
@@ -56,7 +56,7 @@ ShaderD3D12::ShaderD3D12(const std::string& vertex_code, const std::string& frag
 				required_descriptor_bindings[binding] = descriptor;
 			}
 		}
-		for (const auto& [set, bindings] : reflection.descriptor_sets)
+		for (const auto& [set, bindings] : reflection.descriptorSets)
 		{
 			m_requiredDescriptorSets[reflection.stage][set] = bindings;
 		}

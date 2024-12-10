@@ -1,32 +1,32 @@
 ﻿#pragma once
 
-#include "RenderCore.h"
+#include "RHICore.h"
 
 namespace vertex
 {
 	namespace location
 	{
-		constexpr auto Position = "POSITION_LOCATION";
-		constexpr auto Color = "COLOR_LOCATION";
-		constexpr auto TexCoord = "TEXCOORD_LOCATION";
-		constexpr auto Normal = "NORMAL_LOCATION";
-		constexpr auto Tangent = "TANGENT_LOCATION";
+		constexpr auto Position  = "POSITION_LOCATION";
+		constexpr auto Color     = "COLOR_LOCATION";
+		constexpr auto TexCoord  = "TEXCOORD_LOCATION";
+		constexpr auto Normal    = "NORMAL_LOCATION";
+		constexpr auto Tangent   = "TANGENT_LOCATION";
 		constexpr auto Bitangent = "BITANGENT_LOCATION";
-	};
+	}
 
 	namespace defaults
 	{
-		constexpr glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
-		constexpr glm::vec4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		constexpr glm::vec2 TexCoord = { 0.0f, 0.0f };
-		constexpr glm::vec3 Normal = { 0.0f, 0.0f, 0.0f };
-		constexpr glm::vec3 Tangent = { 0.0f, 1.0f, 0.0f };
+		constexpr glm::vec3 Position  = { 0.0f, 0.0f, 0.0f };
+		constexpr glm::vec4 Color     = { 1.0f, 1.0f, 1.0f, 1.0f };
+		constexpr glm::vec2 TexCoord  = { 0.0f, 0.0f };
+		constexpr glm::vec3 Normal    = { 0.0f, 0.0f, 0.0f };
+		constexpr glm::vec3 Tangent   = { 0.0f, 1.0f, 0.0f };
 		constexpr glm::vec3 Bitangent = { 0.0f, 1.0f, 0.0f };
 	}
 
 	std::vector<std::string> MakeSequentialLocationDefines(const std::vector<std::string>& locations);
 
-	struct Position
+	struct Position final
 	{
 		glm::vec3 pos = defaults::Position;
 
@@ -37,7 +37,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionColor
+	struct PositionColor final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
@@ -50,7 +50,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionTexture
+	struct PositionTexture final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec2 texcoord = defaults::TexCoord;
@@ -63,7 +63,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionNormal
+	struct PositionNormal final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec3 normal = defaults::Normal;
@@ -76,7 +76,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionColorNormal
+	struct PositionColorNormal final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
@@ -91,7 +91,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionColorTexture
+	struct PositionColorTexture final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
@@ -106,7 +106,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionTextureNormal
+	struct PositionTextureNormal final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec2 texcoord = defaults::TexCoord;
@@ -121,7 +121,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionColorTextureNormal
+	struct PositionColorTextureNormal final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
@@ -138,7 +138,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionColorTextureNormalTangent
+	struct PositionColorTextureNormalTangent final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
@@ -157,7 +157,7 @@ namespace vertex
 			});
 	};
 
-	struct PositionColorTextureNormalTangentBitangent
+	struct PositionColorTextureNormalTangentBitangent final
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;

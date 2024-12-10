@@ -7,8 +7,8 @@
 #define PLATFORM_EMSCRIPTEN 0
 
 // RenderAPI
-#define RENDER_D3D11 1
-#define RENDER_D3D12 0
+#define RENDER_D3D11 0
+#define RENDER_D3D12 1
 #define RENDER_VULKAN 0
 #define RENDER_OPENGL 0
 #define RENDER_WEBGPU 0
@@ -33,6 +33,8 @@
 #define __CONCAT__(a, b) a##b
 #define CONCAT(a, b) __CONCAT__(a, b)
 
-#if defined(_DEBUG) && 0
+#if defined(_DEBUG)
 #	define RHI_VALIDATION_ENABLED 1
+#else
+#	define RHI_VALIDATION_ENABLED 0
 #endif

@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "RenderCore.h"
+#include "RHICore.h"
 //=============================================================================
 InputLayout::Attribute::Attribute(VertexFormat _format, size_t _offset)
 	: format(_format)

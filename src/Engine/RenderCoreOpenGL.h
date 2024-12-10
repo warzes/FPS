@@ -2,7 +2,7 @@
 
 #if RENDER_OPENGL
 
-#include "RenderCore.h"
+#include "RHICore.h"
 
 static const std::unordered_map<VertexFormat, GLint> VertexFormatSizeMap = {
 	{ VertexFormat::Float1, 1 },

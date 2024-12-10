@@ -8,7 +8,7 @@
 #include "BufferVK.h"
 #include "AccelerationStructureVK.h"
 #include "Log.h"
-#include "RenderResources.h"
+#include "RHIResources.h"
 //=============================================================================
 #if RHI_VALIDATION_ENABLED
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

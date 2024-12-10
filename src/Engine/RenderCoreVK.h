@@ -2,7 +2,7 @@
 
 #if RENDER_VULKAN
 
-#include "RenderCore.h"
+#include "RHICore.h"
 #include "ShaderCompiler.h"
 
 class ObjectVK;

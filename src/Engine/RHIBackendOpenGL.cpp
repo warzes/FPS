@@ -7,7 +7,7 @@
 #include "RenderTargetOpenGL.h"
 #include "BufferOpenGL.h"
 #include "Log.h"
-#include "RenderResources.h"
+#include "RHIResources.h"
 //=============================================================================
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")

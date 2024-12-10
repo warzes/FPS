@@ -147,7 +147,7 @@ std::tuple<vk::raii::PipelineLayout, vk::raii::DescriptorSetLayout, std::vector<
 	{
 		auto reflection = MakeSpirvReflection(spirv);
 
-		for (const auto& [type, descriptor_bindings] : reflection.typed_descriptor_bindings)
+		for (const auto& [type, descriptor_bindings] : reflection.typedDescriptorBindings)
 		{
 			for (const auto& [binding, descriptor] : descriptor_bindings)
 			{

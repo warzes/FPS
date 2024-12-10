@@ -2,59 +2,6 @@
 #include "RenderUtils.h"
 #include "RenderSystem.h"
 
-utils::Mesh::Mesh(const Vertices& vertices)
-{
-	setVertices(vertices);
-}
-
-utils::Mesh::Mesh(const Vertices& vertices, const Indices& indices)
-{
-	setVertices(vertices);
-	setIndices(indices);
-}
-
-void utils::Mesh::setVertices(const Vertex* memory, uint32_t count)
-{
-	mVertexCount = count;
-
-	if (count == 0)
-		return;
-
-	size_t size = count * sizeof(Vertex);
-	size_t stride = sizeof(Vertex);
-
-	if (!mVertexBuffer.has_value() || mVertexBuffer.value().GetSize() < size)
-		mVertexBuffer.emplace(size, stride);
-
-	mVertexBuffer.value().Write(memory, count);
-}
-
-void utils::Mesh::setVertices(const Vertices& value)
-{
-	setVertices(value.data(), static_cast<uint32_t>(value.size()));
-}
-
-void utils::Mesh::setIndices(const Index* memory, uint32_t count)
-{
-	mIndexCount = count;
-
-	if (count == 0)
-		return;
-
-	size_t size = count * sizeof(Index);
-	size_t stride = sizeof(Index);
-
-	if (!mIndexBuffer.has_value() || mIndexBuffer.value().GetSize() < size)
-		mIndexBuffer.emplace(size, stride);
-
-	mIndexBuffer.value().Write(memory, count);
-}
-
-void utils::Mesh::setIndices(const Indices& value)
-{
-	setIndices(value.data(), static_cast<uint32_t>(value.size()));
-}
-
 const std::string utils::effects::BasicEffect::VertexShaderCode = R"(
 #version 450 core
 
@@ -162,7 +109,7 @@ static std::vector<std::string> ConcatDefines(std::vector<std::vector<std::strin
 
 static std::vector<std::string> MakeBasicEffectDefines()
 {
-	return ConcatDefines({ utils::Mesh::Vertex::Defines, {
+	return ConcatDefines({ Mesh::Vertex::Defines, {
 		"COLOR_TEXTURE_BINDING 0",
 		"SETTINGS_UNIFORM_BINDING 2"
 	} });
@@ -667,8 +614,8 @@ utils::effects::BrightFilter::BrightFilter(float _threshold) :
 
 std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> utils::MakeCameraMatrices(const OrthogonalCamera& camera)
 {
-	auto width = (float)camera.width.value_or(gRenderSystem->GetBackbufferWidth());
-	auto height = (float)camera.height.value_or(gRenderSystem->GetBackbufferHeight());
+	auto width = (float)camera.width.value_or(gRenderSystem->GetBackBufferWidth());
+	auto height = (float)camera.height.value_or(gRenderSystem->GetBackBufferHeight());
 	auto proj = glm::orthoLH(0.0f, width, height, 0.0f, -1.0f, 1.0f);
 	auto view = glm::lookAtLH(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f));
@@ -687,8 +634,8 @@ std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> utils::MakeCameraMatrices(const
 	auto right = glm::normalize(glm::cross(front, camera.world_up));
 	auto up = glm::normalize(glm::cross(right, front));
 
-	auto width = (float)camera.width.value_or(gRenderSystem->GetBackbufferWidth());
-	auto height = (float)camera.height.value_or(gRenderSystem->GetBackbufferHeight());
+	auto width = (float)camera.width.value_or(gRenderSystem->GetBackBufferWidth());
+	auto height = (float)camera.height.value_or(gRenderSystem->GetBackBufferHeight());
 
 	auto proj = glm::perspectiveFov(camera.fov, width, height, camera.near_plane, camera.far_plane);
 	auto view = glm::lookAtRH(camera.position, camera.position + front, up);
@@ -1033,8 +980,8 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 
 				if (mesh_dirty)
 				{
-					const auto& vertex_buffer = mesh->getVertexBuffer();
-					const auto& index_buffer = mesh->getIndexBuffer();
+					const auto& vertex_buffer = mesh->GetVertexBuffer();
+					const auto& index_buffer = mesh->GetIndexBuffer();
 
 					if (vertex_buffer.has_value())
 						execute_command(commands::SetVertexBuffer(&vertex_buffer.value()));
@@ -1055,7 +1002,7 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 
 				if (!draw_command.has_value())
 				{
-					if (mesh->getIndexCount() == 0)
+					if (mesh->GetIndexCount() == 0)
 						draw_command = commands::DrawMesh::DrawVerticesCommand{};
 					else
 						draw_command = commands::DrawMesh::DrawIndexedVerticesCommand{};
@@ -1063,12 +1010,12 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 
 				std::visit(cases{
 					[&](const commands::DrawMesh::DrawVerticesCommand& draw) {
-						auto vertex_count = draw.vertex_count.value_or(mesh->getVertexCount());
+						auto vertex_count = draw.vertex_count.value_or(mesh->GetVertexCount());
 						auto vertex_offset = draw.vertex_offset;
 						execute_command(commands::Draw(vertex_count, vertex_offset));
 					},
 					[&](const commands::DrawMesh::DrawIndexedVerticesCommand& draw) {
-						auto index_count = draw.index_count.value_or(mesh->getIndexCount());
+						auto index_count = draw.index_count.value_or(mesh->GetIndexCount());
 						auto index_offset = draw.index_offset;
 						execute_command(commands::DrawIndexed(index_count, index_offset));
 					}
@@ -1601,8 +1548,8 @@ void utils::MeshBuilder::setToMesh(Mesh& mesh)
 	if (mBegan)
 		throw std::runtime_error("missing end()");
 
-	mesh.setVertices(mVertices);
-	mesh.setIndices(mIndices);
+	mesh.SetVertices(mVertices);
+	mesh.SetIndices(mIndices);
 }
 
 void utils::Scratch::begin(MeshBuilder::Mode mode, const State& state)

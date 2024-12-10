@@ -32,8 +32,6 @@ public:
 	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>> blend_modes;
 	std::optional<BlendMode> blend_mode;
 
-
-
 	bool shader_dirty = true;
 	bool input_layouts_dirty = true;
 	bool depth_stencil_state_dirty = true;

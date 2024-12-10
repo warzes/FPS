@@ -78,10 +78,10 @@ ShaderGL::ShaderGL(const std::string& vertex_code, const std::string& fragment_c
 		auto for_each_descriptor_binding = [&](auto type, std::function<void(uint32_t binding, const ShaderReflection::Descriptor& descriptor)> callback) {
 			for (const auto& reflection : { m_vertRefl, m_fragRefl })
 			{
-				if (!reflection.typed_descriptor_bindings.contains(type))
+				if (!reflection.typedDescriptorBindings.contains(type))
 					continue;
 
-				for (const auto& [binding, descriptor] : reflection.typed_descriptor_bindings.at(type))
+				for (const auto& [binding, descriptor] : reflection.typedDescriptorBindings.at(type))
 				{
 					callback(binding, descriptor);
 				}

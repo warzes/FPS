@@ -2,7 +2,7 @@
 
 #if RENDER_D3D12
 
-#include "RenderCore.h"
+#include "RHICore.h"
 
 class BufferD3D12;
 class ShaderD3D12;

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "RenderResources.h"
+#include "RHIResources.h"
 
 namespace Graphics
 {

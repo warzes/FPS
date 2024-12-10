@@ -7,12 +7,17 @@
 #include "RenderTargetD3D11.h"
 #include "BufferD3D11.h"
 #include "Log.h"
-#include "RenderResources.h"
+#include "RHIResources.h"
 //=============================================================================
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
+//=============================================================================
+extern "C" {
+	_declspec(dllexport) uint32_t NvOptimusEnablement = 1;
+	_declspec(dllexport) uint32_t AmdPowerXpressRequestHighPerformance = 1;
+}
 //=============================================================================
 RenderContext gContext{};
 //=============================================================================

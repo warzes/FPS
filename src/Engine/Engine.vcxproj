@@ -107,6 +107,7 @@
     <ClInclude Include="ContextOpenGL.h" />
     <ClInclude Include="ContextVK.h" />
     <ClInclude Include="EngineApp.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="RHIBackend.h" />
     <ClInclude Include="HashCombine.h" />
     <ClInclude Include="Image.h" />
@@ -121,13 +122,13 @@
     <ClInclude Include="PipelineStateOpenGL.h" />
     <ClInclude Include="PipelineStateVK.h" />
     <ClInclude Include="PrivateHeader.h" />
-    <ClInclude Include="RenderCore.h" />
+    <ClInclude Include="RHICore.h" />
     <ClInclude Include="RenderCoreD3D11.h" />
     <ClInclude Include="RenderCoreD3D12.h" />
     <ClInclude Include="RenderCoreOpenGL.h" />
     <ClInclude Include="RenderCoreVK.h" />
     <ClInclude Include="Font.h" />
-    <ClInclude Include="RenderResources.h" />
+    <ClInclude Include="RHIResources.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RenderTargetD3D11.h" />
     <ClInclude Include="RenderTargetD3D12.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="ContextOpenGL.cpp" />
     <ClCompile Include="ContextVK.cpp" />
     <ClCompile Include="EngineApp.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="RHIBackendD3D11.cpp" />
     <ClCompile Include="RHIBackendD3D12.cpp" />
     <ClCompile Include="RHIBackendOpenGL.cpp" />
@@ -176,13 +178,13 @@
     <ClCompile Include="PipelineStateD3D12.cpp" />
     <ClCompile Include="PipelineStateOpenGL.cpp" />
     <ClCompile Include="PipelineStateVK.cpp" />
-    <ClCompile Include="RenderCore.cpp" />
+    <ClCompile Include="RHICore.cpp" />
     <ClCompile Include="RenderCoreD3D11.cpp" />
     <ClCompile Include="RenderCoreD3D12.cpp" />
     <ClCompile Include="RenderCoreOpenGL.cpp" />
     <ClCompile Include="RenderCoreVK.cpp" />
     <ClCompile Include="Font.cpp" />
-    <ClCompile Include="RenderResources.cpp" />
+    <ClCompile Include="RHIResources.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="RenderTargetD3D11.cpp" />
     <ClCompile Include="RenderTargetD3D12.cpp" />

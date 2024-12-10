@@ -1,46 +1,12 @@
 ﻿#pragma once
 
-#include "Vertex.h"
-#include "RenderResources.h"
+#include "Mesh.h"
 
 template<class... Ts> struct cases : Ts... { using Ts::operator()...; };
 template<class... Ts> cases(Ts...) -> cases<Ts...>;
 
 namespace utils
 {
-	class Mesh
-	{
-	public:
-		using Vertex = vertex::PositionColorTextureNormalTangent;
-		using Index = uint32_t;
-		using Vertices = std::vector<Vertex>;
-		using Indices = std::vector<Index>;
-
-	public:
-		Mesh() = default;
-		Mesh(const Vertices& vertices);
-		Mesh(const Vertices& vertices, const Indices& indices);
-
-		void setVertices(const Vertex* memory, uint32_t count);
-		void setVertices(const Vertices& value);
-
-		void setIndices(const Index* memory, uint32_t count);
-		void setIndices(const Indices& value);
-
-		auto getVertexCount() const { return mVertexCount; }
-		auto getIndexCount() const { return mIndexCount; }
-
-		const auto& getVertexBuffer() const { return mVertexBuffer; }
-		const auto& getIndexBuffer() const { return mIndexBuffer; }
-		const auto* GetVertexBuffer() const { return mVertexBuffer.value().Get(); }
-		const auto* GetIndexBuffer() const { return mIndexBuffer.value().Get(); }
-	private:
-		uint32_t mVertexCount = 0;
-		uint32_t mIndexCount = 0;
-		std::optional<VertexBuffer> mVertexBuffer;
-		std::optional<IndexBuffer> mIndexBuffer;
-	};
-
 	struct DirectionalLight
 	{
 		glm::vec3 direction = { 0.5f, 0.5f, 0.5f };

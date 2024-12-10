@@ -1,9 +1,7 @@
 ﻿#pragma once
 
 #include "WindowStructs.h"
-#include "RenderResources.h"
-
-class RaytracingShader;
+#include "RHIResources.h"
 
 class RenderSystem final
 {
@@ -17,8 +15,10 @@ public:
 
 	void Present();
 
-	void Clear(const std::optional<glm::vec4>& color = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f },
-		const std::optional<float>& depth = 1.0f, const std::optional<uint8_t>& stencil = 0);
+	void Clear(
+		const std::optional<glm::vec4>& color = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f }, 
+		const std::optional<float>& depth = 1.0f, 
+		const std::optional<uint8_t>& stencil = 0);
 	void Draw(uint32_t vertex_count, uint32_t vertex_offset = 0, uint32_t instance_count = 1);
 	void DrawIndexed(uint32_t index_count, uint32_t index_offset = 0, uint32_t instance_count = 1);
 	void ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, Texture& dst_texture);
@@ -92,9 +92,9 @@ public:
 	uint32_t GetWidth();
 	uint32_t GetHeight();
 
-	uint32_t GetBackbufferWidth();
-	uint32_t GetBackbufferHeight();
-	PixelFormat GetBackbufferFormat();
+	uint32_t GetBackBufferWidth();
+	uint32_t GetBackBufferHeight();
+	PixelFormat GetBackBufferFormat();
 
 	RenderTarget* AcquireTransientRenderTarget(PixelFormat format = PixelFormat::RGBA32Float);
 	RenderTarget* AcquireTransientRenderTarget(uint32_t width, uint32_t height, PixelFormat format = PixelFormat::RGBA32Float);
@@ -102,7 +102,17 @@ public:
 	void DestroyTransientRenderTargets();
 
 private:
-	glm::u32vec2 m_frameSize = { 0, 0 };
+	glm::u32vec2                                m_frameSize = { 0, 0 };
+	std::optional<glm::u32vec2>                 m_renderTargetSize;
+	PixelFormat                                 m_backBufferFormat;
+
+	std::optional<VertexBuffer>                 m_vertexBuffer;
+	std::optional<IndexBuffer>                  m_indexBuffer;
+	std::unordered_map<uint32_t, UniformBuffer> m_uniformBuffers;
+	std::unordered_map<TransientRenderTargetDesc, std::unordered_set<std::shared_ptr<TransientRenderTarget>>> m_transientRenderTargets;
+#if RENDER_VULKAN
+	std::unordered_map<uint32_t, StorageBuffer> m_storageBuffers;
+#endif
 };
 
 extern RenderSystem* gRenderSystem;

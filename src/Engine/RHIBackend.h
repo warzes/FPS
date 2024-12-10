@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "RenderCore.h"
+#include "RHICore.h"
 #include "WindowStructs.h"
 
 class RenderTarget;

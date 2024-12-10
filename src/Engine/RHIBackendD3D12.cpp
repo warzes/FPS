@@ -7,7 +7,7 @@
 #include "RenderTargetD3D12.h"
 #include "BufferD3D12.h"
 #include "Log.h"
-#include "RenderResources.h"
+#include "RHIResources.h"
 //=============================================================================
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "d3dcompiler.lib")

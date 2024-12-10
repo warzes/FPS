@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 //=============================================================================
-#define EXAMPLE 1
+#define EXAMPLE 0
 #if EXAMPLE
 #include "001_triangle.h"
 #include "002_uniform.h"

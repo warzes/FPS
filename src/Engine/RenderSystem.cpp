@@ -3,15 +3,6 @@
 #include "RHIBackend.h"
 //=============================================================================
 RenderSystem* gRenderSystem{ nullptr };
-std::optional<glm::u32vec2> gRenderTargetSize;
-PixelFormat gBackbufferFormat;
-std::optional<VertexBuffer> gVertexBuffer;
-std::optional<IndexBuffer> gIndexBuffer;
-std::unordered_map<uint32_t, UniformBuffer> gUniformBuffers;
-std::unordered_map<TransientRenderTargetDesc, std::unordered_set<std::shared_ptr<TransientRenderTarget>>> gTransientRenderTargets;
-#if RENDER_VULKAN
-std::unordered_map<uint32_t, StorageBuffer> gStorageBuffers;
-#endif
 //=============================================================================
 RenderSystem::~RenderSystem()
 {
@@ -20,22 +11,25 @@ RenderSystem::~RenderSystem()
 //=============================================================================
 bool RenderSystem::Create(const WindowData& data, const RenderSystemCreateInfo& createInfo)
 {
-	gRenderSystem = this;
 	if (!RHIBackend::CreateAPI(data, createInfo)) return false;
 
 	m_frameSize = { data.width, data.height };
-	gRenderTargetSize.reset();
-	gBackbufferFormat = PixelFormat::RGBA8UNorm;
+	m_renderTargetSize.reset();
+	m_backBufferFormat = PixelFormat::RGBA8UNorm;
+
+	gRenderSystem = this;
 
 	return true;
 }
 //=============================================================================
 void RenderSystem::Destroy()
 {
-	gIndexBuffer.reset();
-	gVertexBuffer.reset();
-	gUniformBuffers.clear();
-
+	m_indexBuffer.reset();
+	m_vertexBuffer.reset();
+	m_uniformBuffers.clear();
+#if RENDER_VULKAN
+	m_storageBuffers.clear();
+#endif
 	RHIBackend::DestroyAPI();
 	gRenderSystem = nullptr;
 }
@@ -155,13 +149,13 @@ void RenderSystem::SetRenderTarget(const std::vector<const RenderTarget*>& value
 	RHIBackend::SetRenderTarget((const RenderTarget**)value.data(), value.size());
 	if (value.empty())
 	{
-		gRenderTargetSize.reset();
-		gBackbufferFormat = PixelFormat::RGBA8UNorm;
+		m_renderTargetSize.reset();
+		m_backBufferFormat = PixelFormat::RGBA8UNorm;
 	}
 	else
 	{
-		gRenderTargetSize = { value.at(0)->GetWidth(), value.at(0)->GetHeight() };
-		gBackbufferFormat = value.at(0)->GetFormat();
+		m_renderTargetSize = { value.at(0)->GetWidth(), value.at(0)->GetHeight() };
+		m_backBufferFormat = value.at(0)->GetFormat();
 	}
 }
 //=============================================================================
@@ -191,15 +185,15 @@ void RenderSystem::SetVertexBuffer(const void* memory, size_t size, size_t strid
 
 	size_t vertex_buffer_size = 0;
 
-	if (gVertexBuffer.has_value())
-		vertex_buffer_size = gVertexBuffer->GetSize();
+	if (m_vertexBuffer.has_value())
+		vertex_buffer_size = m_vertexBuffer->GetSize();
 
 	if (vertex_buffer_size < size)
-		gVertexBuffer.emplace(memory, size, stride);
+		m_vertexBuffer.emplace(memory, size, stride);
 	else
-		gVertexBuffer.value().Write(memory, size, stride);
+		m_vertexBuffer.value().Write(memory, size, stride);
 
-	SetVertexBuffer(gVertexBuffer.value());
+	SetVertexBuffer(m_vertexBuffer.value());
 }
 //=============================================================================
 void RenderSystem::SetIndexBuffer(const IndexBuffer& value)
@@ -213,15 +207,15 @@ void RenderSystem::SetIndexBuffer(const void* memory, size_t size, size_t stride
 
 	size_t index_buffer_size = 0;
 
-	if (gIndexBuffer.has_value())
-		index_buffer_size = gIndexBuffer->GetSize();
+	if (m_indexBuffer.has_value())
+		index_buffer_size = m_indexBuffer->GetSize();
 
 	if (index_buffer_size < size)
-		gIndexBuffer.emplace(memory, size, stride);
+		m_indexBuffer.emplace(memory, size, stride);
 	else
-		gIndexBuffer.value().Write(memory, size, stride);
+		m_indexBuffer.value().Write(memory, size, stride);
 
-	SetIndexBuffer(gIndexBuffer.value());
+	SetIndexBuffer(m_indexBuffer.value());
 }
 //=============================================================================
 void RenderSystem::SetUniformBuffer(uint32_t binding, const UniformBuffer& value)
@@ -233,10 +227,10 @@ void RenderSystem::SetUniformBuffer(uint32_t binding, const void* memory, size_t
 {
 	assert(size > 0);
 
-	if (!gUniformBuffers.contains(binding))
-		gUniformBuffers.emplace(binding, size);
+	if (!m_uniformBuffers.contains(binding))
+		m_uniformBuffers.emplace(binding, size);
 
-	auto& buffer = gUniformBuffers.at(binding);
+	auto& buffer = m_uniformBuffers.at(binding);
 
 	if (buffer.GetSize() < size)
 		buffer = UniformBuffer(size);
@@ -272,10 +266,10 @@ void RenderSystem::SetStorageBuffer(uint32_t binding, const void* memory, size_t
 {
 	assert(size > 0);
 
-	if (!gStorageBuffers.contains(binding))
-		gStorageBuffers.emplace(binding, size);
+	if (!m_storageBuffers.contains(binding))
+		m_storageBuffers.emplace(binding, size);
 
-	auto& buffer = gStorageBuffers.at(binding);
+	auto& buffer = m_storageBuffers.at(binding);
 
 	if (buffer.GetSize() < size)
 		buffer = StorageBuffer(size);
@@ -293,10 +287,6 @@ void RenderSystem::SetAccelerationStructure(uint32_t binding, const TopLevelAcce
 }
 #endif
 //=============================================================================
-
-
-
-//=============================================================================
 uint32_t RenderSystem::GetWidth()
 {
 	return m_frameSize.x;
@@ -307,31 +297,31 @@ uint32_t RenderSystem::GetHeight()
 	return m_frameSize.y;
 }
 //=============================================================================
-uint32_t RenderSystem::GetBackbufferWidth()
+uint32_t RenderSystem::GetBackBufferWidth()
 {
-	return gRenderTargetSize.value_or(m_frameSize).x;
+	return m_renderTargetSize.value_or(m_frameSize).x;
 }
 //=============================================================================
-uint32_t RenderSystem::GetBackbufferHeight()
+uint32_t RenderSystem::GetBackBufferHeight()
 {
-	return gRenderTargetSize.value_or(m_frameSize).y;
+	return m_renderTargetSize.value_or(m_frameSize).y;
 }
 //=============================================================================
-PixelFormat RenderSystem::GetBackbufferFormat()
+PixelFormat RenderSystem::GetBackBufferFormat()
 {
-	return gBackbufferFormat;
+	return m_backBufferFormat;
 }
 //=============================================================================
 RenderTarget* RenderSystem::AcquireTransientRenderTarget(PixelFormat format)
 {
-	return AcquireTransientRenderTarget(GetBackbufferWidth(), GetBackbufferHeight(), format);
+	return AcquireTransientRenderTarget(GetBackBufferWidth(), GetBackBufferHeight(), format);
 }
 //=============================================================================
 RenderTarget* RenderSystem::AcquireTransientRenderTarget(uint32_t width, uint32_t height, PixelFormat format)
 {
 	auto desc = TransientRenderTargetDesc(width, height, format);
 
-	for (auto& [_desc, transient_rts] : gTransientRenderTargets)
+	for (auto& [_desc, transient_rts] : m_transientRenderTargets)
 	{
 		if (desc != _desc)
 			continue;
@@ -347,13 +337,13 @@ RenderTarget* RenderSystem::AcquireTransientRenderTarget(uint32_t width, uint32_
 	}
 
 	auto transient_rt = std::make_shared<TransientRenderTarget>(width, height, format);
-	gTransientRenderTargets[desc].insert(transient_rt);
+	m_transientRenderTargets[desc].insert(transient_rt);
 	return transient_rt.get();
 }
 //=============================================================================
 void RenderSystem::ReleaseTransientRenderTarget(RenderTarget* target)
 {
-	for (auto& [desc, transient_rts] : gTransientRenderTargets)
+	for (auto& [desc, transient_rts] : m_transientRenderTargets)
 	{
 		for (auto& transient_rt : transient_rts)
 		{
@@ -369,7 +359,7 @@ void RenderSystem::ReleaseTransientRenderTarget(RenderTarget* target)
 //=============================================================================
 void RenderSystem::DestroyTransientRenderTargets()
 {
-	for (auto& [desc, transient_rts] : gTransientRenderTargets)
+	for (auto& [desc, transient_rts] : m_transientRenderTargets)
 	{
 		std::erase_if(transient_rts, [](const std::shared_ptr<TransientRenderTarget>& transient_rt) {
 			return transient_rt->GetState() == TransientRenderTarget::State::Destroy;
@@ -381,7 +371,7 @@ void RenderSystem::DestroyTransientRenderTargets()
 		}
 	}
 
-	std::erase_if(gTransientRenderTargets, [](const auto& pair) {
+	std::erase_if(m_transientRenderTargets, [](const auto& pair) {
 		return pair.second.empty();
 		});
 }

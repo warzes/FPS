@@ -42,7 +42,7 @@ void E008()
 	{
 		const auto WhiteColor = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
 
-		const utils::Mesh::Vertices vertices = {
+		const Mesh::Vertices vertices = {
 			/* front */
 			/* 0  */ { { -1.0f,  1.0f,  1.0f }, WhiteColor, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
 			/* 1  */ { {  1.0f,  1.0f,  1.0f }, WhiteColor, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
@@ -80,7 +80,7 @@ void E008()
 			/* 23 */ { { 1.0f,  1.0f,  1.0f }, WhiteColor, { 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
 		};
 
-		const utils::Mesh::Indices indices = {
+		const Mesh::Indices indices = {
 			0, 1, 2, 1, 3, 2, // front
 			4, 5, 6, 5, 7, 6, // top
 			8, 9, 10, 9, 11, 10, // left
@@ -107,7 +107,7 @@ void E008()
 			.shininess = 32.0f
 		};
 
-		utils::Mesh cube_mesh;
+		Mesh cube_mesh;
 		cube_mesh.setVertices(vertices);
 		cube_mesh.setIndices(indices);
 

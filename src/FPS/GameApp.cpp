@@ -241,9 +241,7 @@ void GameStart()
 			engine.BeginFrame();
 			InputUpdate(input);
 			UpdateCamera(input, 0.01f, camera);
-
-			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
-			
+						
 			time += 0.01f;
 
 			std::vector<utils::Light> lights = { directional_light };

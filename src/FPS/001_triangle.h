@@ -51,12 +51,10 @@ void main()
 		rhi.SetIndexBuffer(indices);
 		rhi.SetInputLayout(Vertex::Layout);
 
-
 		while (!engine.IsShouldClose())
 		{
 			engine.BeginFrame();
-			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
-
+	
 			rhi.Clear();
 			rhi.DrawIndexed(static_cast<uint32_t>(indices.size()));
 

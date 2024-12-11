@@ -165,8 +165,6 @@ void main()
 		while (!engine.IsShouldClose())
 		{
 			engine.BeginFrame();
-			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
-
 
 			static float time = 0.0f;
 			time += 0.01f;

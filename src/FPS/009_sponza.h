@@ -388,7 +388,6 @@ void E009()
 		while (!engine.IsShouldClose())
 		{
 			engine.BeginFrame();
-			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
 
 			time += 0.01f;
 

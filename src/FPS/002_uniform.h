@@ -76,9 +76,6 @@ void main()
 			matrices.model = glm::translate(matrices.model, { glm::sin(time * 2.0f) * 0.5f, 0.0f, 0.0f });
 			rhi.SetUniformBuffer(0, matrices);
 
-
-			rhi.Resize(engine.GetWindowSystem().GetWidth(), engine.GetWindowSystem().GetHeight());
-
 			rhi.Clear();
 			rhi.DrawIndexed(static_cast<uint32_t>(indices.size()));
 

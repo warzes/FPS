@@ -54,6 +54,8 @@ void EngineApp::BeginFrame()
 		return;
 	}
 	m_input.Update();
+
+	m_render.Resize(m_window.GetWidth(), m_window.GetHeight());
 }
 //=============================================================================
 void EngineApp::EndFrame()

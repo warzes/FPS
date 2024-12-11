@@ -53,6 +53,7 @@ void DestroyMainRenderTargetD3D11()
 {
 	if (gContext.context)
 	{
+		// Clear the previous window size specific context.
 		gContext.context->OMSetRenderTargets(0, nullptr, nullptr);
 		gContext.context->Flush();
 	}

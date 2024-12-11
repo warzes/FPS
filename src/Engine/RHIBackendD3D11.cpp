@@ -38,35 +38,21 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 		return false;
 	}
 
-	DXGI_SWAP_CHAIN_DESC swapChainDesc               = {};
-	swapChainDesc.BufferCount                        = RHI_BACKBUFFER_COUNT;
-	swapChainDesc.BufferDesc.Width                   = data.width;
-	swapChainDesc.BufferDesc.Height                  = data.height;
-	swapChainDesc.BufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM/*DXGI_FORMAT_R10G10B10A2_UNORM*/; // TODO: переделать под комент
-	swapChainDesc.BufferDesc.RefreshRate.Numerator   = 0;
-	swapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
-	//swapChainDesc.Flags                              = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	swapChainDesc.BufferUsage                        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.OutputWindow                       = data.hwnd;
-	swapChainDesc.SampleDesc.Count                   = 1;
-	swapChainDesc.SampleDesc.Quality                 = 0;
-	swapChainDesc.Windowed                           = TRUE;
-	swapChainDesc.SwapEffect                         = DXGI_SWAP_EFFECT_DISCARD/*DXGI_SWAP_EFFECT_FLIP_DISCARD*/;// TODO: переделать под комент
-
 #if RHI_VALIDATION_ENABLED
-	const UINT flags = D3D11_CREATE_DEVICE_DEBUG;
+	const UINT creationFlags = D3D11_CREATE_DEVICE_DEBUG;
 #else
-	const UINT flags = 0;
+	const UINT creationFlags = 0;
 #endif
 
 	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_12_1;
+
 	ComPtr<ID3D11DeviceContext> context = nullptr;
 	ComPtr<ID3D11Device> device = nullptr;
-	ComPtr<IDXGISwapChain> swapChain = nullptr;
-	hr = D3D11CreateDeviceAndSwapChain(gContext.adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, flags, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, swapChain.GetAddressOf(), device.GetAddressOf(), nullptr, context.GetAddressOf());
+
+	hr = D3D11CreateDevice(gContext.adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, creationFlags, &featureLevel, 1, D3D11_SDK_VERSION, device.ReleaseAndGetAddressOf(), nullptr, context.ReleaseAndGetAddressOf());
 	if (FAILED(hr))
 	{
-		Fatal("D3D11CreateDeviceAndSwapChain() failed: " + DXErrorToStr(hr));
+		Fatal("D3D11CreateDevice() failed: " + DXErrorToStr(hr));
 		return false;
 	}
 	hr = device.As(&gContext.device);
@@ -87,12 +73,50 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 		Fatal("ID3DUserDefinedAnnotation failed: " + DXErrorToStr(hr));
 		return false;
 	}
+
+#if 0
+	DXGI_SWAP_CHAIN_DESC swapChainDesc               = {};
+	swapChainDesc.BufferCount                        = RHI_BACKBUFFER_COUNT;
+	swapChainDesc.BufferDesc.Width                   = data.width;
+	swapChainDesc.BufferDesc.Height                  = data.height;
+	swapChainDesc.BufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM/*DXGI_FORMAT_R10G10B10A2_UNORM*/; // TODO: переделать под комент
+	swapChainDesc.BufferDesc.RefreshRate.Numerator   = 0;
+	swapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
+	//swapChainDesc.Flags                              = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	swapChainDesc.BufferUsage                        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.OutputWindow                       = data.hwnd;
+	swapChainDesc.SampleDesc.Count                   = 1;
+	swapChainDesc.SampleDesc.Quality                 = 0;
+	swapChainDesc.Windowed                           = TRUE;
+	swapChainDesc.SwapEffect                         = DXGI_SWAP_EFFECT_DISCARD/*DXGI_SWAP_EFFECT_FLIP_DISCARD*/;// TODO: переделать под комент
+#else
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+	swapChainDesc.Width                 = data.width;
+	swapChainDesc.Height                = data.height;
+	swapChainDesc.Format                = DXGI_FORMAT_R8G8B8A8_UNORM/*DXGI_FORMAT_R10G10B10A2_UNORM*/; // TODO: переделать под комент/ или DXGI_FORMAT_B8G8R8A8_UNORM
+	swapChainDesc.SampleDesc.Count      = 1;
+	swapChainDesc.SampleDesc.Quality    = 0;
+	swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount           = RHI_BACKBUFFER_COUNT;
+
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
+	fsSwapChainDesc.Windowed = TRUE;
+
+	ComPtr<IDXGISwapChain1> swapChain = nullptr;
+	hr = dxgiFactory->CreateSwapChainForHwnd(device.Get(), data.hwnd, &swapChainDesc, &fsSwapChainDesc, nullptr, swapChain.ReleaseAndGetAddressOf());
+	if (FAILED(hr))
+	{
+		Fatal("CreateSwapChainForHwnd() failed: " + DXErrorToStr(hr));
+		return false;
+	}
+
 	hr = swapChain.As(&gContext.swapChain);
 	if (FAILED(hr))
 	{
 		Fatal("IDXGISwapChain as IDXGISwapChain4 failed: " + DXErrorToStr(hr));
 		return false;
 	}
+#endif
 
 #if RHI_VALIDATION_ENABLED
 	ComPtr<ID3D11InfoQueue> d3dDebug;
@@ -111,7 +135,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 			};
 
 			D3D11_INFO_QUEUE_FILTER filter{};
-			filter.DenyList.NumIDs = ARRAYSIZE(hide);
+			filter.DenyList.NumIDs = static_cast<UINT>(std::size(hide));
 			filter.DenyList.pIDList = hide;
 			infoQueue->AddStorageFilterEntries(&filter);
 
@@ -506,7 +530,9 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 {
 	if (count == 0)
 	{
-		gContext.context->OMSetRenderTargets(1, gContext.mainRenderTarget->GetD3D11RenderTargetView().GetAddressOf(), gContext.mainRenderTarget->GetD3D11DepthStencilView().Get());
+		gContext.context->OMSetRenderTargets(1, 
+			gContext.mainRenderTarget->GetD3D11RenderTargetView().GetAddressOf(),
+			gContext.mainRenderTarget->GetD3D11DepthStencilView().Get());
 
 		gContext.renderTargets = { gContext.mainRenderTarget };
 

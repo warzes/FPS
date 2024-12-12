@@ -701,7 +701,7 @@ utils::commands::SetScissor::SetScissor(std::optional<Scissor> _scissor) :
 }
 
 utils::commands::SetBlendMode::SetBlendMode(std::optional<BlendMode> _blend_mode) :
-	blend_mode(std::move(_blend_mode))
+	blendMode(std::move(_blend_mode))
 {
 }
 
@@ -894,7 +894,7 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 			[&](const commands::SetTopology& cmd) { gRenderSystem->SetTopology(cmd.topology); },
 			[&](const commands::SetViewport& cmd) { gRenderSystem->SetViewport(cmd.viewport); },
 			[&](const commands::SetScissor& cmd) { gRenderSystem->SetScissor(cmd.scissor); },
-			[&](const commands::SetBlendMode& cmd) { gRenderSystem->SetBlendMode(cmd.blend_mode); },
+			[&](const commands::SetBlendMode& cmd) { gRenderSystem->SetBlendMode(cmd.blendMode); },
 			[&](const commands::SetSampler& cmd) { gRenderSystem->SetSampler(cmd.sampler); },
 			[&](const commands::SetCullMode& cmd) { gRenderSystem->SetCullMode(cmd.cull_mode); },
 			[&](const commands::SetTextureAddress& cmd) { gRenderSystem->SetTextureAddress(cmd.texture_address); },
@@ -1053,7 +1053,7 @@ void utils::passes::Blit(Texture* src, RenderTarget* dst, const BlitOptions& opt
 	render_pass.commands.insert(render_pass.commands.end(), {
 		commands::SetSampler(options.sampler),
 		commands::SetColor(options.color),
-		commands::SetBlendMode(options.blend_mode),
+		commands::SetBlendMode(options.blendMode),
 		commands::SetColorTexture(src),
 		commands::DrawMesh()
 		});
@@ -1143,7 +1143,7 @@ void utils::passes::Bloom(RenderTarget* src, RenderTarget* dst, float bright_thr
 	for (auto it = std::next(tex_chain.rbegin()); it != tex_chain.rend(); ++it)
 	{
 		Blit(*std::prev(it), *it, {
-			.blend_mode = BlendStates::Additive,
+			.blendMode = BlendStates::Additive,
 			.effect = effects::BloomUpsample()
 			});
 		ViewStage("upsample", *it);
@@ -1153,7 +1153,7 @@ void utils::passes::Bloom(RenderTarget* src, RenderTarget* dst, float bright_thr
 
 	Blit(*tex_chain.begin(), dst, {
 		.color = glm::vec4(intensity),
-		.blend_mode = BlendStates::Additive,
+		.blendMode = BlendStates::Additive,
 		.effect = effects::BloomUpsample()
 		});
 
@@ -1198,7 +1198,7 @@ void utils::passes::BloomGaussian(RenderTarget* src, RenderTarget* dst, float br
 
 	Blit(blur_dst, dst, {
 		.color = glm::vec4(intensity),
-		.blend_mode = BlendStates::Additive
+		.blendMode = BlendStates::Additive
 		});
 
 	gRenderSystem->ReleaseTransientRenderTarget(bright);
@@ -1609,7 +1609,7 @@ void utils::Scratch::flush(bool sort_textures)
 				commands::SetEffect(std::nullopt),
 			commands::SetViewport(command.state.viewport),
 			commands::SetScissor(command.state.scissor),
-			commands::SetBlendMode(command.state.blend_mode),
+			commands::SetBlendMode(command.state.blendMode),
 			commands::SetDepthBias(command.state.depth_bias),
 			commands::SetDepthMode(command.state.depth_mode),
 			commands::SetStencilMode(command.state.stencil_mode),

@@ -18,7 +18,7 @@ SE_MAKE_HASHABLE(PipelineStateVK,
 	t.shader,
 	t.color_attachment_formats,
 	t.depth_stencil_format,
-	t.input_layouts
+	t.inputLayouts
 );
 
 struct RaytracingPipelineStateVK

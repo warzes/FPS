@@ -6,8 +6,25 @@
 #include "ShaderD3D11.h"
 #include "Log.h"
 //=============================================================================
-void RenderContext::Clear()
+void RenderContext::Reset()
 {
+	renderTargets.clear();
+	viewport.reset();
+	shader = nullptr;
+	inputLayouts.clear();
+	depthStencilState = {};
+	rasterizerState = {};
+	samplerState = {};
+	blendMode.reset();
+
+	shaderDirty = true;
+	inputLayoutsDirty = true;
+	depthStencilStateDirty = true;
+	rasterizerStateDirty = true;
+	samplerStateDirty = true;
+	blendModeDirty = true;
+	viewportDirty = true;
+
 	DestroyMainRenderTargetD3D11();
 	swapChain.Reset();
 	context.Reset();
@@ -33,10 +50,8 @@ PixelFormat RenderContext::GetBackbufferFormat()
 //=============================================================================
 bool CreateMainRenderTargetD3D11(uint32_t width, uint32_t height)
 {
-	HRESULT hr = E_FAIL;
-
 	ComPtr<ID3D11Texture2D> backBuffer;
-	hr = gContext.swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
+	HRESULT hr = gContext.swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
 	if (FAILED(hr))
 	{
 		Fatal("GetBuffer() failed: " + DXErrorToStr(hr));
@@ -66,10 +81,10 @@ void DestroyMainRenderTargetD3D11()
 //=============================================================================
 void EnsureShader()
 {
-	if (!gContext.shader_dirty)
+	if (!gContext.shaderDirty)
 		return;
 
-	gContext.shader_dirty = false;
+	gContext.shaderDirty = false;
 
 	gContext.context->VSSetShader(gContext.shader->GetD3D11VertexShader().Get(), NULL, 0);
 	gContext.context->PSSetShader(gContext.shader->GetD3D11PixelShader().Get(), NULL, 0);
@@ -77,20 +92,20 @@ void EnsureShader()
 //=============================================================================
 void EnsureInputLayout()
 {
-	if (!gContext.input_layouts_dirty)
+	if (!gContext.inputLayoutsDirty)
 		return;
 
-	gContext.input_layouts_dirty = false;
+	gContext.inputLayoutsDirty = false;
 
 	auto& cache = gContext.shader->GetInputLayoutCache();
 
-	if (!cache.contains(gContext.input_layouts))
+	if (!cache.contains(gContext.inputLayouts))
 	{
 		std::vector<D3D11_INPUT_ELEMENT_DESC> input_elements;
 
-		for (size_t i = 0; i < gContext.input_layouts.size(); i++)
+		for (size_t i = 0; i < gContext.inputLayouts.size(); i++)
 		{
-			const auto& input_layout = gContext.input_layouts.at(i);
+			const auto& input_layout = gContext.inputLayouts.at(i);
 
 			for (const auto& [location, attribute] : input_layout.attributes)
 			{
@@ -113,25 +128,25 @@ void EnsureInputLayout()
 
 		gContext.device->CreateInputLayout(input_elements.data(), (UINT)input_elements.size(),
 			gContext.shader->GetVertexShaderBlob()->GetBufferPointer(),
-			gContext.shader->GetVertexShaderBlob()->GetBufferSize(), cache[gContext.input_layouts].GetAddressOf());
+			gContext.shader->GetVertexShaderBlob()->GetBufferSize(), cache[gContext.inputLayouts].GetAddressOf());
 	}
 
-	gContext.context->IASetInputLayout(cache.at(gContext.input_layouts).Get());
+	gContext.context->IASetInputLayout(cache.at(gContext.inputLayouts).Get());
 }
 //=============================================================================
 void EnsureDepthStencilState()
 {
-	if (!gContext.depth_stencil_state_dirty)
+	if (!gContext.depthStencilStateDirty)
 		return;
 
-	gContext.depth_stencil_state_dirty = false;
+	gContext.depthStencilStateDirty = false;
 
-	const auto& depth_stencil_state = gContext.depth_stencil_state;
+	const auto& depth_stencil_state = gContext.depthStencilState;
 
 	auto depth_mode = depth_stencil_state.depthMode.value_or(DepthMode());
 	auto stencil_mode = depth_stencil_state.stencilMode.value_or(StencilMode());
 
-	if (!gContext.depth_stencil_states.contains(depth_stencil_state))
+	if (!gContext.depthStencilStates.contains(depth_stencil_state))
 	{
 		const static std::unordered_map<ComparisonFunc, D3D11_COMPARISON_FUNC> ComparisonFuncMap = {
 			{ ComparisonFunc::Always, D3D11_COMPARISON_ALWAYS },
@@ -171,22 +186,22 @@ void EnsureDepthStencilState()
 
 		desc.BackFace = desc.FrontFace;
 
-		gContext.device->CreateDepthStencilState(&desc, gContext.depth_stencil_states[depth_stencil_state].GetAddressOf());
+		gContext.device->CreateDepthStencilState(&desc, gContext.depthStencilStates[depth_stencil_state].GetAddressOf());
 	}
 
-	gContext.context->OMSetDepthStencilState(gContext.depth_stencil_states.at(depth_stencil_state).Get(), stencil_mode.reference);
+	gContext.context->OMSetDepthStencilState(gContext.depthStencilStates.at(depth_stencil_state).Get(), stencil_mode.reference);
 }
 //=============================================================================
 void EnsureRasterizerState()
 {
-	if (!gContext.rasterizer_state_dirty)
+	if (!gContext.rasterizerStateDirty)
 		return;
 
-	gContext.rasterizer_state_dirty = false;
+	gContext.rasterizerStateDirty = false;
 
-	const auto& value = gContext.rasterizer_state;
+	const auto& value = gContext.rasterizerState;
 
-	if (!gContext.rasterizer_states.contains(value))
+	if (!gContext.rasterizerStates.contains(value))
 	{
 		const static std::unordered_map<CullMode, D3D11_CULL_MODE> CullMap = {
 			{ CullMode::None, D3D11_CULL_NONE },
@@ -208,22 +223,22 @@ void EnsureRasterizerState()
 			desc.DepthBias = D3D11_DEFAULT_DEPTH_BIAS;
 			desc.SlopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
 		}
-		gContext.device->CreateRasterizerState(&desc, gContext.rasterizer_states[value].GetAddressOf());
+		gContext.device->CreateRasterizerState(&desc, gContext.rasterizerStates[value].GetAddressOf());
 	}
 
-	gContext.context->RSSetState(gContext.rasterizer_states.at(value).Get());
+	gContext.context->RSSetState(gContext.rasterizerStates.at(value).Get());
 }
 //=============================================================================
 void EnsureSamplerState()
 {
-	if (!gContext.sampler_state_dirty)
+	if (!gContext.samplerStateDirty)
 		return;
 
-	gContext.sampler_state_dirty = false;
+	gContext.samplerStateDirty = false;
 
-	const auto& value = gContext.sampler_state;
+	const auto& value = gContext.samplerState;
 
-	if (!gContext.sampler_states.contains(value))
+	if (!gContext.samplerStates.contains(value))
 	{
 		// TODO: see D3D11_ENCODE_BASIC_FILTER
 
@@ -243,25 +258,25 @@ void EnsureSamplerState()
 		desc.AddressU = TextureAddressMap.at(value.textureAddress);
 		desc.AddressV = TextureAddressMap.at(value.textureAddress);
 		desc.AddressW = TextureAddressMap.at(value.textureAddress);
-		gContext.device->CreateSamplerState(&desc, gContext.sampler_states[value].GetAddressOf());
+		gContext.device->CreateSamplerState(&desc, gContext.samplerStates[value].GetAddressOf());
 	}
 
 	for (auto [binding, _] : gContext.textures)
 	{
-		gContext.context->PSSetSamplers(binding, 1, gContext.sampler_states.at(value).GetAddressOf());
+		gContext.context->PSSetSamplers(binding, 1, gContext.samplerStates.at(value).GetAddressOf());
 	}
 }
 //=============================================================================
 void EnsureBlendMode()
 {
-	if (!gContext.blend_mode_dirty)
+	if (!gContext.blendModeDirty)
 		return;
 
-	gContext.blend_mode_dirty = false;
+	gContext.blendModeDirty = false;
 
-	const auto& blend_mode = gContext.blend_mode;
+	const auto& blend_mode = gContext.blendMode;
 
-	if (!gContext.blend_modes.contains(blend_mode))
+	if (!gContext.blendModes.contains(blend_mode))
 	{
 		const static std::unordered_map<Blend, D3D11_BLEND> ColorBlendMap = {
 			{ Blend::One, D3D11_BLEND_ONE },
@@ -331,18 +346,18 @@ void EnsureBlendMode()
 			blend.BlendOpAlpha = BlendOpMap.at(blend_mode_nn.alphaFunc);
 		}
 
-		gContext.device->CreateBlendState(&desc, gContext.blend_modes[blend_mode].GetAddressOf());
+		gContext.device->CreateBlendState(&desc, gContext.blendModes[blend_mode].GetAddressOf());
 	}
 
-	gContext.context->OMSetBlendState(gContext.blend_modes.at(blend_mode).Get(), nullptr, 0xFFFFFFFF);
+	gContext.context->OMSetBlendState(gContext.blendModes.at(blend_mode).Get(), nullptr, 0xFFFFFFFF);
 }
 //=============================================================================
 void EnsureViewport()
 {
-	if (!gContext.viewport_dirty)
+	if (!gContext.viewportDirty)
 		return;
 
-	gContext.viewport_dirty = false;
+	gContext.viewportDirty = false;
 
 	auto width = static_cast<float>(gContext.GetBackBufferWidth());
 	auto height = static_cast<float>(gContext.GetBackBufferHeight());

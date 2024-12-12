@@ -234,7 +234,7 @@ void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 	gContext.height = height;
 
 	if (!gContext.viewport.has_value())
-		gContext.viewport_dirty = true;
+		gContext.viewportDirty = true;
 }
 //=============================================================================
 void RHIBackend::Present()
@@ -475,7 +475,7 @@ void RHIBackend::SetTopology(Topology topology)
 void RHIBackend::SetViewport(std::optional<Viewport> viewport)
 {
 	gContext.viewport = viewport;
-	gContext.viewport_dirty = true;
+	gContext.viewportDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetScissor(std::optional<Scissor> scissor)
@@ -575,14 +575,14 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 //=============================================================================
 void RHIBackend::SetSampler(Sampler value)
 {
-	gContext.sampler_state.sampler = value;
-	gContext.sampler_state_dirty = true;
+	gContext.samplerState.sampler = value;
+	gContext.samplerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetTextureAddress(TextureAddress value)
 {
-	gContext.sampler_state.textureAddress = value;
-	gContext.sampler_state_dirty = true;
+	gContext.samplerState.textureAddress = value;
+	gContext.samplerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetFrontFace(FrontFace value)
@@ -606,12 +606,12 @@ void RHIBackend::SetDepthBias(const std::optional<DepthBias> depth_bias)
 void RHIBackend::SetShader(ShaderHandle* handle)
 {
 	gContext.shader = (ShaderGL*)handle;
-	gContext.shader_dirty = true;
+	gContext.shaderDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetInputLayout(const std::vector<InputLayout>& value)
 {
-	gContext.input_layouts = value;
+	gContext.inputLayouts = value;
 	gContext.vertex_array_dirty = true;
 }
 //=============================================================================
@@ -619,7 +619,7 @@ void RHIBackend::SetTexture(uint32_t binding, TextureHandle* handle)
 {
 	gContext.textures[binding] = (TextureGL*)handle;
 	gContext.dirty_textures.insert(binding);
-	gContext.sampler_state_dirty = true;
+	gContext.samplerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t count)
@@ -630,7 +630,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 		gContext.render_targets.clear();
 
 		if (!gContext.viewport.has_value())
-			gContext.viewport_dirty = true;
+			gContext.viewportDirty = true;
 
 		return;
 	}
@@ -659,7 +659,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 	gContext.render_targets = render_targets;
 
 	if (!gContext.viewport.has_value())
-		gContext.viewport_dirty = true;
+		gContext.viewportDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetVertexBuffer(const VertexBuffer** vertex_buffer, size_t count)

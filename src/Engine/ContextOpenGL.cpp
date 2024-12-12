@@ -98,12 +98,12 @@ void EnsureDepthMode()
 //=============================================================================
 void EnsureGraphicsState(bool draw_indexed)
 {
-	if (gContext.shader_dirty)
+	if (gContext.shaderDirty)
 	{
 		glUseProgram(gContext.shader->GetProgram());
 		gContext.vertex_array_dirty = true;
 		gContext.index_buffer_dirty = draw_indexed;
-		gContext.shader_dirty = false;
+		gContext.shaderDirty = false;
 	}
 
 	if (gContext.index_buffer_dirty && draw_indexed)
@@ -125,7 +125,7 @@ void EnsureGraphicsState(bool draw_indexed)
 
 			glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->GetGLBuffer());
 
-			const auto& input_layout = gContext.input_layouts.at(i);
+			const auto& input_layout = gContext.inputLayouts.at(i);
 
 			for (const auto& [location, attribute] : input_layout.attributes)
 			{
@@ -160,13 +160,13 @@ void EnsureGraphicsState(bool draw_indexed)
 
 	gContext.dirty_textures.clear();
 
-	if (gContext.sampler_state_dirty)
+	if (gContext.samplerStateDirty)
 	{
-		gContext.sampler_state_dirty = false;
+		gContext.samplerStateDirty = false;
 
-		const auto& value = gContext.sampler_state;
+		const auto& value = gContext.samplerState;
 
-		if (!gContext.sampler_states.contains(value))
+		if (!gContext.samplerStates.contains(value))
 		{
 			const static std::unordered_map<Sampler, std::unordered_map<RenderContext::SamplerType, GLint>> SamplerMap = {
 				{ Sampler::Nearest, {
@@ -200,14 +200,14 @@ void EnsureGraphicsState(bool draw_indexed)
 				sampler_state_map.insert({ sampler_type, sampler_object });
 			}
 
-			gContext.sampler_states.insert({ value, sampler_state_map });
+			gContext.samplerStates.insert({ value, sampler_state_map });
 		}
 
 		for (auto [binding, texture_handle] : gContext.textures)
 		{
 			bool texture_has_mips = ((TextureGL*)texture_handle)->GetMipCount() > 1;
 			auto sampler_type = texture_has_mips ? RenderContext::SamplerType::Mipmap : RenderContext::SamplerType::NoMipmap;
-			auto sampler = gContext.sampler_states.at(value).at(sampler_type);
+			auto sampler = gContext.samplerStates.at(value).at(sampler_type);
 			glBindSampler(binding, sampler);
 		}
 	}
@@ -224,9 +224,9 @@ void EnsureGraphicsState(bool draw_indexed)
 		glFrontFace(FrontFaceMap.at(gContext.front_face));
 	}
 
-	if (gContext.viewport_dirty)
+	if (gContext.viewportDirty)
 	{
-		gContext.viewport_dirty = false;
+		gContext.viewportDirty = false;
 
 		auto width = static_cast<float>(gContext.GetBackBufferWidth());
 		auto height = static_cast<float>(gContext.GetBackBufferHeight());

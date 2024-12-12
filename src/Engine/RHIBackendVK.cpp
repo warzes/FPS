@@ -601,7 +601,7 @@ void RHIBackend::SetTopology(Topology topology)
 void RHIBackend::SetViewport(std::optional<Viewport> viewport)
 {
 	gContext.viewport = viewport;
-	gContext.viewport_dirty = true;
+	gContext.viewportDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetScissor(std::optional<Scissor> scissor)
@@ -612,8 +612,8 @@ void RHIBackend::SetScissor(std::optional<Scissor> scissor)
 //=============================================================================
 void RHIBackend::SetBlendMode(const std::optional<BlendMode>& blend_mode)
 {
-	gContext.blend_mode = blend_mode;
-	gContext.blend_mode_dirty = true;
+	gContext.blendMode = blend_mode;
+	gContext.blendModeDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetDepthMode(const std::optional<DepthMode>& depth_mode)
@@ -636,12 +636,12 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 //=============================================================================
 void RHIBackend::SetSampler(Sampler value)
 {
-	gContext.sampler_state.sampler = value;
+	gContext.samplerState.sampler = value;
 }
 //=============================================================================
 void RHIBackend::SetTextureAddress(TextureAddress value)
 {
-	gContext.sampler_state.texture_address = value;
+	gContext.samplerState.texture_address = value;
 }
 //=============================================================================
 void RHIBackend::SetFrontFace(FrontFace value)
@@ -662,7 +662,7 @@ void RHIBackend::SetShader(ShaderHandle* handle)
 //=============================================================================
 void RHIBackend::SetInputLayout(const std::vector<InputLayout>& value)
 {
-	gContext.pipeline_state.input_layouts = value;
+	gContext.pipeline_state.inputLayouts = value;
 	gContext.pipeline_state_dirty = true;
 }
 //=============================================================================
@@ -697,7 +697,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 	}
 
 	if (gContext.render_targets.size() != render_targets.size())
-		gContext.blend_mode_dirty = true;
+		gContext.blendModeDirty = true;
 
 	gContext.pipeline_state_dirty = true;
 	gContext.pipeline_state.color_attachment_formats = color_attachment_formats;
@@ -706,7 +706,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 	EnsureRenderPassDeactivated();
 
 	if (!gContext.viewport.has_value())
-		gContext.viewport_dirty = true;
+		gContext.viewportDirty = true;
 
 	if (!gContext.scissor.has_value())
 		gContext.scissor_dirty = true;

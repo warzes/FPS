@@ -7,7 +7,7 @@
 class RenderContext final
 {
 public:
-	void Clear();
+	void Reset();
 
 	ComPtr<IDXGIAdapter4>             adapter{ nullptr };
 	ComPtr<ID3D11Device5>             device{ nullptr };
@@ -15,36 +15,36 @@ public:
 	ComPtr<ID3DUserDefinedAnnotation> annotation{ nullptr };
 	ComPtr<IDXGISwapChain4>           swapChain{ nullptr };
 
+	const DXGI_FORMAT                 backBufferFormat{ DXGI_FORMAT_R8G8B8A8_UNORM }; /*DXGI_FORMAT_R10G10B10A2_UNORM*/; // TODO: переделать под комент/ или DXGI_FORMAT_B8G8R8A8_UNORM. это также нужно указать в backBufferTexture/mainRenderTarget
+	const DXGI_FORMAT                 depthBufferFormat{ DXGI_FORMAT_D24_UNORM_S8_UINT };
 	TextureD3D11*                     backBufferTexture{ nullptr };
 	RenderTargetD3D11*                mainRenderTarget{ nullptr };
 
+	std::vector<RenderTargetD3D11*>   renderTargets;
+	std::optional<Viewport>           viewport;
 
+	ShaderD3D11*                      shader = nullptr;
+	std::vector<InputLayout>          inputLayouts;
 
-	std::vector<RenderTargetD3D11*> renderTargets;
-	std::optional<Viewport>         viewport;
+	std::unordered_map<DepthStencilStateD3D11, ComPtr<ID3D11DepthStencilState>> depthStencilStates;
+	DepthStencilStateD3D11            depthStencilState;
 
-	ShaderD3D11* shader = nullptr;
-	std::vector<InputLayout> input_layouts;
+	std::unordered_map<RasterizerStateD3D11, ComPtr<ID3D11RasterizerState>> rasterizerStates;
+	RasterizerStateD3D11              rasterizerState;
 
-	std::unordered_map<DepthStencilStateD3D11, ComPtr<ID3D11DepthStencilState>> depth_stencil_states;
-	DepthStencilStateD3D11 depth_stencil_state;
+	std::unordered_map<SamplerStateD3D11, ComPtr<ID3D11SamplerState>> samplerStates;
+	SamplerStateD3D11                 samplerState;
 
-	std::unordered_map<RasterizerStateD3D11, ComPtr<ID3D11RasterizerState>> rasterizer_states;
-	RasterizerStateD3D11 rasterizer_state;
+	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>> blendModes;
+	std::optional<BlendMode>          blendMode;
 
-	std::unordered_map<SamplerStateD3D11, ComPtr<ID3D11SamplerState>> sampler_states;
-	SamplerStateD3D11 sampler_state;
-
-	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>> blend_modes;
-	std::optional<BlendMode> blend_mode;
-
-	bool shader_dirty = true;
-	bool input_layouts_dirty = true;
-	bool depth_stencil_state_dirty = true;
-	bool rasterizer_state_dirty = true;
-	bool sampler_state_dirty = true;
-	bool blend_mode_dirty = true;
-	bool viewport_dirty = true;
+	bool shaderDirty = true;
+	bool inputLayoutsDirty = true;
+	bool depthStencilStateDirty = true;
+	bool rasterizerStateDirty = true;
+	bool samplerStateDirty = true;
+	bool blendModeDirty = true;
+	bool viewportDirty = true;
 
 	bool vsync = false;
 	std::unordered_map<uint32_t, TextureD3D11*> textures;

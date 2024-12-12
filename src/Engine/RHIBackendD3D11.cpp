@@ -46,9 +46,8 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 
 	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_12_1;
 
-	ComPtr<ID3D11DeviceContext> context = nullptr;
 	ComPtr<ID3D11Device> device = nullptr;
-
+	ComPtr<ID3D11DeviceContext> context = nullptr;
 	hr = D3D11CreateDevice(gContext.adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr, creationFlags, &featureLevel, 1, D3D11_SDK_VERSION, device.ReleaseAndGetAddressOf(), nullptr, context.ReleaseAndGetAddressOf());
 	if (FAILED(hr))
 	{
@@ -73,50 +72,6 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 		Fatal("ID3DUserDefinedAnnotation failed: " + DXErrorToStr(hr));
 		return false;
 	}
-
-#if 0
-	DXGI_SWAP_CHAIN_DESC swapChainDesc               = {};
-	swapChainDesc.BufferCount                        = RHI_BACKBUFFER_COUNT;
-	swapChainDesc.BufferDesc.Width                   = data.width;
-	swapChainDesc.BufferDesc.Height                  = data.height;
-	swapChainDesc.BufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM/*DXGI_FORMAT_R10G10B10A2_UNORM*/; // TODO: переделать под комент
-	swapChainDesc.BufferDesc.RefreshRate.Numerator   = 0;
-	swapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
-	//swapChainDesc.Flags                              = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	swapChainDesc.BufferUsage                        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.OutputWindow                       = data.hwnd;
-	swapChainDesc.SampleDesc.Count                   = 1;
-	swapChainDesc.SampleDesc.Quality                 = 0;
-	swapChainDesc.Windowed                           = TRUE;
-	swapChainDesc.SwapEffect                         = DXGI_SWAP_EFFECT_DISCARD/*DXGI_SWAP_EFFECT_FLIP_DISCARD*/;// TODO: переделать под комент
-#else
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-	swapChainDesc.Width                 = data.width;
-	swapChainDesc.Height                = data.height;
-	swapChainDesc.Format                = DXGI_FORMAT_R8G8B8A8_UNORM/*DXGI_FORMAT_R10G10B10A2_UNORM*/; // TODO: переделать под комент/ или DXGI_FORMAT_B8G8R8A8_UNORM
-	swapChainDesc.SampleDesc.Count      = 1;
-	swapChainDesc.SampleDesc.Quality    = 0;
-	swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount           = RHI_BACKBUFFER_COUNT;
-
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
-	fsSwapChainDesc.Windowed = TRUE;
-
-	ComPtr<IDXGISwapChain1> swapChain = nullptr;
-	hr = dxgiFactory->CreateSwapChainForHwnd(device.Get(), data.hwnd, &swapChainDesc, &fsSwapChainDesc, nullptr, swapChain.ReleaseAndGetAddressOf());
-	if (FAILED(hr))
-	{
-		Fatal("CreateSwapChainForHwnd() failed: " + DXErrorToStr(hr));
-		return false;
-	}
-
-	hr = swapChain.As(&gContext.swapChain);
-	if (FAILED(hr))
-	{
-		Fatal("IDXGISwapChain as IDXGISwapChain4 failed: " + DXErrorToStr(hr));
-		return false;
-	}
-#endif
 
 #if RHI_VALIDATION_ENABLED
 	ComPtr<ID3D11InfoQueue> d3dDebug;
@@ -148,6 +103,41 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	}
 #endif
 
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+	swapChainDesc.Width                 = data.width;
+	swapChainDesc.Height                = data.height;
+	swapChainDesc.Format                = gContext.backBufferFormat;
+	swapChainDesc.SampleDesc.Count      = 1;
+	swapChainDesc.SampleDesc.Quality    = 0;
+	swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount           = RHI_BACKBUFFER_COUNT;
+	//swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
+	fsSwapChainDesc.Windowed = TRUE;
+
+	ComPtr<IDXGISwapChain1> swapChain = nullptr;
+	hr = dxgiFactory->CreateSwapChainForHwnd(device.Get(), data.hwnd, &swapChainDesc, &fsSwapChainDesc, nullptr, swapChain.ReleaseAndGetAddressOf());
+	if (FAILED(hr))
+	{
+		Fatal("CreateSwapChainForHwnd() failed: " + DXErrorToStr(hr));
+		return false;
+	}
+
+	hr = dxgiFactory->MakeWindowAssociation(data.hwnd, DXGI_MWA_NO_ALT_ENTER);
+	if (FAILED(hr))
+	{
+		Fatal("MakeWindowAssociation() failed: " + DXErrorToStr(hr));
+		return false;
+	}
+
+	hr = swapChain.As(&gContext.swapChain);
+	if (FAILED(hr))
+	{
+		Fatal("IDXGISwapChain as IDXGISwapChain4 failed: " + DXErrorToStr(hr));
+		return false;
+	}
+
 	if (!CreateMainRenderTargetD3D11(data.width, data.height))
 	{
 		Fatal("CreateMainRenderTarget() failed");
@@ -160,14 +150,13 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 //=============================================================================
 void RHIBackend::DestroyAPI()
 {
-	gContext.Clear();
+	gContext.Reset();
 }
 //=============================================================================
 void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 {
 	DestroyMainRenderTargetD3D11();
-	HRESULT hr = E_FAIL;
-	hr = gContext.swapChain->ResizeBuffers(0, (UINT)width, (UINT)height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	HRESULT hr = gContext.swapChain->ResizeBuffers(RHI_BACKBUFFER_COUNT, (UINT)width, (UINT)height, gContext.backBufferFormat, 0);
 	if (FAILED(hr))
 	{
 		Fatal("ResizeBuffers() failed: " + DXErrorToStr(hr));
@@ -180,7 +169,7 @@ void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 	}
 	SetRenderTarget(nullptr, 0);
 	if (!gContext.viewport.has_value())
-		gContext.viewport_dirty = true;
+		gContext.viewportDirty = true;
 }
 //=============================================================================
 void RHIBackend::Present()
@@ -205,12 +194,8 @@ void RHIBackend::Clear(const std::optional<glm::vec4>& color, const std::optiona
 		if (depth.has_value() || stencil.has_value())
 		{
 			UINT flags = 0;
-
-			if (depth.has_value())
-				flags |= D3D11_CLEAR_DEPTH;
-
-			if (stencil.has_value())
-				flags |= D3D11_CLEAR_STENCIL;
+			if (depth.has_value()) flags |= D3D11_CLEAR_DEPTH;
+			if (stencil.has_value()) flags |= D3D11_CLEAR_STENCIL;
 
 			gContext.context->ClearDepthStencilView(target->GetD3D11DepthStencilView().Get(), flags, depth.value_or(1.0f), stencil.value_or(0));
 		}
@@ -220,13 +205,13 @@ void RHIBackend::Clear(const std::optional<glm::vec4>& color, const std::optiona
 void RHIBackend::Draw(uint32_t vertexCount, uint32_t vertexOffset, uint32_t instanceCount)
 {
 	EnsureGraphicsState(false);
-	gContext.context->DrawInstanced((UINT)vertexCount, (UINT)instanceCount, (UINT)vertexOffset, 0);
+	gContext.context->DrawInstanced(vertexCount, instanceCount, vertexOffset, 0);
 }
 //=============================================================================
 void RHIBackend::DrawIndexed(uint32_t indexCount, uint32_t indexOffset, uint32_t instanceCount)
 {
 	EnsureGraphicsState(true);
-	gContext.context->DrawIndexedInstanced((UINT)indexCount, (UINT)instanceCount, (UINT)indexOffset, 0, 0);
+	gContext.context->DrawIndexedInstanced(indexCount, instanceCount, indexOffset, 0, 0);
 }
 //=============================================================================
 void RHIBackend::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, TextureHandle* dstTextureHandle)
@@ -339,11 +324,11 @@ void RHIBackend::DestroyTexture(TextureHandle* handle)
 	}
 }
 //=============================================================================
-RenderTargetHandle* RHIBackend::CreateRenderTarget(uint32_t width, uint32_t height, TextureHandle* texture_handle)
+RenderTargetHandle* RHIBackend::CreateRenderTarget(uint32_t width, uint32_t height, TextureHandle* textureHandle)
 {
-	auto texture = (TextureD3D11*)texture_handle;
-	auto render_target = new RenderTargetD3D11(width, height, texture);
-	return (RenderTargetHandle*)render_target;
+	auto texture = (TextureD3D11*)textureHandle;
+	auto renderTarget = new RenderTargetD3D11(width, height, texture);
+	return (RenderTargetHandle*)renderTarget;
 }
 //=============================================================================
 void RHIBackend::DestroyRenderTarget(RenderTargetHandle* handle)
@@ -436,7 +421,7 @@ void RHIBackend::SetTopology(Topology topology)
 void RHIBackend::SetViewport(std::optional<Viewport> viewport)
 {
 	gContext.viewport = viewport;
-	gContext.viewport_dirty = true;
+	gContext.viewportDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetScissor(std::optional<Scissor> scissor)
@@ -454,69 +439,69 @@ void RHIBackend::SetScissor(std::optional<Scissor> scissor)
 		gContext.context->RSSetScissorRects(1, &rect);
 	}
 
-	gContext.rasterizer_state.scissorEnabled = scissor.has_value();
-	gContext.rasterizer_state_dirty = true;
+	gContext.rasterizerState.scissorEnabled = scissor.has_value();
+	gContext.rasterizerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetBlendMode(const std::optional<BlendMode>& blend_mode)
 {
-	gContext.blend_mode = blend_mode;
-	gContext.blend_mode_dirty = true;
+	gContext.blendMode = blend_mode;
+	gContext.blendModeDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetDepthMode(const std::optional<DepthMode>& depth_mode)
 {
-	gContext.depth_stencil_state.depthMode = depth_mode;
-	gContext.depth_stencil_state_dirty = true;
+	gContext.depthStencilState.depthMode = depth_mode;
+	gContext.depthStencilStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 {
-	gContext.depth_stencil_state.stencilMode = stencil_mode;
-	gContext.depth_stencil_state_dirty = true;
+	gContext.depthStencilState.stencilMode = stencil_mode;
+	gContext.depthStencilStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetCullMode(CullMode cull_mode)
 {
-	gContext.rasterizer_state.cullMode = cull_mode;
-	gContext.rasterizer_state_dirty = true;
+	gContext.rasterizerState.cullMode = cull_mode;
+	gContext.rasterizerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetSampler(Sampler value)
 {
-	gContext.sampler_state.sampler = value;
-	gContext.sampler_state_dirty = true;
+	gContext.samplerState.sampler = value;
+	gContext.samplerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetTextureAddress(TextureAddress value)
 {
-	gContext.sampler_state.textureAddress = value;
-	gContext.sampler_state_dirty = true;
+	gContext.samplerState.textureAddress = value;
+	gContext.samplerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetFrontFace(FrontFace value)
 {
-	gContext.rasterizer_state.frontFace = value;
-	gContext.rasterizer_state_dirty = true;
+	gContext.rasterizerState.frontFace = value;
+	gContext.rasterizerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetDepthBias(const std::optional<DepthBias> depth_bias)
 {
-	gContext.rasterizer_state.depthBias = depth_bias;
-	gContext.rasterizer_state_dirty = true;
+	gContext.rasterizerState.depthBias = depth_bias;
+	gContext.rasterizerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetShader(ShaderHandle* handle)
 {
 	gContext.shader = (ShaderD3D11*)handle;
-	gContext.shader_dirty = true;
-	gContext.input_layouts_dirty = true;
+	gContext.shaderDirty = true;
+	gContext.inputLayoutsDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetInputLayout(const std::vector<InputLayout>& value)
 {
-	gContext.input_layouts = value;
-	gContext.input_layouts_dirty = true;
+	gContext.inputLayouts = value;
+	gContext.inputLayoutsDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetTexture(uint32_t binding, TextureHandle* handle)
@@ -537,7 +522,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 		gContext.renderTargets = { gContext.mainRenderTarget };
 
 		if (!gContext.viewport.has_value())
-			gContext.viewport_dirty = true;
+			gContext.viewportDirty = true;
 		return;
 	}
 
@@ -568,11 +553,10 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 
 		gContext.renderTargets.push_back(target);
 	}
-	gContext.context->OMSetRenderTargets((UINT)render_target_views.size(),
-		render_target_views.data(), depth_stencil_view.value_or(nullptr));
+	gContext.context->OMSetRenderTargets((UINT)render_target_views.size(), render_target_views.data(), depth_stencil_view.value_or(nullptr));
 
 	if (!gContext.viewport.has_value())
-		gContext.viewport_dirty = true;
+		gContext.viewportDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetVertexBuffer(const VertexBuffer** vertex_buffer, size_t count)

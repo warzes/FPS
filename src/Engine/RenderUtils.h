@@ -311,7 +311,7 @@ namespace utils
 		struct SetBlendMode
 		{
 			SetBlendMode(std::optional<BlendMode> blend_mode);
-			std::optional<BlendMode> blend_mode;
+			std::optional<BlendMode> blendMode;
 		};
 
 		struct SetSampler
@@ -557,7 +557,7 @@ namespace utils
 			bool clear = false;
 			Sampler sampler = Sampler::Linear;
 			glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-			std::optional<BlendMode> blend_mode;
+			std::optional<BlendMode> blendMode;
 			std::optional<commands::SetEffect> effect;
 		};
 
@@ -690,7 +690,7 @@ namespace utils
 
 			std::optional<Scissor> scissor;
 			std::optional<Viewport> viewport;
-			std::optional<BlendMode> blend_mode;
+			std::optional<BlendMode> blendMode;
 			std::optional<DepthMode> depth_mode;
 			std::optional<StencilMode> stencil_mode;
 			std::optional<DepthBias> depth_bias;

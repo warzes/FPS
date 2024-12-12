@@ -480,16 +480,16 @@ void PushDescriptorBuffer(vk::raii::CommandBuffer& cmdlist, vk::PipelineBindPoin
 //=============================================================================
 void PushDescriptorTexture(vk::raii::CommandBuffer& cmdlist, vk::PipelineBindPoint pipeline_bind_point, const vk::raii::PipelineLayout& pipeline_layout, uint32_t binding)
 {
-	if (!gContext.sampler_states.contains(gContext.sampler_state))
+	if (!gContext.samplerStates.contains(gContext.samplerState))
 	{
-		auto sampler = CreateSamplerState(gContext.sampler_state);
-		gContext.sampler_states.insert({ gContext.sampler_state, std::move(sampler) });
+		auto sampler = CreateSamplerState(gContext.samplerState);
+		gContext.samplerStates.insert({ gContext.samplerState, std::move(sampler) });
 	}
 
 	auto texture = gContext.textures.at(binding);
 	texture->EnsureState(cmdlist, vk::ImageLayout::eGeneral);
 
-	const auto& sampler = gContext.sampler_states.at(gContext.sampler_state);
+	const auto& sampler = gContext.samplerStates.at(gContext.samplerState);
 
 	auto descriptor_image_info = vk::DescriptorImageInfo()
 		.setSampler(*sampler)
@@ -695,9 +695,9 @@ vk::raii::Pipeline CreateGraphicsPipeline(const PipelineStateVK& pipeline_state)
 	std::vector<vk::VertexInputBindingDescription> vertex_input_binding_descriptions;
 	std::vector<vk::VertexInputAttributeDescription> vertex_input_attribute_descriptions;
 
-	for (size_t i = 0; i < pipeline_state.input_layouts.size(); i++)
+	for (size_t i = 0; i < pipeline_state.inputLayouts.size(); i++)
 	{
-		const auto& input_layout = pipeline_state.input_layouts.at(i);
+		const auto& input_layout = pipeline_state.inputLayouts.at(i);
 
 		static const std::unordered_map<InputLayout::Rate, vk::VertexInputRate> InputRateMap = {
 			{ InputLayout::Rate::Vertex, vk::VertexInputRate::eVertex },
@@ -884,10 +884,10 @@ void EnsureTopology(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureViewport(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.viewport_dirty)
+	if (!gContext.viewportDirty)
 		return;
 
-	gContext.viewport_dirty = false;
+	gContext.viewportDirty = false;
 
 	auto width = static_cast<float>(gContext.GetBackBufferWidth());
 	auto height = static_cast<float>(gContext.GetBackBufferHeight());
@@ -975,10 +975,10 @@ void EnsureFrontFace(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureBlendMode(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.blend_mode_dirty)
+	if (!gContext.blendModeDirty)
 		return;
 
-	gContext.blend_mode_dirty = false;
+	gContext.blendModeDirty = false;
 
 	static const std::unordered_map<Blend, vk::BlendFactor> BlendFactorMap = {
 		{ Blend::One, vk::BlendFactor::eOne },
@@ -1001,7 +1001,7 @@ void EnsureBlendMode(vk::raii::CommandBuffer& cmdlist)
 		{ BlendFunction::Max, vk::BlendOp::eMax },
 	};
 
-	const auto& blend_mode = gContext.blend_mode.value_or(BlendStates::Opaque);
+	const auto& blend_mode = gContext.blendMode.value_or(BlendStates::Opaque);
 
 	auto color_mask = vk::ColorComponentFlags();
 
@@ -1031,7 +1031,7 @@ void EnsureBlendMode(vk::raii::CommandBuffer& cmdlist)
 
 	if (gContext.render_targets.empty())
 	{
-		blend_enable_array = { gContext.blend_mode.has_value() };
+		blend_enable_array = { gContext.blendMode.has_value() };
 		color_mask_array = { color_mask };
 		color_blend_equation_array = { color_blend_equation };
 	}
@@ -1039,7 +1039,7 @@ void EnsureBlendMode(vk::raii::CommandBuffer& cmdlist)
 	{
 		for (size_t i = 0; i < gContext.render_targets.size(); i++)
 		{
-			blend_enable_array.push_back(gContext.blend_mode.has_value());
+			blend_enable_array.push_back(gContext.blendMode.has_value());
 			color_mask_array.push_back(color_mask);
 			color_blend_equation_array.push_back(color_blend_equation);
 		}
@@ -1272,13 +1272,13 @@ void RenderBegin()
 
 	gContext.pipeline_state_dirty = true;
 	gContext.topology_dirty = true;
-	gContext.viewport_dirty = true;
+	gContext.viewportDirty = true;
 	gContext.scissor_dirty = true;
 	gContext.cull_mode_dirty = true;
 	gContext.front_face_dirty = true;
 	gContext.vertex_buffers_dirty = true;
 	gContext.index_buffer_dirty = true;
-	gContext.blend_mode_dirty = true;
+	gContext.blendModeDirty = true;
 	gContext.depth_mode_dirty = true;
 	gContext.stencil_mode_dirty = true;
 

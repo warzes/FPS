@@ -65,7 +65,7 @@
     <ClCompile Include="PipelineStateOpenGL.cpp">
       <Filter>RHI\OpenGL\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="RenderCoreD3D11.cpp">
+    <ClCompile Include="RHICoreD3D11.cpp">
       <Filter>RHI\Direct3D11</Filter>
     </ClCompile>
     <ClCompile Include="ContextD3D11.cpp">
@@ -233,7 +233,7 @@
     <ClInclude Include="PipelineStateOpenGL.h">
       <Filter>RHI\OpenGL\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="RenderCoreD3D11.h">
+    <ClInclude Include="RHICoreD3D11.h">
       <Filter>RHI\Direct3D11</Filter>
     </ClInclude>
     <ClInclude Include="ContextD3D11.h">

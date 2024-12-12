@@ -124,7 +124,7 @@
     <ClInclude Include="PipelineStateVK.h" />
     <ClInclude Include="PrivateHeader.h" />
     <ClInclude Include="RHICore.h" />
-    <ClInclude Include="RenderCoreD3D11.h" />
+    <ClInclude Include="RHICoreD3D11.h" />
     <ClInclude Include="RenderCoreD3D12.h" />
     <ClInclude Include="RenderCoreOpenGL.h" />
     <ClInclude Include="RenderCoreVK.h" />
@@ -181,7 +181,7 @@
     <ClCompile Include="PipelineStateOpenGL.cpp" />
     <ClCompile Include="PipelineStateVK.cpp" />
     <ClCompile Include="RHICore.cpp" />
-    <ClCompile Include="RenderCoreD3D11.cpp" />
+    <ClCompile Include="RHICoreD3D11.cpp" />
     <ClCompile Include="RenderCoreD3D12.cpp" />
     <ClCompile Include="RenderCoreOpenGL.cpp" />
     <ClCompile Include="RenderCoreVK.cpp" />

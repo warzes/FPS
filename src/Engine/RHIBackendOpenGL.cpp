@@ -318,7 +318,7 @@ void RHIBackend::DrawIndexed(uint32_t indexCount, uint32_t indexOffset, uint32_t
 void RHIBackend::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, TextureHandle* dstTextureHandle)
 {
 	auto dst_texture = (TextureGL*)dstTextureHandle;
-	auto format = gContext.GetBackbufferFormat();
+	auto format = gContext.GetBackBufferFormat();
 
 	assert(dst_texture->GetWidth() == size.x);
 	assert(dst_texture->GetHeight() == size.y);

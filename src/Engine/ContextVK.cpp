@@ -22,7 +22,7 @@ uint32_t RenderContext::GetBackBufferHeight()
 	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetHeight() : height;
 }
 //=============================================================================
-vk::Format RenderContext::GetBackbufferFormat()
+vk::Format RenderContext::GetBackBufferFormat()
 {
 	return !render_targets.empty() ? render_targets.at(0)->GetTexture()->GetFormat() : PixelFormatMap.at(PixelFormat::RGBA8UNorm); //gContext.surfaceFormat.format;
 }

@@ -16,7 +16,7 @@ uint32_t RenderContext::GetBackBufferHeight()
 	return !renderTargets.empty() ? renderTargets.at(0)->GetTexture()->GetHeight() : height;
 }
 //=============================================================================
-PixelFormat RenderContext::GetBackbufferFormat()
+PixelFormat RenderContext::GetBackBufferFormat()
 {
 	return !renderTargets.empty() ? renderTargets.at(0)->GetTexture()->GetFormat() : PixelFormat::RGBA8UNorm;
 }

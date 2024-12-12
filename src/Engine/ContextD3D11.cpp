@@ -12,10 +12,15 @@ void RenderContext::Reset()
 	viewport.reset();
 	shader = nullptr;
 	inputLayouts.clear();
+	depthStencilStates.clear();
 	depthStencilState = {};
+	rasterizerStates.clear();
 	rasterizerState = {};
+	samplerStates.clear();
 	samplerState = {};
+	blendModes.clear();
 	blendMode.reset();
+	textures.clear();
 
 	shaderDirty = true;
 	inputLayoutsDirty = true;
@@ -33,17 +38,17 @@ void RenderContext::Reset()
 	adapter.Reset();
 }
 //=============================================================================
-uint32_t RenderContext::GetBackBufferWidth()
+uint32_t RenderContext::GetBackBufferWidth() const
 {
 	return renderTargets.at(0)->GetTexture()->GetWidth();
 }
 //=============================================================================
-uint32_t RenderContext::GetBackBufferHeight()
+uint32_t RenderContext::GetBackBufferHeight() const
 {
 	return renderTargets.at(0)->GetTexture()->GetHeight();
 }
 //=============================================================================
-PixelFormat RenderContext::GetBackbufferFormat()
+PixelFormat RenderContext::GetBackBufferFormat() const
 {
 	return renderTargets.at(0)->GetTexture()->GetFormat();
 }
@@ -79,22 +84,18 @@ void DestroyMainRenderTargetD3D11()
 	gContext.mainRenderTarget = nullptr;
 }
 //=============================================================================
-void EnsureShader()
+void ensureShader()
 {
-	if (!gContext.shaderDirty)
-		return;
-
+	if (!gContext.shaderDirty) return;
 	gContext.shaderDirty = false;
 
-	gContext.context->VSSetShader(gContext.shader->GetD3D11VertexShader().Get(), NULL, 0);
-	gContext.context->PSSetShader(gContext.shader->GetD3D11PixelShader().Get(), NULL, 0);
+	gContext.context->VSSetShader(gContext.shader->GetD3D11VertexShader().Get(), nullptr, 0);
+	gContext.context->PSSetShader(gContext.shader->GetD3D11PixelShader().Get(), nullptr, 0);
 }
 //=============================================================================
-void EnsureInputLayout()
+void ensureInputLayout()
 {
-	if (!gContext.inputLayoutsDirty)
-		return;
-
+	if (!gContext.inputLayoutsDirty) return;
 	gContext.inputLayoutsDirty = false;
 
 	auto& cache = gContext.shader->GetInputLayoutCache();
@@ -126,19 +127,21 @@ void EnsureInputLayout()
 			}
 		}
 
-		gContext.device->CreateInputLayout(input_elements.data(), (UINT)input_elements.size(),
+		HRESULT hr = gContext.device->CreateInputLayout(input_elements.data(), (UINT)input_elements.size(),
 			gContext.shader->GetVertexShaderBlob()->GetBufferPointer(),
 			gContext.shader->GetVertexShaderBlob()->GetBufferSize(), cache[gContext.inputLayouts].GetAddressOf());
+		if (FAILED(hr))
+		{
+			Fatal("CreateInputLayout() failed: " + DXErrorToStr(hr));
+		}
 	}
 
 	gContext.context->IASetInputLayout(cache.at(gContext.inputLayouts).Get());
 }
 //=============================================================================
-void EnsureDepthStencilState()
+void ensureDepthStencilState()
 {
-	if (!gContext.depthStencilStateDirty)
-		return;
-
+	if (!gContext.depthStencilStateDirty) return;
 	gContext.depthStencilStateDirty = false;
 
 	const auto& depth_stencil_state = gContext.depthStencilState;
@@ -186,17 +189,19 @@ void EnsureDepthStencilState()
 
 		desc.BackFace = desc.FrontFace;
 
-		gContext.device->CreateDepthStencilState(&desc, gContext.depthStencilStates[depth_stencil_state].GetAddressOf());
+		HRESULT hr = gContext.device->CreateDepthStencilState(&desc, gContext.depthStencilStates[depth_stencil_state].GetAddressOf());
+		if (FAILED(hr))
+		{
+			Fatal("CreateDepthStencilState() failed: " + DXErrorToStr(hr));
+		}
 	}
 
 	gContext.context->OMSetDepthStencilState(gContext.depthStencilStates.at(depth_stencil_state).Get(), stencil_mode.reference);
 }
 //=============================================================================
-void EnsureRasterizerState()
+void ensureRasterizerState()
 {
-	if (!gContext.rasterizerStateDirty)
-		return;
-
+	if (!gContext.rasterizerStateDirty) return;
 	gContext.rasterizerStateDirty = false;
 
 	const auto& value = gContext.rasterizerState;
@@ -223,17 +228,19 @@ void EnsureRasterizerState()
 			desc.DepthBias = D3D11_DEFAULT_DEPTH_BIAS;
 			desc.SlopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
 		}
-		gContext.device->CreateRasterizerState(&desc, gContext.rasterizerStates[value].GetAddressOf());
+		HRESULT hr = gContext.device->CreateRasterizerState(&desc, gContext.rasterizerStates[value].GetAddressOf());
+		if (FAILED(hr))
+		{
+			Fatal("CreateRasterizerState() failed: " + DXErrorToStr(hr));
+		}
 	}
 
 	gContext.context->RSSetState(gContext.rasterizerStates.at(value).Get());
 }
 //=============================================================================
-void EnsureSamplerState()
+void ensureSamplerState()
 {
-	if (!gContext.samplerStateDirty)
-		return;
-
+	if (!gContext.samplerStateDirty) return;
 	gContext.samplerStateDirty = false;
 
 	const auto& value = gContext.samplerState;
@@ -258,7 +265,11 @@ void EnsureSamplerState()
 		desc.AddressU = TextureAddressMap.at(value.textureAddress);
 		desc.AddressV = TextureAddressMap.at(value.textureAddress);
 		desc.AddressW = TextureAddressMap.at(value.textureAddress);
-		gContext.device->CreateSamplerState(&desc, gContext.samplerStates[value].GetAddressOf());
+		HRESULT hr = gContext.device->CreateSamplerState(&desc, gContext.samplerStates[value].GetAddressOf());
+		if (FAILED(hr))
+		{
+			Fatal("CreateSamplerState() failed: " + DXErrorToStr(hr));
+		}
 	}
 
 	for (auto [binding, _] : gContext.textures)
@@ -267,11 +278,9 @@ void EnsureSamplerState()
 	}
 }
 //=============================================================================
-void EnsureBlendMode()
+void ensureBlendMode()
 {
-	if (!gContext.blendModeDirty)
-		return;
-
+	if (!gContext.blendModeDirty) return;
 	gContext.blendModeDirty = false;
 
 	const auto& blend_mode = gContext.blendMode;
@@ -346,17 +355,19 @@ void EnsureBlendMode()
 			blend.BlendOpAlpha = BlendOpMap.at(blend_mode_nn.alphaFunc);
 		}
 
-		gContext.device->CreateBlendState(&desc, gContext.blendModes[blend_mode].GetAddressOf());
+		HRESULT hr = gContext.device->CreateBlendState(&desc, gContext.blendModes[blend_mode].GetAddressOf());
+		if (FAILED(hr))
+		{
+			Fatal("CreateBlendState() failed: " + DXErrorToStr(hr));
+		}
 	}
 
 	gContext.context->OMSetBlendState(gContext.blendModes.at(blend_mode).Get(), nullptr, 0xFFFFFFFF);
 }
 //=============================================================================
-void EnsureViewport()
+void ensureViewport()
 {
-	if (!gContext.viewportDirty)
-		return;
-
+	if (!gContext.viewportDirty) return;
 	gContext.viewportDirty = false;
 
 	auto width = static_cast<float>(gContext.GetBackBufferWidth());
@@ -374,15 +385,15 @@ void EnsureViewport()
 	gContext.context->RSSetViewports(1, &vp);
 }
 //=============================================================================
-void EnsureGraphicsState(bool draw_indexed)
+void EnsureGraphicsState()
 {
-	EnsureShader();
-	EnsureInputLayout();
-	EnsureDepthStencilState();
-	EnsureRasterizerState();
-	EnsureSamplerState();
-	EnsureBlendMode();
-	EnsureViewport();
+	ensureShader();
+	ensureInputLayout();
+	ensureDepthStencilState();
+	ensureRasterizerState();
+	ensureSamplerState();
+	ensureBlendMode();
+	ensureViewport();
 }
 //=============================================================================
 #endif // RENDER_D3D11

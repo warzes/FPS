@@ -61,7 +61,8 @@ const std::string DXErrorToStr(HRESULT hr)
 
 		// TODO: остальное
 	}
-	return "";
+	assert(1);
+	return "UNKNOWN";
 #undef CASE_TO_STR
 }
 //=============================================================================

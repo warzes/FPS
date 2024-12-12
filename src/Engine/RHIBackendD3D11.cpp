@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #if RENDER_D3D11
 #include "RHIBackend.h"
-#include "RenderCoreD3D11.h"
+#include "RHICoreD3D11.h"
 #include "ContextD3D11.h"
 #include "ShaderD3D11.h"
 #include "TextureD3D11.h"
@@ -204,13 +204,13 @@ void RHIBackend::Clear(const std::optional<glm::vec4>& color, const std::optiona
 //=============================================================================
 void RHIBackend::Draw(uint32_t vertexCount, uint32_t vertexOffset, uint32_t instanceCount)
 {
-	EnsureGraphicsState(false);
+	EnsureGraphicsState();
 	gContext.context->DrawInstanced(vertexCount, instanceCount, vertexOffset, 0);
 }
 //=============================================================================
 void RHIBackend::DrawIndexed(uint32_t indexCount, uint32_t indexOffset, uint32_t instanceCount)
 {
-	EnsureGraphicsState(true);
+	EnsureGraphicsState();
 	gContext.context->DrawIndexedInstanced(indexCount, instanceCount, indexOffset, 0, 0);
 }
 //=============================================================================
@@ -219,7 +219,7 @@ void RHIBackend::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, T
 	if (size.x <= 0 || size.y <= 0) return;
 
 	auto dstTexture = (TextureD3D11*)dstTextureHandle;
-	auto format = gContext.GetBackbufferFormat();
+	auto format = gContext.GetBackBufferFormat();
 
 	assert(dstTexture->GetWidth() == size.x);
 	assert(dstTexture->GetHeight() == size.y);

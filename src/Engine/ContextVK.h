@@ -90,7 +90,7 @@ public:
 
 	uint32_t GetBackBufferWidth();
 	uint32_t GetBackBufferHeight();
-	vk::Format GetBackbufferFormat();
+	vk::Format GetBackBufferFormat();
 
 	bool render_pass_active = false;
 

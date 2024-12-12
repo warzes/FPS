@@ -6,6 +6,8 @@
 //=============================================================================
 ShaderD3D11::ShaderD3D11(const std::string& vertexCode, const std::string& fragmentCode, std::vector<std::string> defines)
 {
+	HRESULT hr = E_FAIL;
+
 	auto vertexShaderSpirv   = CompileGlslToSpirv(ShaderStage::Vertex, vertexCode, defines);
 	auto fragmentShaderSpirv = CompileGlslToSpirv(ShaderStage::Fragment, fragmentCode, defines);
 
@@ -18,7 +20,8 @@ ShaderD3D11::ShaderD3D11(const std::string& vertexCode, const std::string& fragm
 #endif
 
 	ComPtr<ID3DBlob> vertexShaderError;
-	if (FAILED(D3DCompile(hlslVert.c_str(), hlslVert.size(), nullptr, nullptr, nullptr, "main", "vs_4_0", flags, 0, m_vertexShaderBlob.GetAddressOf(), vertexShaderError.GetAddressOf())))
+	hr = D3DCompile(hlslVert.c_str(), hlslVert.size(), nullptr, nullptr, nullptr, "main", "vs_5_0", flags, 0, m_vertexShaderBlob.GetAddressOf(), vertexShaderError.GetAddressOf());
+	if (FAILED(hr))
 	{
 		std::string shaderErrorString = "";
 		if (vertexShaderError)
@@ -30,7 +33,8 @@ ShaderD3D11::ShaderD3D11(const std::string& vertexCode, const std::string& fragm
 
 	ComPtr<ID3DBlob> pixelShaderError;
 	ComPtr<ID3DBlob> pixelShaderBlob;
-	if (FAILED(D3DCompile(hlslFrag.c_str(), hlslFrag.size(), nullptr, nullptr, nullptr, "main", "ps_4_0", flags, 0, pixelShaderBlob.GetAddressOf(), pixelShaderError.GetAddressOf())))
+	hr = D3DCompile(hlslFrag.c_str(), hlslFrag.size(), nullptr, nullptr, nullptr, "main", "ps_5_0", flags, 0, pixelShaderBlob.GetAddressOf(), pixelShaderError.GetAddressOf());
+	if (FAILED(hr))
 	{
 		std::string shaderErrorString = "";
 		if (pixelShaderError)
@@ -39,15 +43,17 @@ ShaderD3D11::ShaderD3D11(const std::string& vertexCode, const std::string& fragm
 		return;
 	}
 	
-	if (FAILED(gContext.device->CreateVertexShader(m_vertexShaderBlob->GetBufferPointer(), m_vertexShaderBlob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf())))
+	hr = gContext.device->CreateVertexShader(m_vertexShaderBlob->GetBufferPointer(), m_vertexShaderBlob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf());
+	if (FAILED(hr))
 	{
-		Fatal("CreateVertexShader() failed");
+		Fatal("CreateVertexShader() failed: " + DXErrorToStr(hr));
 		return;
 	}
 
-	if (FAILED(gContext.device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, m_pixelShader.GetAddressOf())))
+	hr = gContext.device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, m_pixelShader.GetAddressOf());
+	if (FAILED(hr))
 	{
-		Fatal("CreatePixelShader() failed");
+		Fatal("CreatePixelShader() failed: " + DXErrorToStr(hr));
 		return;
 	}
 }

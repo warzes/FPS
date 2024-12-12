@@ -9,6 +9,10 @@ class RenderContext final
 public:
 	void Reset();
 
+	uint32_t    GetBackBufferWidth() const;
+	uint32_t    GetBackBufferHeight() const;
+	PixelFormat GetBackBufferFormat() const;
+
 	ComPtr<IDXGIAdapter4>             adapter{ nullptr };
 	ComPtr<ID3D11Device5>             device{ nullptr };
 	ComPtr<ID3D11DeviceContext4>      context{ nullptr };
@@ -38,6 +42,8 @@ public:
 	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>> blendModes;
 	std::optional<BlendMode>          blendMode;
 
+	std::unordered_map<uint32_t, TextureD3D11*> textures;
+
 	bool shaderDirty = true;
 	bool inputLayoutsDirty = true;
 	bool depthStencilStateDirty = true;
@@ -47,11 +53,6 @@ public:
 	bool viewportDirty = true;
 
 	bool vsync = false;
-	std::unordered_map<uint32_t, TextureD3D11*> textures;
-
-	uint32_t GetBackBufferWidth();
-	uint32_t GetBackBufferHeight();
-	PixelFormat GetBackbufferFormat();
 };
 
 extern RenderContext gContext;
@@ -59,6 +60,6 @@ extern RenderContext gContext;
 bool CreateMainRenderTargetD3D11(uint32_t width, uint32_t height);
 void DestroyMainRenderTargetD3D11();
 
-void EnsureGraphicsState(bool draw_indexed);
+void EnsureGraphicsState();
 
 #endif // RENDER_D3D11

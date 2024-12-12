@@ -61,7 +61,7 @@ public:
 
 	uint32_t    GetBackBufferWidth();
 	uint32_t    GetBackBufferHeight();
-	PixelFormat GetBackbufferFormat();
+	PixelFormat GetBackBufferFormat();
 private:
 };
 

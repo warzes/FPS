@@ -10,20 +10,24 @@ TextureD3D11::TextureD3D11(uint32_t width, uint32_t height, PixelFormat format, 
 	, m_format(format)
 	, m_mipCount(mipCount)
 {
+	HRESULT hr = E_FAIL;
+
 	auto texDesc = CD3D11_TEXTURE2D_DESC(PixelFormatMap.at(format), width, height);
 	texDesc.MipLevels = mipCount;
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
-	if (FAILED(gContext.device->CreateTexture2D(&texDesc, nullptr, m_texture2D.GetAddressOf())))
+	hr = gContext.device->CreateTexture2D(&texDesc, nullptr, m_texture2D.GetAddressOf());
+	if (FAILED(hr))
 	{
-		Fatal("CreateTexture2D() failed");
+		Fatal("CreateTexture2D() failed: " + DXErrorToStr(hr));
 		return;
 	}
 
 	auto srvDesc = CD3D11_SHADER_RESOURCE_VIEW_DESC(m_texture2D.Get(), D3D11_SRV_DIMENSION_TEXTURE2D);
-	if (FAILED(gContext.device->CreateShaderResourceView(m_texture2D.Get(), &srvDesc, m_shaderResourceView.GetAddressOf())))
+	hr = gContext.device->CreateShaderResourceView(m_texture2D.Get(), &srvDesc, m_shaderResourceView.GetAddressOf());
+	if (FAILED(hr))
 	{
-		Fatal("CreateShaderResourceView() failed");
+		Fatal("CreateShaderResourceView() failed: " + DXErrorToStr(hr));
 		return;
 	}
 }

@@ -2,7 +2,7 @@
 
 #if RENDER_D3D11
 
-#include "RenderCoreD3D11.h"
+#include "RHICoreD3D11.h"
 
 class TextureD3D11 final
 {
@@ -17,9 +17,9 @@ public:
 
 	const auto& GetD3D11Texture2D() const { return m_texture2D; }
 	const auto& GetD3D11ShaderResourceView() const { return m_shaderResourceView; }
-	auto GetWidth() const { return m_width; }
-	auto GetHeight() const { return m_height; }
-	auto GetFormat() const { return m_format; }
+	auto        GetWidth() const { return m_width; }
+	auto        GetHeight() const { return m_height; }
+	auto        GetFormat() const { return m_format; }
 
 private:
 	ComPtr<ID3D11ShaderResourceView> m_shaderResourceView;

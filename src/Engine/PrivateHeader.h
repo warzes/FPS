@@ -2,6 +2,9 @@
 
 #if defined(_ENGINE_PRIVATE_HEADER)
 
+#include <codecvt>
+#include <locale>
+
 #if RENDER_D3D11
 
 #	include <d3dcompiler.h>

@@ -16,25 +16,25 @@ public:
 	void Present();
 
 	void Clear(
-		const std::optional<glm::vec4>& color = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f }, 
-		const std::optional<float>& depth = 1.0f, 
-		const std::optional<uint8_t>& stencil = 0);
-	void Draw(uint32_t vertex_count, uint32_t vertex_offset = 0, uint32_t instance_count = 1);
-	void DrawIndexed(uint32_t index_count, uint32_t index_offset = 0, uint32_t instance_count = 1);
-	void ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, Texture& dst_texture);
+		const std::optional<glm::vec4>& color = glm::vec4{ 0.2f, 0.4f, 0.6f, 1.0f }, 
+		const std::optional<float>&     depth = 1.0f, 
+		const std::optional<uint8_t>&   stencil = 0);
+	void Draw(uint32_t vertexCount, uint32_t vertexOffset = 0, uint32_t instanceCount = 1);
+	void DrawIndexed(uint32_t indexCount, uint32_t indexOffset = 0, uint32_t instanceCount = 1);
+	void ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, Texture& dstTexture);
 
 	void SetTopology(Topology topology);
 	void SetViewport(const std::optional<Viewport>& viewport);
 	void SetScissor(const std::optional<Scissor>& scissor);
 
-	void SetBlendMode(const std::optional<BlendMode>& blend_mode);
-	void SetDepthMode(const std::optional<DepthMode>& depth_mode);
-	void SetStencilMode(const std::optional<StencilMode>& stencil_mode);
-	void SetCullMode(CullMode cull_mode);
+	void SetBlendMode(const std::optional<BlendMode>& blendMode);
+	void SetDepthMode(const std::optional<DepthMode>& depthMode);
+	void SetStencilMode(const std::optional<StencilMode>& stencilMode);
+	void SetCullMode(CullMode cullMode);
 	void SetSampler(Sampler value);
 	void SetTextureAddress(TextureAddress value);
 	void SetFrontFace(FrontFace value);
-	void SetDepthBias(const std::optional<DepthBias> depth_bias);
+	void SetDepthBias(const std::optional<DepthBias> depthBias);
 
 	void SetShader(const Shader& shader);
 	void SetInputLayout(const InputLayout& value);

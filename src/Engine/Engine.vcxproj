@@ -107,7 +107,10 @@
     <ClInclude Include="ContextOpenGL.h" />
     <ClInclude Include="ContextVK.h" />
     <ClInclude Include="EngineApp.h" />
+    <ClInclude Include="Matrix3.h" />
+    <ClInclude Include="Matrix4.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="RenderCoreD3D.h" />
     <ClInclude Include="RHIBackend.h" />
     <ClInclude Include="HashCombine.h" />
@@ -148,6 +151,9 @@
     <ClInclude Include="TextureD3D12.h" />
     <ClInclude Include="TextureOpenGL.h" />
     <ClInclude Include="TextureVK.h" />
+    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="WindowStructs.h" />
     <ClInclude Include="WindowSystem.h" />
@@ -164,6 +170,7 @@
     <ClCompile Include="ContextOpenGL.cpp" />
     <ClCompile Include="ContextVK.cpp" />
     <ClCompile Include="EngineApp.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="RenderCoreD3D.cpp" />
     <ClCompile Include="RHIBackendD3D11.cpp" />

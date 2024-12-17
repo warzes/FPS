@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+https://github.com/Delt06/dx12-renderer
+https://www.3dgep.com/learning-directx-12-1/
 #if RENDER_D3D12
 
 #include "RenderCoreD3D12.h"
@@ -26,7 +28,7 @@ public:
 	};
 	ComPtr<ID3D12DescriptorHeap>        frameRTVHeap;
 
-	Frame                               frames[NUM_BACK_BUFFERS];
+	Frame                               frames[RHI_BACKBUFFER_COUNT];
 	UINT                                frameIndex{ 0 };
 
 	HANDLE                              fenceEvent{ nullptr };

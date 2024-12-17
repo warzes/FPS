@@ -28,10 +28,7 @@ namespace utils
 		float shininess = 32.0f;
 	};
 
-	using Light = std::variant<
-		DirectionalLight,
-		PointLight
-	>;
+	using Light = std::variant<DirectionalLight, PointLight>;
 
 	namespace effects
 	{
@@ -240,6 +237,7 @@ namespace utils
 
 	std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> MakeCameraMatrices(const OrthogonalCamera& camera);
 	std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> MakeCameraMatrices(const PerspectiveCamera& camera);
+	std::tuple<glm::mat4/*view*/, glm::mat4/*projection*/> CalculatePerspectiveViewProjection(float yaw, float pitch, const glm::vec3& position, uint32_t width, uint32_t height, float fov = 70.0f, float near_plane = 1.0f, float far_plane = 8192.0f, const glm::vec3& world_up = { 0.0f, 1.0f, 0.0f });
 
 	struct Context
 	{
@@ -675,86 +673,4 @@ namespace utils
 		Mesh::Indices mIndices;
 		uint32_t mVertexStart = 0;
 	};
-
-	class Scratch
-	{
-	public:
-		struct State
-		{
-			Texture* texture = nullptr;
-			Sampler sampler = Sampler::Linear;
-			TextureAddress texaddr = TextureAddress::Clamp;
-			CullMode cull_mode = CullMode::None;
-			FrontFace front_face = FrontFace::Clockwise;
-			float mipmap_bias = 0.0f;
-
-			std::optional<Scissor> scissor;
-			std::optional<Viewport> viewport;
-			std::optional<BlendMode> blendMode;
-			std::optional<DepthMode> depth_mode;
-			std::optional<StencilMode> stencil_mode;
-			std::optional<DepthBias> depth_bias;
-			std::optional<float> alpha_test_threshold;
-
-			glm::mat4 projection_matrix = glm::mat4(1.0f);
-			glm::mat4 view_matrix = glm::mat4(1.0f);
-			glm::mat4 model_matrix = glm::mat4(1.0f);
-
-			bool operator==(const State& other) const = default;
-		};
-
-	public:
-		void begin(MeshBuilder::Mode mode, const State& state);
-		void begin(MeshBuilder::Mode mode);
-		void vertex(const Mesh::Vertex& value);
-		void end();
-		void flush(bool sort_textures = false);
-		bool isBegan() const;
-
-	private:
-		void pushCommand();
-
-	private:
-		State mState;
-		Mesh mMesh;
-		MeshBuilder mMeshBuilder;
-
-		struct ScratchCommand
-		{
-			State state;
-			Topology topology;
-			uint32_t index_count;
-			uint32_t index_offset;
-		};
-
-		std::vector<ScratchCommand> mScratchCommands;
-		std::vector<Command> mCommands;
-	};
-}
-
-inline std::tuple<glm::mat4/*view*/, glm::mat4/*projection*/> CalculatePerspectiveViewProjection(float yaw,
-	float pitch, const glm::vec3& position, uint32_t width,
-	uint32_t height, float fov = 70.0f,
-	float near_plane = 1.0f, float far_plane = 8192.0f, const glm::vec3& world_up = { 0.0f, 1.0f, 0.0f })
-{
-	auto [proj, view] = utils::MakeCameraMatrices(utils::PerspectiveCamera{
-		.width = width,
-		.height = height,
-		.yaw = yaw,
-		.pitch = pitch,
-		.position = position,
-		.world_up = world_up,
-		.far_plane = far_plane,
-		.near_plane = near_plane,
-		.fov = fov
-		});
-	return { view, proj };
-}
-
-inline std::tuple<uint32_t, uint32_t, void*> LoadTexture(const std::string& filename)
-{
-	int width = 0;
-	int height = 0;
-	void* memory = stbi_load(filename.c_str(), &width, &height, nullptr, 4);
-	return { width, height, memory };
 }

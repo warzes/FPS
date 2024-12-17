@@ -539,7 +539,7 @@ void RHIBackend::WriteVertexBufferMemory(VertexBufferHandle* handle, const void*
 		});
 
 	if (has_buffer)
-		gContext.vertex_buffers_dirty = true;
+		gContext.vertexBuffersDirty = true;
 }
 //=============================================================================
 IndexBufferHandle* RHIBackend::CreateIndexBuffer(size_t size, size_t stride)
@@ -563,7 +563,7 @@ void RHIBackend::WriteIndexBufferMemory(IndexBufferHandle* handle, const void* m
 	buffer->SetStride(stride);
 
 	if (gContext.index_buffer == buffer)
-		gContext.index_buffer_dirty = true;
+		gContext.indexBufferDirty = true;
 }
 //=============================================================================
 UniformBufferHandle* RHIBackend::CreateUniformBuffer(size_t size)
@@ -595,7 +595,7 @@ void RHIBackend::WriteUniformBufferMemory(UniformBufferHandle* handle, const voi
 void RHIBackend::SetTopology(Topology topology)
 {
 	gContext.topology = topology;
-	gContext.topology_dirty = true;
+	gContext.topologyDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetViewport(std::optional<Viewport> viewport)
@@ -607,7 +607,7 @@ void RHIBackend::SetViewport(std::optional<Viewport> viewport)
 void RHIBackend::SetScissor(std::optional<Scissor> scissor)
 {
 	gContext.scissor = scissor;
-	gContext.scissor_dirty = true;
+	gContext.scissorDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetBlendMode(const std::optional<BlendMode>& blend_mode)
@@ -619,19 +619,19 @@ void RHIBackend::SetBlendMode(const std::optional<BlendMode>& blend_mode)
 void RHIBackend::SetDepthMode(const std::optional<DepthMode>& depth_mode)
 {
 	gContext.depth_mode = depth_mode;
-	gContext.depth_mode_dirty = true;
+	gContext.depthModeDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 {
-	gContext.stencil_mode_dirty = true;
+	gContext.stencilModeDirty = true;
 	gContext.stencil_mode = stencil_mode;
 }
 //=============================================================================
 void RHIBackend::SetCullMode(CullMode cull_mode)
 {
 	gContext.cull_mode = cull_mode;
-	gContext.cull_mode_dirty = true;
+	gContext.cullModeDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetSampler(Sampler value)
@@ -647,7 +647,7 @@ void RHIBackend::SetTextureAddress(TextureAddress value)
 void RHIBackend::SetFrontFace(FrontFace value)
 {
 	gContext.front_face = value;
-	gContext.front_face_dirty = true;
+	gContext.frontFaceDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetDepthBias(const std::optional<DepthBias> depth_bias)
@@ -657,13 +657,13 @@ void RHIBackend::SetDepthBias(const std::optional<DepthBias> depth_bias)
 void RHIBackend::SetShader(ShaderHandle* handle)
 {
 	gContext.pipeline_state.shader = (ShaderVK*)handle;
-	gContext.pipeline_state_dirty = true;
+	gContext.pipelineStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetInputLayout(const std::vector<InputLayout>& value)
 {
 	gContext.pipeline_state.inputLayouts = value;
-	gContext.pipeline_state_dirty = true;
+	gContext.pipelineStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetTexture(uint32_t binding, TextureHandle* handle)
@@ -699,7 +699,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 	if (gContext.render_targets.size() != render_targets.size())
 		gContext.blendModeDirty = true;
 
-	gContext.pipeline_state_dirty = true;
+	gContext.pipelineStateDirty = true;
 	gContext.pipeline_state.color_attachment_formats = color_attachment_formats;
 	gContext.pipeline_state.depth_stencil_format = depth_stencil_format;
 	gContext.render_targets = render_targets;
@@ -709,7 +709,7 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 		gContext.viewportDirty = true;
 
 	if (!gContext.scissor.has_value())
-		gContext.scissor_dirty = true;
+		gContext.scissorDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetVertexBuffer(const VertexBuffer** vertex_buffer, size_t count)
@@ -720,13 +720,13 @@ void RHIBackend::SetVertexBuffer(const VertexBuffer** vertex_buffer, size_t coun
 		auto buffer = (VertexBufferVK*)(VertexBufferHandle*)*(VertexBuffer*)vertex_buffer[i];
 		gContext.vertex_buffers.push_back(buffer);
 	}
-	gContext.vertex_buffers_dirty = true;
+	gContext.vertexBuffersDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetIndexBuffer(IndexBufferHandle* handle)
 {
 	gContext.index_buffer = (IndexBufferVK*)handle;
-	gContext.index_buffer_dirty = true;
+	gContext.indexBufferDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetUniformBuffer(uint32_t binding, UniformBufferHandle* handle)

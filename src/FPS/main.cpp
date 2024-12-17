@@ -11,6 +11,9 @@
 #include "007_instancing.h"
 #include "008_bloom.h"
 #include "009_sponza.h"
+#include "010_RaytracedTriangle.h"
+#include "011_raytracedCube.h"
+#include "012_RaytracedShadows.h"
 #endif // EXAMPLE
 //=============================================================================
 #if defined(_MSC_VER)
@@ -23,7 +26,7 @@ int main(
 	[[maybe_unused]] char* argv[])
 {
 #if EXAMPLE
-	E001();
+	//E001();
 	//E002();
 	//E003();
 	//E004();
@@ -32,7 +35,9 @@ int main(
 	//E007();
 	//E008();
 	//E009();
-
+	//E010();
+	//E011();
+	E012();
 #else
 	void GameStart();
 	GameStart();

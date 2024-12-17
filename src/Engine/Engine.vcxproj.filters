@@ -433,9 +433,6 @@
     <Filter Include="Math">
       <UniqueIdentifier>{64bd0bbb-2dfc-4d29-bd48-f174de52df58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render\Core">
-      <UniqueIdentifier>{f0ba48df-c31e-47a1-8c52-da2404fd6af6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="RHI\D3DCore">
       <UniqueIdentifier>{7baf3ec2-2a3f-43f5-a8dc-2e4b15d9390f}</UniqueIdentifier>
     </Filter>

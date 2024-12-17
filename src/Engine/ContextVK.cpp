@@ -832,10 +832,10 @@ vk::raii::Pipeline CreateRaytracingPipeline(const RaytracingPipelineStateVK& pip
 //=============================================================================
 void EnsureVertexBuffers(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.vertex_buffers_dirty)
+	if (!gContext.vertexBuffersDirty)
 		return;
 
-	gContext.vertex_buffers_dirty = false;
+	gContext.vertexBuffersDirty = false;
 
 	std::vector<vk::Buffer> buffers;
 	std::vector<vk::DeviceSize> offsets;
@@ -853,10 +853,10 @@ void EnsureVertexBuffers(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureIndexBuffer(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.index_buffer_dirty)
+	if (!gContext.indexBufferDirty)
 		return;
 
-	gContext.index_buffer_dirty = false;
+	gContext.indexBufferDirty = false;
 
 	auto index_type = GetIndexTypeFromStride(gContext.index_buffer->GetStride());
 	cmdlist.bindIndexBuffer(*gContext.index_buffer->GetBuffer(), 0, index_type);
@@ -864,10 +864,10 @@ void EnsureIndexBuffer(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureTopology(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.topology_dirty)
+	if (!gContext.topologyDirty)
 		return;
 
-	gContext.topology_dirty = false;
+	gContext.topologyDirty = false;
 
 	static const std::unordered_map<Topology, vk::PrimitiveTopology> TopologyMap = {
 		{ Topology::PointList, vk::PrimitiveTopology::ePointList },
@@ -907,10 +907,10 @@ void EnsureViewport(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureScissor(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.scissor_dirty)
+	if (!gContext.scissorDirty)
 		return;
 
-	gContext.scissor_dirty = false;
+	gContext.scissorDirty = false;
 
 	auto width = static_cast<float>(gContext.GetBackBufferWidth());
 	auto height = static_cast<float>(gContext.GetBackBufferHeight());
@@ -944,10 +944,10 @@ void EnsureScissor(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureCullMode(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.cull_mode_dirty)
+	if (!gContext.cullModeDirty)
 		return;
 
-	gContext.cull_mode_dirty = false;
+	gContext.cullModeDirty = false;
 
 	const static std::unordered_map<CullMode, vk::CullModeFlags> CullModeMap = {
 		{ CullMode::None, vk::CullModeFlagBits::eNone },
@@ -960,10 +960,10 @@ void EnsureCullMode(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureFrontFace(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.front_face_dirty)
+	if (!gContext.frontFaceDirty)
 		return;
 
-	gContext.front_face_dirty = false;
+	gContext.frontFaceDirty = false;
 
 	const static std::unordered_map<FrontFace, vk::FrontFace> FrontFaceMap = {
 		{ FrontFace::Clockwise, vk::FrontFace::eClockwise },
@@ -1052,10 +1052,10 @@ void EnsureBlendMode(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureDepthMode(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.depth_mode_dirty)
+	if (!gContext.depthModeDirty)
 		return;
 
-	gContext.depth_mode_dirty = false;
+	gContext.depthModeDirty = false;
 
 	if (gContext.depth_mode.has_value())
 	{
@@ -1073,20 +1073,20 @@ void EnsureDepthMode(vk::raii::CommandBuffer& cmdlist)
 //=============================================================================
 void EnsureStencilMode(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.stencil_mode_dirty)
+	if (!gContext.stencilModeDirty)
 		return;
 
-	gContext.stencil_mode_dirty = false;
+	gContext.stencilModeDirty = false;
 
 	cmdlist.setStencilTestEnable(gContext.stencil_mode.has_value());
 }
 //=============================================================================
 void EnsureGraphicsPipelineState(vk::raii::CommandBuffer& cmdlist)
 {
-	if (!gContext.pipeline_state_dirty)
+	if (!gContext.pipelineStateDirty)
 		return;
 
-	gContext.pipeline_state_dirty = false;
+	gContext.pipelineStateDirty = false;
 
 	if (!gContext.pipeline_states.contains(gContext.pipeline_state))
 	{
@@ -1270,17 +1270,17 @@ void RenderBegin()
 	assert(!gContext.working);
 	gContext.working = true;
 
-	gContext.pipeline_state_dirty = true;
-	gContext.topology_dirty = true;
+	gContext.pipelineStateDirty = true;
+	gContext.topologyDirty = true;
 	gContext.viewportDirty = true;
-	gContext.scissor_dirty = true;
-	gContext.cull_mode_dirty = true;
-	gContext.front_face_dirty = true;
-	gContext.vertex_buffers_dirty = true;
-	gContext.index_buffer_dirty = true;
+	gContext.scissorDirty = true;
+	gContext.cullModeDirty = true;
+	gContext.frontFaceDirty = true;
+	gContext.vertexBuffersDirty = true;
+	gContext.indexBufferDirty = true;
 	gContext.blendModeDirty = true;
-	gContext.depth_mode_dirty = true;
-	gContext.stencil_mode_dirty = true;
+	gContext.depthModeDirty = true;
+	gContext.stencilModeDirty = true;
 
 	auto begin_info = vk::CommandBufferBeginInfo()
 		.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);

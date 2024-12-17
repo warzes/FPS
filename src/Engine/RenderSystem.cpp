@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "RenderSystem.h"
 #include "RHIBackend.h"
+#include "RenderUtils.h"
 //=============================================================================
 #if PLATFORM_WINDOWS
 extern "C" {
@@ -31,6 +32,7 @@ bool RenderSystem::Create(const WindowData& data, const RenderSystemCreateInfo& 
 //=============================================================================
 void RenderSystem::Destroy()
 {
+	utils::ClearContext();
 	m_indexBuffer.reset();
 	m_vertexBuffer.reset();
 	m_uniformBuffers.clear();

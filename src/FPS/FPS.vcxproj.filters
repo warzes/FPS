@@ -39,6 +39,15 @@
     <ClInclude Include="Temp.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="010_RaytracedTriangle.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="012_RaytracedShadows.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="011_RaytracedCube.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Examples">

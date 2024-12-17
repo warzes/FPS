@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "RenderUtils.h"
 #include "RenderSystem.h"
+#include "Log.h"
 
 const std::string utils::effects::BasicEffect::VertexShaderCode = R"(
 #version 450 core
@@ -643,6 +644,22 @@ std::tuple<glm::mat4/*proj*/, glm::mat4/*view*/> utils::MakeCameraMatrices(const
 	return { proj, view };
 }
 
+std::tuple<glm::mat4/*view*/, glm::mat4/*projection*/> utils::CalculatePerspectiveViewProjection(float yaw, float pitch, const glm::vec3& position, uint32_t width, uint32_t height, float fov, float near_plane, float far_plane, const glm::vec3& world_up)
+{
+	auto [proj, view] = utils::MakeCameraMatrices(utils::PerspectiveCamera{
+		.width = width,
+		.height = height,
+		.yaw = yaw,
+		.pitch = pitch,
+		.position = position,
+		.world_up = world_up,
+		.far_plane = far_plane,
+		.near_plane = near_plane,
+		.fov = fov
+		});
+	return { view, proj };
+}
+
 void utils::ClearContext()
 {
 	gContext.reset();
@@ -915,7 +932,7 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 			},
 			[&](const commands::SetEffect& cmd) {
 				if (cmd.shader == nullptr)
-					throw std::runtime_error("shader must be not null");
+					Fatal("shader must be not null");
 
 				effect_setted_up = true;
 				execute_command(commands::SetShader(cmd.shader));
@@ -1550,116 +1567,4 @@ void utils::MeshBuilder::setToMesh(Mesh& mesh)
 
 	mesh.SetVertices(mVertices);
 	mesh.SetIndices(mIndices);
-}
-
-void utils::Scratch::begin(MeshBuilder::Mode mode, const State& state)
-{
-	if (!mMeshBuilder.getVertices().empty() && mState != state)
-		pushCommand();
-
-	mMeshBuilder.begin(mode, [&] {
-		pushCommand();
-		});
-
-	mState = state;
-}
-
-void utils::Scratch::begin(MeshBuilder::Mode mode)
-{
-	begin(mode, {});
-}
-
-void utils::Scratch::vertex(const Mesh::Vertex& value)
-{
-	mMeshBuilder.vertex(value);
-}
-
-void utils::Scratch::end()
-{
-	mMeshBuilder.end();
-}
-
-void utils::Scratch::flush(bool sort_textures)
-{
-	if (mMeshBuilder.getVertices().empty())
-	{
-		mMeshBuilder.reset();
-		return;
-	}
-
-	pushCommand();
-
-	mMeshBuilder.setToMesh(mMesh);
-	mMeshBuilder.reset();
-
-	if (sort_textures)
-	{
-		std::sort(mScratchCommands.begin(), mScratchCommands.end(), [](const ScratchCommand& left, const ScratchCommand& right) {
-			return left.state.texture < right.state.texture;
-			});
-	}
-
-	mCommands.push_back(commands::SetMesh(&mMesh));
-
-	for (const auto& command : mScratchCommands)
-	{
-		mCommands.insert(mCommands.end(), {
-			command.state.alpha_test_threshold.has_value() ?
-				commands::SetEffect(effects::AlphaTest{ command.state.alpha_test_threshold.value() }) :
-				commands::SetEffect(std::nullopt),
-			commands::SetViewport(command.state.viewport),
-			commands::SetScissor(command.state.scissor),
-			commands::SetBlendMode(command.state.blendMode),
-			commands::SetDepthBias(command.state.depth_bias),
-			commands::SetDepthMode(command.state.depth_mode),
-			commands::SetStencilMode(command.state.stencil_mode),
-			commands::SetCullMode(command.state.cull_mode),
-			commands::SetFrontFace(command.state.front_face),
-			commands::SetSampler(command.state.sampler),
-			commands::SetTextureAddress(command.state.texaddr),
-			commands::SetMipmapBias(command.state.mipmap_bias),
-			commands::SetProjectionMatrix(command.state.projection_matrix),
-			commands::SetViewMatrix(command.state.view_matrix),
-			commands::SetModelMatrix(command.state.model_matrix),
-			commands::SetColorTexture(command.state.texture),
-			commands::SetTopology(command.topology),
-			commands::DrawMesh(commands::DrawMesh::DrawIndexedVerticesCommand{
-				.index_count = command.index_count,
-				.index_offset = command.index_offset
-			})
-			});
-	}
-
-	mScratchCommands.clear();
-
-	ExecuteCommands(mCommands);
-
-	mCommands.clear();
-}
-
-bool utils::Scratch::isBegan() const
-{
-	return mMeshBuilder.isBegan();
-}
-
-void utils::Scratch::pushCommand()
-{
-	uint32_t index_offset = 0;
-
-	if (!mScratchCommands.empty())
-	{
-		const auto& prev_command = mScratchCommands.at(mScratchCommands.size() - 1);
-		index_offset = prev_command.index_offset + prev_command.index_count;
-	}
-
-	uint32_t index_count = static_cast<uint32_t>(mMeshBuilder.getIndices().size()) - index_offset;
-
-	auto topology = mMeshBuilder.getTopology().value();
-
-	mScratchCommands.push_back(ScratchCommand{
-		.state = mState,
-		.topology = topology,
-		.index_count = index_count,
-		.index_offset = index_offset
-		});
 }

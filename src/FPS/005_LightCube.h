@@ -147,7 +147,7 @@ void main()
 
 		auto shader = Shader(vertex_shader_code, fragment_shader_code, Vertex::Defines);
 
-		auto [tex_width, tex_height, tex_memory] = LoadTexture("assets/bricks.jpg");
+		auto [tex_width, tex_height, tex_memory] = LoadTextureFromSTBImage("assets/bricks.jpg");
 
 		auto texture = Texture(tex_width, tex_height, PixelFormat::RGBA8UNorm, tex_memory, true);
 
@@ -169,7 +169,7 @@ void main()
 			static float time = 0.0f;
 			time += 0.01f;
 
-			std::tie(matrices.view, matrices.projection) = CalculatePerspectiveViewProjection(yaw, pitch, position, rhi.GetBackBufferWidth(), rhi.GetBackBufferHeight());
+			std::tie(matrices.view, matrices.projection) = utils::CalculatePerspectiveViewProjection(yaw, pitch, position, rhi.GetBackBufferWidth(), rhi.GetBackBufferHeight());
 
 			matrices.model = glm::mat4(1.0f);
 			matrices.model = glm::rotate(matrices.model, time, { 0.0f, 1.0f, 0.0f });

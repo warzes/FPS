@@ -89,7 +89,7 @@ void E008()
 			20, 21, 22, 21, 23, 22, // right
 		};
 
-		auto [tex_width, tex_height, tex_memory] = LoadTexture("assets/bricks.jpg");
+		auto [tex_width, tex_height, tex_memory] = LoadTextureFromSTBImage("assets/bricks.jpg");
 
 		auto texture = Texture(tex_width, tex_height, PixelFormat::RGBA8UNorm, tex_memory, true);
 

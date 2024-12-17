@@ -112,6 +112,9 @@
     <ClInclude Include="007_instancing.h" />
     <ClInclude Include="008_bloom.h" />
     <ClInclude Include="009_sponza.h" />
+    <ClInclude Include="010_RaytracedTriangle.h" />
+    <ClInclude Include="011_RaytracedCube.h" />
+    <ClInclude Include="012_RaytracedShadows.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Temp.h" />
   </ItemGroup>

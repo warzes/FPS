@@ -57,8 +57,8 @@ public:
 	RaytracingPipelineStateVK raytracing_pipeline_state;
 	std::unordered_map<RaytracingPipelineStateVK, vk::raii::Pipeline> raytracing_pipeline_states;
 
-	SamplerStateVK sampler_state;
-	std::unordered_map<SamplerStateVK, vk::raii::Sampler> sampler_states;
+	SamplerStateVK samplerState;
+	std::unordered_map<SamplerStateVK, vk::raii::Sampler> samplerStates;
 
 	std::vector<RenderTargetVK*> render_targets;
 
@@ -72,19 +72,19 @@ public:
 	Topology topology = Topology::TriangleList;
 	std::vector<VertexBufferVK*> vertex_buffers; // TODO: store pointer and count, not std::vector
 	IndexBufferVK* index_buffer = nullptr;
-	std::optional<BlendMode> blend_mode;
+	std::optional<BlendMode> blendMode;
 
-	bool pipeline_state_dirty = true;
-	bool scissor_dirty = true;
-	bool viewport_dirty = true;
-	bool depth_mode_dirty = true;
-	bool stencil_mode_dirty = true;
-	bool cull_mode_dirty = true;
-	bool front_face_dirty = true;
-	bool topology_dirty = true;
-	bool vertex_buffers_dirty = true;
-	bool index_buffer_dirty = true;
-	bool blend_mode_dirty = true;
+	bool pipelineStateDirty = true;
+	bool scissorDirty = true;
+	bool viewportDirty = true;
+	bool depthModeDirty = true;
+	bool stencilModeDirty = true;
+	bool cullModeDirty = true;
+	bool frontFaceDirty = true;
+	bool topologyDirty = true;
+	bool vertexBuffersDirty = true;
+	bool indexBufferDirty = true;
+	bool blendModeDirty = true;
 
 	std::unordered_set<uint32_t> graphics_pipeline_ignore_bindings;
 

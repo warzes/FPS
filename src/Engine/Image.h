@@ -21,3 +21,12 @@ private:
 	int   m_height;
 	int   m_channels;
 };
+
+
+inline std::tuple<uint32_t, uint32_t, void*> LoadTextureFromSTBImage(const std::string& filename)
+{
+	int width = 0;
+	int height = 0;
+	void* memory = stbi_load(filename.c_str(), &width, &height, nullptr, 4);
+	return { width, height, memory };
+}

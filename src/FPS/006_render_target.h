@@ -220,7 +220,7 @@ void main()
 			static float time = 0.0f;
 			time += 0.01f;
 
-			std::tie(matrices.view, matrices.projection) = CalculatePerspectiveViewProjection(yaw, pitch, position, rhi.GetBackBufferWidth(), rhi.GetBackBufferHeight());
+			std::tie(matrices.view, matrices.projection) = utils::CalculatePerspectiveViewProjection(yaw, pitch, position, rhi.GetBackBufferWidth(), rhi.GetBackBufferHeight());
 
 			matrices.model = glm::mat4(1.0f);
 			matrices.model = glm::rotate(matrices.model, time, { 0.0f, 1.0f, 0.0f });

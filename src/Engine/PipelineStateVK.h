@@ -9,7 +9,7 @@ struct PipelineStateVK
 	ShaderVK* shader = nullptr;
 	std::vector<vk::Format> color_attachment_formats;
 	std::optional<vk::Format> depth_stencil_format;
-	std::vector<InputLayout> input_layouts;
+	std::vector<InputLayout> inputLayouts;
 
 	bool operator==(const PipelineStateVK& other) const = default;
 };

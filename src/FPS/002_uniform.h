@@ -72,8 +72,8 @@ void main()
 
 			static float time = 0.0;
 			time += 0.001f;
-			matrices.model = glm::mat4(1.0f);
-			matrices.model = glm::translate(matrices.model, { glm::sin(time * 2.0f) * 0.5f, 0.0f, 0.0f });
+
+			matrices.model = glm::translate(glm::mat4(1.0f), { glm::sin(time * 2.0f) * 0.5f, 0.0f, 0.0f });
 			rhi.SetUniformBuffer(0, matrices);
 
 			rhi.Clear();

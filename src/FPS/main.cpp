@@ -26,8 +26,8 @@ int main(
 	[[maybe_unused]] char* argv[])
 {
 #if EXAMPLE
-	E001();
-	//E002();
+	//E001();
+	E002();
 	//E003();
 	//E004();
 	//E005();

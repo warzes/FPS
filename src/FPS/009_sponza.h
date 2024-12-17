@@ -228,10 +228,10 @@ namespace e009
 			for (const auto& draw_data : draw_datas)
 			{
 				auto draw_vertex = [&](const Mesh::Vertex& vertex) {
-					mesh_builder.begin(utils::MeshBuilder::Mode::Lines);
-					mesh_builder.vertex({ .pos = vertex.pos, .color = { 0.0f, 1.0f, 0.0f, 1.0f } });
-					mesh_builder.vertex({ .pos = vertex.pos + (vertex.normal * 25.0f), .color = { 0.0f, 1.0f, 0.0f, 1.0f } });
-					mesh_builder.end();
+					mesh_builder.Begin(utils::MeshBuilder::Mode::Lines);
+					mesh_builder.Vertex({ .pos = vertex.pos, .color = { 0.0f, 1.0f, 0.0f, 1.0f } });
+					mesh_builder.Vertex({ .pos = vertex.pos + (vertex.normal * 25.0f), .color = { 0.0f, 1.0f, 0.0f, 1.0f } });
+					mesh_builder.End();
 					};
 
 				std::visit(cases{
@@ -261,7 +261,7 @@ namespace e009
 		}
 
 		Mesh mesh;
-		mesh_builder.setToMesh(mesh);
+		mesh_builder.SetToMesh(mesh);
 
 		return mesh;
 	}

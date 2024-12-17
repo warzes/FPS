@@ -113,6 +113,7 @@
     <ClInclude Include="Matrix3.h" />
     <ClInclude Include="Matrix4.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshBuilder.h" />
     <ClInclude Include="Plane3.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Ray3.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="RenderCoreD3D.cpp" />
     <ClCompile Include="RHIBackendD3D11.cpp" />
     <ClCompile Include="RHIBackendD3D12.cpp" />

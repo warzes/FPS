@@ -561,18 +561,17 @@ void RHIBackend::SetRenderTarget(const RenderTarget** render_target, size_t coun
 //=============================================================================
 void RHIBackend::SetVertexBuffer(const VertexBuffer** vertex_buffer, size_t count)
 {
-	std::vector<ID3D11Buffer*> buffers;
-	std::vector<UINT> strides;
-	std::vector<UINT> offsets;
+	std::vector<ID3D11Buffer*> buffers(count);
+	std::vector<UINT> strides(count);
+	std::vector<UINT> offsets(count);
 
 	for (size_t i = 0; i < count; i++)
 	{
 		auto buffer = (VertexBufferD3D11*)(VertexBufferHandle*)*(VertexBuffer*)vertex_buffer[i];
-		buffers.push_back(buffer->GetD3D11Buffer().Get());
-		strides.push_back((UINT)buffer->GetStride());
-		offsets.push_back(0);
+		buffers[i] = buffer->GetD3D11Buffer().Get();
+		strides[i] = (UINT)buffer->GetStride();
+		offsets[i] = 0;
 	}
-
 	gContext.context->IASetVertexBuffers(0, (UINT)buffers.size(), buffers.data(), strides.data(), offsets.data());
 }
 //=============================================================================

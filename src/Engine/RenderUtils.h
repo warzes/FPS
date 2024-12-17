@@ -563,10 +563,8 @@ namespace utils
 
 		void GaussianBlur(RenderTarget* src, RenderTarget* dst = nullptr);
 		void Grayscale(RenderTarget* src, RenderTarget* dst = nullptr, float intensity = 1.0f);
-		void Bloom(RenderTarget* src, RenderTarget* dst = nullptr, float bright_threshold = 1.0f,
-			float intensity = 2.0f);
-		void BloomGaussian(RenderTarget* src, RenderTarget* dst = nullptr, float bright_threshold = 1.0f,
-			float intensity = 2.0f);
+		void Bloom(RenderTarget* src, RenderTarget* dst = nullptr, float bright_threshold = 1.0f, float intensity = 2.0f);
+		void BloomGaussian(RenderTarget* src, RenderTarget* dst = nullptr, float bright_threshold = 1.0f, float intensity = 2.0f);
 	}
 
 	struct Model
@@ -582,8 +580,7 @@ namespace utils
 		DepthMode depth_mode;
 		Sampler sampler = Sampler::Linear;
 
-		static std::vector<Command> Draw(const Model& model, bool use_color_texture = true,
-			bool use_normal_texture = true);
+		static std::vector<Command> Draw(const Model& model, bool use_color_texture = true, bool use_normal_texture = true);
 	};
 
 	struct DrawSceneOptions
@@ -623,9 +620,7 @@ namespace utils
 		std::vector<Posteffect> posteffects;
 	};
 
-	void DrawScene(RenderTarget* target, const PerspectiveCamera& camera,
-		const std::vector<Model>& models, const std::vector<Light>& lights = {},
-		const DrawSceneOptions& options = {});
+	void DrawScene(RenderTarget* target, const PerspectiveCamera& camera, const std::vector<Model>& models, const std::vector<Light>& lights = {}, const DrawSceneOptions& options = {});
 
 	class StageViewer
 	{
@@ -635,42 +630,4 @@ namespace utils
 
 	void SetStageViewer(StageViewer* value);
 	void ViewStage(const std::string& name, Texture* texture);
-
-	class MeshBuilder
-	{
-	public:
-		enum class Mode
-		{
-			Points,
-			Lines,
-			LineLoop,
-			LineStrip,
-			Triangles,
-			TriangleStrip,
-			TriangleFan,
-			Quads,
-			Polygon
-		};
-
-	public:
-		void reset();
-		void begin(Mode mode, std::function<void()> onFlush = nullptr);
-		void vertex(const Mesh::Vertex& value);
-		void end();
-		void setToMesh(Mesh& mesh);
-
-	public:
-		bool isBegan() const { return mBegan; }
-		const auto& getTopology() const { return mTopology; }
-		const auto& getVertices() const { return mVertices; }
-		const auto& getIndices() const { return mIndices; }
-
-	private:
-		bool mBegan = false;
-		std::optional<Mode> mMode;
-		std::optional<Topology> mTopology;
-		Mesh::Vertices mVertices;
-		Mesh::Indices mIndices;
-		uint32_t mVertexStart = 0;
-	};
 }

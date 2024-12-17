@@ -20,6 +20,7 @@
 #include "Engine/Font.h"
 #include "Engine/Image.h"
 #include "Engine/Mesh.h"
+#include "Engine/MeshBuilder.h"
 #include "Engine/RenderUtils.h"
 #include "Engine/TextMesh.h"
 #include "Engine/Vertex.h"

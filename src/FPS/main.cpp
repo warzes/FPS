@@ -26,7 +26,7 @@ int main(
 	[[maybe_unused]] char* argv[])
 {
 #if EXAMPLE
-	//E001();
+	E001();
 	//E002();
 	//E003();
 	//E004();
@@ -37,7 +37,7 @@ int main(
 	//E009();
 	//E010();
 	//E011();
-	E012();
+	//E012();
 #else
 	void GameStart();
 	GameStart();

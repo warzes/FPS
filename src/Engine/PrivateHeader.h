@@ -13,7 +13,16 @@
 
 #	include <wrl.h>
 using Microsoft::WRL::ComPtr;
-#endif // RENDER_D3D12
+#endif // RENDER_D3D11
+
+#if RENDER_D3D11ON12
+
+#	include <d3d11on12.h>
+#	include <dxgi1_6.h>
+
+#	include <wrl.h>
+using Microsoft::WRL::ComPtr;
+#endif // RENDER_D3D11ON12
 
 #if RENDER_D3D12
 

@@ -94,8 +94,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AccelerationStructureVK.h" />
+    <ClInclude Include="AxisAlignedBox.h" />
     <ClInclude Include="BaseHeader.h" />
     <ClInclude Include="BaseMacros.h" />
+    <ClInclude Include="Box3.h" />
     <ClInclude Include="BufferD3D11.h" />
     <ClInclude Include="BufferD3D12.h" />
     <ClInclude Include="BufferOpenGL.h" />
@@ -107,10 +109,13 @@
     <ClInclude Include="ContextOpenGL.h" />
     <ClInclude Include="ContextVK.h" />
     <ClInclude Include="EngineApp.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="Matrix3.h" />
     <ClInclude Include="Matrix4.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Plane3.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="Ray3.h" />
     <ClInclude Include="RenderCoreD3D.h" />
     <ClInclude Include="RHIBackend.h" />
     <ClInclude Include="HashCombine.h" />
@@ -144,6 +149,7 @@
     <ClInclude Include="ShaderD3D12.h" />
     <ClInclude Include="ShaderOpenGL.h" />
     <ClInclude Include="ShaderVK.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="TextMesh.h" />
@@ -151,6 +157,7 @@
     <ClInclude Include="TextureD3D12.h" />
     <ClInclude Include="TextureOpenGL.h" />
     <ClInclude Include="TextureVK.h" />
+    <ClInclude Include="Transform3.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vector4.h" />
@@ -215,6 +222,7 @@
     <ClCompile Include="TextureD3D12.cpp" />
     <ClCompile Include="TextureOpenGL.cpp" />
     <ClCompile Include="TextureVK.cpp" />
+    <ClCompile Include="Transform3.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="WindowSystemWin32.cpp" />
   </ItemGroup>

@@ -44,7 +44,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	const UINT creationFlags = 0;
 #endif
 
-	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_12_1;
+	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
 
 	ComPtr<ID3D11Device> device = nullptr;
 	ComPtr<ID3D11DeviceContext> context = nullptr;

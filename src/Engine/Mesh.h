@@ -11,7 +11,6 @@ public:
 	using Vertices = std::vector<Vertex>;
 	using Indices  = std::vector<Index>;
 
-public:
 	Mesh() = default;
 	Mesh(const Vertices& vertices);
 	Mesh(const Vertices& vertices, const Indices& indices);

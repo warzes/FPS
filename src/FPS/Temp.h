@@ -148,7 +148,7 @@ namespace game
 
 					vertex.pos = positions_ptr[i];
 					vertex.normal = normal_ptr[i];
-					vertex.texcoord = texcoord_ptr[i];
+					vertex.texCoord = texcoord_ptr[i];
 					vertex.color = { 1.0f, 1.0f, 1.0f, 1.0f }; // TODO: colors_ptr[i]
 					vertex.tangent = tangents_ptr[i];
 					//vertex.bitangent = bitangents_ptr[i];

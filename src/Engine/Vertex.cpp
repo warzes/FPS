@@ -25,7 +25,7 @@ const InputLayout vertex::PositionColor::Layout = InputLayout(InputLayout::Rate:
 //=============================================================================
 const InputLayout vertex::PositionTexture::Layout = InputLayout(InputLayout::Rate::Vertex, {
 	{ VertexFormat::Float3, offsetof(PositionTexture, pos) },
-	{ VertexFormat::Float2, offsetof(PositionTexture, texcoord) }
+	{ VertexFormat::Float2, offsetof(PositionTexture, texCoord) }
 	});
 //=============================================================================
 const InputLayout vertex::PositionNormal::Layout = InputLayout(InputLayout::Rate::Vertex, {
@@ -42,26 +42,26 @@ const InputLayout vertex::PositionColorNormal::Layout = InputLayout(InputLayout:
 const InputLayout vertex::PositionColorTexture::Layout = InputLayout(InputLayout::Rate::Vertex, {
 	{ VertexFormat::Float3, offsetof(PositionColorTexture, pos) },
 	{ VertexFormat::Float4, offsetof(PositionColorTexture, color) },
-	{ VertexFormat::Float2, offsetof(PositionColorTexture, texcoord) }
+	{ VertexFormat::Float2, offsetof(PositionColorTexture, texCoord) }
 	});
 //=============================================================================
 const InputLayout vertex::PositionTextureNormal::Layout = InputLayout(InputLayout::Rate::Vertex, {
 	{ VertexFormat::Float3, offsetof(PositionTextureNormal, pos) },
-	{ VertexFormat::Float2, offsetof(PositionTextureNormal, texcoord) },
+	{ VertexFormat::Float2, offsetof(PositionTextureNormal, texCoord) },
 	{ VertexFormat::Float3, offsetof(PositionTextureNormal, normal) }
 	});
 //=============================================================================
 const InputLayout vertex::PositionColorTextureNormal::Layout = InputLayout(InputLayout::Rate::Vertex, {
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormal, pos) },
 	{ VertexFormat::Float4, offsetof(PositionColorTextureNormal, color) },
-	{ VertexFormat::Float2, offsetof(PositionColorTextureNormal, texcoord) },
+	{ VertexFormat::Float2, offsetof(PositionColorTextureNormal, texCoord) },
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormal, normal) }
 	});
 //=============================================================================
 const InputLayout vertex::PositionColorTextureNormalTangent::Layout = InputLayout(InputLayout::Rate::Vertex, {
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormalTangent, pos) },
 	{ VertexFormat::Float4, offsetof(PositionColorTextureNormalTangent, color) },
-	{ VertexFormat::Float2, offsetof(PositionColorTextureNormalTangent, texcoord) },
+	{ VertexFormat::Float2, offsetof(PositionColorTextureNormalTangent, texCoord) },
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormalTangent, normal) },
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormalTangent, tangent) }
 	});
@@ -69,7 +69,7 @@ const InputLayout vertex::PositionColorTextureNormalTangent::Layout = InputLayou
 const InputLayout vertex::PositionColorTextureNormalTangentBitangent::Layout = InputLayout(InputLayout::Rate::Vertex, {
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormalTangentBitangent, pos) },
 	{ VertexFormat::Float4, offsetof(PositionColorTextureNormalTangentBitangent, color) },
-	{ VertexFormat::Float2, offsetof(PositionColorTextureNormalTangentBitangent, texcoord) },
+	{ VertexFormat::Float2, offsetof(PositionColorTextureNormalTangentBitangent, texCoord) },
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormalTangentBitangent, normal) },
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormalTangentBitangent, tangent) },
 	{ VertexFormat::Float3, offsetof(PositionColorTextureNormalTangentBitangent, bitangent) }

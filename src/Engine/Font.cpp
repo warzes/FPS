@@ -1,9 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Font.h"
 #include "Image.h"
-
-using namespace Graphics;
-
+//=============================================================================
 Font::Font(void* data, size_t size)
 {
 	stbtt_fontinfo info;
@@ -11,12 +9,12 @@ Font::Font(void* data, size_t size)
 
 	float scale = stbtt_ScaleForPixelHeight(&info, GlyphSize);
 
-	struct glyph
+	struct glyph final
 	{
 		int w;
 		int h;
-		int xoff;
-		int yoff;
+		int xOff;
+		int yOff;
 		unsigned char* pixels; // TODO: memory leak
 	};
 
@@ -28,7 +26,7 @@ Font::Font(void* data, size_t size)
 		const float PixelDistScale = Onedge / SdfPadding;
 
 		auto& g = glyphs[i];
-		g.pixels = stbtt_GetGlyphSDF(&info, scale, i, (int)SdfPadding, Onedge, PixelDistScale, &g.w, &g.h, &g.xoff, &g.yoff);
+		g.pixels = stbtt_GetGlyphSDF(&info, scale, i, (int)SdfPadding, Onedge, PixelDistScale, &g.w, &g.h, &g.xOff, &g.yOff);
 	}
 
 	using namespace rectpack2D;
@@ -65,37 +63,37 @@ Font::Font(void* data, size_t size)
 		if (g_index == 0 && i != 0)
 			continue;
 
-		int xadvance;
-		stbtt_GetCodepointHMetrics(&info, i, &xadvance, nullptr);
-		auto& _glyph = mGlyphs[i];
+		int xAdvance;
+		stbtt_GetCodepointHMetrics(&info, i, &xAdvance, nullptr);
+		auto& _glyph = m_glyphs[i];
 		const auto& rect = rectangles.at(g_index);
 		const auto& g = glyphs.at(g_index);
 		_glyph.pos.x = static_cast<float>(rect.x);
 		_glyph.pos.y = static_cast<float>(rect.y);
 		_glyph.size.x = static_cast<float>(rect.w);
 		_glyph.size.y = static_cast<float>(rect.h);
-		_glyph.offset.x = static_cast<float>(g.xoff);
-		_glyph.offset.y = static_cast<float>(g.yoff);
-		_glyph.xadvance = static_cast<float>(xadvance) * scale;
+		_glyph.offset.x = static_cast<float>(g.xOff);
+		_glyph.offset.y = static_cast<float>(g.yOff);
+		_glyph.xAdvance = static_cast<float>(xAdvance) * scale;
 	}
 
-	for (const auto& [left_index, left_glyph] : mGlyphs)
+	for (const auto& [left_index, left_glyph] : m_glyphs)
 	{
-		for (const auto& [right_index, right_glyph] : mGlyphs)
+		for (const auto& [right_index, right_glyph] : m_glyphs)
 		{
 			auto kern = stbtt_GetCodepointKernAdvance(&info, left_index, right_index);
 
 			if (kern == 0.0f)
 				continue;
 
-			mKernings[left_index][right_index] = kern * scale;
+			m_kernings[left_index][right_index] = kern * scale;
 		}
 	}
 
 	const auto dst_width = result_size.w;
 	const auto dst_height = result_size.h;
 	const int channels = 4;
-	auto image = Graphics::Image(dst_width, dst_height, channels);
+	auto image = Image(dst_width, dst_height, channels);
 
 	for (int i = 0; i < info.numGlyphs; i++)
 	{
@@ -111,7 +109,7 @@ Font::Font(void* data, size_t size)
 		}
 	}
 
-	mTexture = std::make_shared<Texture>(image.GetWidth(), image.GetHeight(), PixelFormat::RGBA8UNorm, image.GetMemory());
+	m_texture = std::make_shared<Texture>(image.GetWidth(), image.GetHeight(), PixelFormat::RGBA8UNorm, image.GetMemory());
 
 	int ascent = 0;
 	int descent = 0;
@@ -121,58 +119,55 @@ Font::Font(void* data, size_t size)
 
 	assert(res == 1);
 
-	mAscent = ascent * scale;
-	mDescent = descent * scale;
-	mLinegap = linegap * scale;
+	m_ascent = ascent * scale;
+	m_descent = descent * scale;
+	m_linegap = linegap * scale;
 }
-
-Font::~Font()
-{
-}
-
-float Font::getScaleFactorForSize(float size)
+//=============================================================================
+float Font::GetScaleFactorForSize(float size)
 {
 	return size / GlyphSize;
 }
-
-const Font::Glyph& Font::getGlyph(wchar_t symbol) const
+//=============================================================================
+const Font::Glyph& Font::GetGlyph(wchar_t symbol) const
 {
-	if (mGlyphs.count(symbol) == 0)
-		return mGlyphs.at(0);
+	if (m_glyphs.count(symbol) == 0)
+		return m_glyphs.at(0);
 
-	return mGlyphs.at(symbol);
+	return m_glyphs.at(symbol);
 }
-
-float Font::getStringWidth(std::wstring::const_iterator begin, std::wstring::const_iterator end, float size) const
+//=============================================================================
+float Font::GetStringWidth(std::wstring::const_iterator begin, std::wstring::const_iterator end, float size) const
 {
 	float result = 0.0f;
 
 	for (auto it = begin; it != end; ++it)
 	{
-		result += getGlyph(*it).xadvance;
+		result += GetGlyph(*it).xAdvance;
 
 		if (it != end - 1)
 		{
-			result += getKerning(*it, *(it + 1));
+			result += GetKerning(*it, *(it + 1));
 		}
 	}
-	return result * Font::getScaleFactorForSize(size);
+	return result * Font::GetScaleFactorForSize(size);
 }
-
-float Font::getStringWidth(const std::wstring& text, float size) const
+//=============================================================================
+float Font::GetStringWidth(const std::wstring& text, float size) const
 {
-	return getStringWidth(text.begin(), text.end(), size);
+	return GetStringWidth(text.begin(), text.end(), size);
 }
-
-float Font::getKerning(wchar_t left, wchar_t right) const
+//=============================================================================
+float Font::GetKerning(wchar_t left, wchar_t right) const
 {
-	if (mKernings.count(left) == 0)
+	if (m_kernings.count(left) == 0)
 		return 0.0f;
 
-	const auto& left_kern = mKernings.at(left);
+	const auto& left_kern = m_kernings.at(left);
 
 	if (left_kern.count(right) == 0)
 		return 0.0f;
 
 	return left_kern.at(right);
 }
+//=============================================================================

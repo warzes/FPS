@@ -53,7 +53,7 @@ namespace vertex
 	struct PositionTexture final
 	{
 		glm::vec3 pos = defaults::Position;
-		glm::vec2 texcoord = defaults::TexCoord;
+		glm::vec2 texCoord = defaults::TexCoord;
 
 		static const InputLayout Layout;
 
@@ -95,7 +95,7 @@ namespace vertex
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
-		glm::vec2 texcoord = defaults::TexCoord;
+		glm::vec2 texCoord = defaults::TexCoord;
 
 		static const InputLayout Layout;
 
@@ -109,7 +109,7 @@ namespace vertex
 	struct PositionTextureNormal final
 	{
 		glm::vec3 pos = defaults::Position;
-		glm::vec2 texcoord = defaults::TexCoord;
+		glm::vec2 texCoord = defaults::TexCoord;
 		glm::vec3 normal = defaults::Normal;
 
 		static const InputLayout Layout;
@@ -125,7 +125,7 @@ namespace vertex
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
-		glm::vec2 texcoord = defaults::TexCoord;
+		glm::vec2 texCoord = defaults::TexCoord;
 		glm::vec3 normal = defaults::Normal;
 
 		static const InputLayout Layout;
@@ -142,7 +142,7 @@ namespace vertex
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
-		glm::vec2 texcoord = defaults::TexCoord;
+		glm::vec2 texCoord = defaults::TexCoord;
 		glm::vec3 normal = defaults::Normal;
 		glm::vec3 tangent = defaults::Tangent;
 
@@ -161,7 +161,7 @@ namespace vertex
 	{
 		glm::vec3 pos = defaults::Position;
 		glm::vec4 color = defaults::Color;
-		glm::vec2 texcoord = defaults::TexCoord;
+		glm::vec2 texCoord = defaults::TexCoord;
 		glm::vec3 normal = defaults::Normal;
 		glm::vec3 tangent = defaults::Tangent;
 		glm::vec3 bitangent = defaults::Bitangent;

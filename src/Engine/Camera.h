@@ -1,86 +1,75 @@
 ﻿#pragma once
 
-
-namespace Graphics
+class Camera2D final 
 {
-	class Camera
-	{
-	public:
-		virtual glm::mat4 GetViewMatrix() const = 0;
-		virtual glm::mat4 GetProjectionMatrix() const = 0;
+public:
+	glm::mat4 GetViewMatrix() const;
+	glm::mat4 GetProjectionMatrix() const;
 
-		void SetSize(uint32_t width, uint32_t height);
+	auto GetPosition() const { return m_position; }
+	void SetPosition(glm::vec2 value) { m_position = value; }
 
-	protected:
-		uint32_t m_width{ 0 };
-		uint32_t m_height{ 0 };
-	};
+	void SetSize(uint32_t width, uint32_t height);
 
-	class Camera2D : public Camera
-	{
-	public:
-		glm::mat4 GetViewMatrix() const override;
-		glm::mat4 GetProjectionMatrix() const override;
+private:
+	glm::vec2 m_position = { 0.0f, 0.0f };
+	uint32_t  m_width{ 0 };
+	uint32_t  m_height{ 0 };
+};
 
-		auto GetPosition() const { return mPosition; }
-		void SetPosition(glm::vec2 value) { mPosition = value; }
+class Camera3D final
+{
+public:
+	void Update();
 
-	private:
-		glm::vec2 mPosition = { 0.0f, 0.0f };
-	};
+	void SetSize(uint32_t width, uint32_t height);
 
-	class Camera3D : public Camera
-	{
-	public:
-		Camera3D();
+	void FrontMove(float offset);
+	void SideMove(float offset);
 
-		void Update();
+	auto GetViewMatrix() const { return m_viewMatrix; }
+	auto GetProjectionMatrix() const { return m_projectionMatrix; }
 
-		void FrontMove(float offset);
-		void SideMove(float offset);
+	auto GetPosition() const { return m_position; }
+	void SetPosition(glm::vec3 value) { m_position = value; }
 
-		glm::mat4 GetViewMatrix() const override { return mViewMatrix; }
-		glm::mat4 GetProjectionMatrix() const override { return mProjectionMatrix; }
+	auto GetYaw() const { return m_yaw; }
+	void SetYaw(float value) { m_yaw = value; }
 
-		auto GetPosition() const { return mPosition; }
-		void SetPosition(glm::vec3 value) { mPosition = value; }
+	auto GetPitch() const { return m_pitch; }
+	void SetPitch(float value) { m_pitch = value; }
 
-		auto GetYaw() const { return mYaw; }
-		void SetYaw(float value) { mYaw = value; }
+	auto GetFieldOfView() const { return m_fieldOfView; }
+	void SetFieldOfView(float value) { m_fieldOfView = value; }
 
-		auto GetPitch() const { return mPitch; }
-		void SetPitch(float value) { mPitch = value; }
+	auto GetWorldUp() const { return m_worldUp; }
+	void SetWorldUp(const glm::vec3& value) { m_worldUp = value; }
 
-		auto GetFieldOfView() const { return mFieldOfView; }
-		void SetFieldOfView(float value) { mFieldOfView = value; }
+	auto GetNearPlane() const { return m_nearPlane; }
+	void SetNearPlane(float value) { m_nearPlane = value; }
 
-		auto GetWorldUp() const { return mWorldUp; }
-		void SetWorldUp(const glm::vec3& value) { mWorldUp = value; }
+	auto GetFarPlane() const { return m_farPlane; }
+	void SetFarPlane(float value) { m_farPlane = value; }
 
-		auto GetNearPlane() const { return mNearPlane; }
-		void SetNearPlane(float value) { mNearPlane = value; }
+	auto GetFront() const { return m_front; }
+	auto GetUp() const { return m_up; }
+	auto GetRight() const { return m_right; }
 
-		auto GetFarPlane() const { return mFarPlane; }
-		void SetFarPlane(float value) { mFarPlane = value; }
+private:
+	glm::mat4 m_viewMatrix = glm::mat4(1.0f);
+	glm::mat4 m_projectionMatrix = glm::mat4(1.0f);
+	uint32_t  m_width{ 0 };
+	uint32_t  m_height{ 0 };
 
-		auto GetFront() const { return mFront; }
-		auto GetUp() const { return mUp; }
-		auto GetRight() const { return mRight; }
+	glm::vec3 m_position = { 0.0f, 0.0f, 0.0f };
+	float     m_yaw = 0.0f;
+	float     m_pitch = 0.0f;
+	float     m_fieldOfView = 70.0f;
+	glm::vec3 m_worldUp = { 0.0f, -1.0f, 0.0f };
+	float     m_nearPlane = 1.0f;
+	float     m_farPlane = 8192.0f;
 
-	private:
-		glm::mat4 mViewMatrix = glm::mat4(1.0f);
-		glm::mat4 mProjectionMatrix = glm::mat4(1.0f);
-
-		glm::vec3 mPosition = { 0.0f, 0.0f, 0.0f };
-		float mYaw = 0.0f;
-		float mPitch = 0.0f;
-		float mFieldOfView = 70.0f;
-		glm::vec3 mWorldUp = { 0.0f, -1.0f, 0.0f };
-		float mNearPlane = 1.0f;
-		float mFarPlane = 8192.0f;
-
-		glm::vec3 mFront;
-		glm::vec3 mUp;
-		glm::vec3 mRight;
-	};
-}
+	glm::vec3 m_front;
+	glm::vec3 m_up;
+	glm::vec3 m_right;
+};

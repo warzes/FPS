@@ -1,16 +1,13 @@
 ﻿#include "stdafx.h"
 #include "TextMesh.h"
-
-using namespace Graphics;
-
-TextMesh TextMesh::createTextMesh(const Font& font, std::wstring::const_iterator begin,
-	std::wstring::const_iterator end)
+//=============================================================================
+TextMesh TextMesh::CreateTextMesh(const Font& font, std::wstring::const_iterator begin, std::wstring::const_iterator end)
 {
 	TextMesh mesh;
 
 	mesh.topology = Topology::TriangleList;
 
-	const auto texture = font.getTexture();
+	const auto texture = font.GetTexture();
 
 	glm::vec2 tex_size = { static_cast<float>(texture->GetWidth()), static_cast<float>(texture->GetHeight()) };
 
@@ -18,9 +15,9 @@ TextMesh TextMesh::createTextMesh(const Font& font, std::wstring::const_iterator
 
 	mesh.vertices.resize(length * 4);
 	mesh.indices.resize(length * 6);
-	mesh.symbol_positions.resize(length);
-	mesh.symbol_sizes.resize(length);
-	mesh.symbol_line_y.resize(length);
+	mesh.symbolPositions.resize(length);
+	mesh.symbolSizes.resize(length);
+	mesh.symbolLineY.resize(length);
 
 	glm::vec2 pos = { 0.0f, 0.0f };
 
@@ -28,23 +25,23 @@ TextMesh TextMesh::createTextMesh(const Font& font, std::wstring::const_iterator
 
 	for (auto it = begin; it != end; ++it, i++)
 	{
-		const auto& glyph = font.getGlyph(*it);
+		const auto& glyph = font.GetGlyph(*it);
 
 		auto vtx = &mesh.vertices[i * 4];
 		auto idx = &mesh.indices[i * 6];
 
 		pos.x += glyph.offset.x;
-		pos.y = font.getAscent() + glyph.offset.y;
+		pos.y = font.GetAscent() + glyph.offset.y;
 
 		auto p1 = pos;
 		auto p2 = pos + glyph.size;
 
 		pos.x -= glyph.offset.x;
-		pos.x += glyph.xadvance;
+		pos.x += glyph.xAdvance;
 
 		if (it != end - 1)
 		{
-			pos.x += font.getKerning(*it, *(it + 1));
+			pos.x += font.GetKerning(*it, *(it + 1));
 		}
 
 		auto uv1 = glyph.pos / tex_size;
@@ -66,17 +63,17 @@ TextMesh TextMesh::createTextMesh(const Font& font, std::wstring::const_iterator
 		idx[4] = base_vtx + 2;
 		idx[5] = base_vtx + 3;
 
-		mesh.symbol_positions[i] = p1;
-		mesh.symbol_sizes[i] = glyph.size;
-		mesh.symbol_line_y[i] = 0.0f;
+		mesh.symbolPositions[i] = p1;
+		mesh.symbolSizes[i] = glyph.size;
+		mesh.symbolLineY[i] = 0.0f;
 	}
 
 	return mesh;
 }
-
-TextMesh TextMesh::createSinglelineTextMesh(const Font& font, const std::wstring& text, float vertical_offset)
+//=============================================================================
+TextMesh TextMesh::CreateSingleLineTextMesh(const Font& font, const std::wstring& text, float vertical_offset)
 {
-	auto mesh = createTextMesh(font, text.begin(), text.end());
+	auto mesh = CreateTextMesh(font, text.begin(), text.end());
 
 	for (auto& vertex : mesh.vertices)
 	{
@@ -85,11 +82,10 @@ TextMesh TextMesh::createSinglelineTextMesh(const Font& font, const std::wstring
 
 	return mesh;
 }
-
-std::tuple<float, TextMesh> TextMesh::createMultilineTextMesh(const Font& font, const std::wstring& text,
-	float maxWidth, float size, Align align)
+//=============================================================================
+std::tuple<float, TextMesh> TextMesh::CreateMultilineTextMesh(const Font& font, const std::wstring& text, float maxWidth, float size, Align align)
 {
-	auto scale = font.getScaleFactorForSize(size);
+	auto scale = font.GetScaleFactorForSize(size);
 	float height = 0.0f;
 
 	float scaledMaxWidth = maxWidth / scale;
@@ -97,13 +93,13 @@ std::tuple<float, TextMesh> TextMesh::createMultilineTextMesh(const Font& font, 
 	TextMesh result;
 
 	auto appendTextMesh = [&font, scaledMaxWidth, &height, &result, align](std::wstring::const_iterator begin, std::wstring::const_iterator end) {
-		auto mesh = createTextMesh(font, begin, end);
+		auto mesh = CreateTextMesh(font, begin, end);
 		for (auto index : mesh.indices)
 		{
 			index += static_cast<uint32_t>(result.vertices.size());
 			result.indices.push_back(index);
 		}
-		auto str_w = font.getStringWidth(begin, end);
+		auto str_w = font.GetStringWidth(begin, end);
 		for (auto vertex : mesh.vertices)
 		{
 			if (align == Align::Right)
@@ -115,7 +111,7 @@ std::tuple<float, TextMesh> TextMesh::createMultilineTextMesh(const Font& font, 
 			result.vertices.push_back(vertex);
 		}
 
-		for (auto symbol_position : mesh.symbol_positions)
+		for (auto symbol_position : mesh.symbolPositions)
 		{
 			if (align == Align::Right)
 				symbol_position.x += scaledMaxWidth - str_w;
@@ -123,21 +119,21 @@ std::tuple<float, TextMesh> TextMesh::createMultilineTextMesh(const Font& font, 
 				symbol_position.x += (scaledMaxWidth - str_w) / 2.0f;
 
 			symbol_position.y += height;
-			result.symbol_positions.push_back(symbol_position);
+			result.symbolPositions.push_back(symbol_position);
 		}
 
-		for (auto symbol_size : mesh.symbol_sizes)
+		for (auto symbol_size : mesh.symbolSizes)
 		{
-			result.symbol_sizes.push_back(symbol_size);
+			result.symbolSizes.push_back(symbol_size);
 		}
 
-		for (auto symbol_line_y : mesh.symbol_line_y)
+		for (auto symbol_line_y : mesh.symbolLineY)
 		{
 			symbol_line_y += height;
-			result.symbol_line_y.push_back(symbol_line_y);
+			result.symbolLineY.push_back(symbol_line_y);
 		}
 
-		height += font.getAscent() - font.getDescent() + font.getLinegap();
+		height += font.GetAscent() - font.GetDescent() + font.GetLinegap();
 		};
 
 	result.topology = Topology::TriangleList;
@@ -161,7 +157,7 @@ std::tuple<float, TextMesh> TextMesh::createMultilineTextMesh(const Font& font, 
 		if (length <= 1)
 			continue;
 
-		auto str_w = font.getStringWidth(begin, it);
+		auto str_w = font.GetStringWidth(begin, it);
 
 		if (str_w <= scaledMaxWidth)
 			continue;
@@ -191,12 +187,12 @@ std::tuple<float, TextMesh> TextMesh::createMultilineTextMesh(const Font& font, 
 	if (begin != text.end())
 		appendTextMesh(begin, text.end());
 
-	height -= font.getLinegap();
+	height -= font.GetLinegap();
 
 	return { height * scale, result };
 }
-
-void TextMesh::setSymbolColor(size_t index, const glm::vec4& color)
+//=============================================================================
+void TextMesh::SetSymbolColor(size_t index, const glm::vec4& color)
 {
 	size_t base_vtx = index * 4;
 
@@ -205,3 +201,4 @@ void TextMesh::setSymbolColor(size_t index, const glm::vec4& color)
 		vertices[i].color = color;
 	}
 }
+//=============================================================================

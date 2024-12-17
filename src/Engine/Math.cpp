@@ -1,7 +1,15 @@
 ﻿#include "stdafx.h"
+
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Quaternion.h"
 #include "Matrix3.h"
 #include "Matrix4.h"
+
+#include "AxisAlignedBox.h"
+#include "Box3.h"
+#include "Plane3.h"
+#include "Ray3.h"
+#include "Sphere.h"
+#include "Frustum.h"

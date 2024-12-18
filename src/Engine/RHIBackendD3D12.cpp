@@ -91,7 +91,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	gContext.descriptorHeapGPUHandle = gContext.descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 
 	DXGI_SWAP_CHAIN_DESC1 swapchain_desc = {};
-	swapchain_desc.BufferCount = NUM_BACK_BUFFERS;
+	swapchain_desc.BufferCount = RHI_BACKBUFFER_COUNT;
 	swapchain_desc.Width = data.width;
 	swapchain_desc.Height = data.height;
 	swapchain_desc.Format = MainRenderTargetColorAttachmentFormat;
@@ -138,7 +138,7 @@ void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 	RenderEnd();
 	DestroyMainRenderTarget();
 	WaitForGpu();
-	gContext.swapChain->ResizeBuffers(NUM_BACK_BUFFERS, width, height, MainRenderTargetColorAttachmentFormat, 0);
+	gContext.swapChain->ResizeBuffers(RHI_BACKBUFFER_COUNT, width, height, MainRenderTargetColorAttachmentFormat, 0);
 	CreateMainRenderTarget(width, height);
 	RenderBegin();
 

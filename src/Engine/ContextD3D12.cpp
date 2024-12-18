@@ -105,7 +105,7 @@ void CreateMainRenderTarget(uint32_t width, uint32_t height)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtv_heap_desc = {};
 	rtv_heap_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtv_heap_desc.NumDescriptors = NUM_BACK_BUFFERS;
+	rtv_heap_desc.NumDescriptors = RHI_BACKBUFFER_COUNT;
 	rtv_heap_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	rtv_heap_desc.NodeMask = 1;
 	gContext.device->CreateDescriptorHeap(&rtv_heap_desc, IID_PPV_ARGS(gContext.frameRTVHeap.GetAddressOf()));
@@ -113,7 +113,7 @@ void CreateMainRenderTarget(uint32_t width, uint32_t height)
 	auto rtv_increment_size = gContext.device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	auto rtv_heap_start = gContext.frameRTVHeap->GetCPUDescriptorHandleForHeapStart();
 
-	for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
+	for (UINT i = 0; i < RHI_BACKBUFFER_COUNT; i++)
 	{
 		auto& frame = gContext.frames[i];
 
@@ -133,7 +133,7 @@ void CreateMainRenderTarget(uint32_t width, uint32_t height)
 //=============================================================================
 void DestroyMainRenderTarget()
 {
-	for (UINT i = 0; i < NUM_BACK_BUFFERS; i++)
+	for (UINT i = 0; i < RHI_BACKBUFFER_COUNT; i++)
 	{
 		delete gContext.frames[i].backBufferTexture;
 		delete gContext.frames[i].mainRenderTarget;

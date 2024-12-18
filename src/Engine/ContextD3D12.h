@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-https://github.com/Delt06/dx12-renderer
-https://www.3dgep.com/learning-directx-12-1/
 #if RENDER_D3D12
 
 #include "RenderCoreD3D12.h"

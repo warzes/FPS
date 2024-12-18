@@ -27,7 +27,7 @@ int main(
 {
 #if EXAMPLE
 	//E001();
-	E002();
+	E002(); https://www.3dgep.com/introduction-to-directx-11/
 	//E003();
 	//E004();
 	//E005();

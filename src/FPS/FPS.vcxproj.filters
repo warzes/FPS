@@ -56,5 +56,8 @@
     <Filter Include="Game">
       <UniqueIdentifier>{7349b314-9e02-4f96-a21f-fb620c533211}</UniqueIdentifier>
     </Filter>
+    <Filter Include="demo">
+      <UniqueIdentifier>{6f1a1348-781d-493f-b20f-29986a4b61c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

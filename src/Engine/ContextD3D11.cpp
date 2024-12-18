@@ -8,6 +8,8 @@
 //=============================================================================
 void RenderContext::Reset()
 {
+	EveryRay - Rendering - Engine
+
 	renderTargets.clear();
 	viewport.reset();
 	shader = nullptr;
@@ -215,23 +217,24 @@ void ensureRasterizerState()
 		};
 
 		auto desc = CD3D11_RASTERIZER_DESC(D3D11_DEFAULT);
-		desc.CullMode = CullMap.at(value.cullMode);
-		desc.ScissorEnable = value.scissorEnabled;
+		desc.CullMode              = CullMap.at(value.cullMode);
+		desc.ScissorEnable         = value.scissorEnabled;
 		desc.FrontCounterClockwise = value.frontFace == FrontFace::CounterClockwise;
 		if (value.depthBias.has_value())
 		{
 			desc.SlopeScaledDepthBias = value.depthBias->factor;
-			desc.DepthBias = (INT)value.depthBias->units;
+			desc.DepthBias            = (INT)value.depthBias->units;
 		}
 		else
 		{
-			desc.DepthBias = D3D11_DEFAULT_DEPTH_BIAS;
 			desc.SlopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+			desc.DepthBias            = D3D11_DEFAULT_DEPTH_BIAS;
 		}
 		HRESULT hr = gContext.device->CreateRasterizerState(&desc, gContext.rasterizerStates[value].GetAddressOf());
 		if (FAILED(hr))
 		{
 			Fatal("CreateRasterizerState() failed: " + DXErrorToStr(hr));
+			return;
 		}
 	}
 
@@ -269,6 +272,7 @@ void ensureSamplerState()
 		if (FAILED(hr))
 		{
 			Fatal("CreateSamplerState() failed: " + DXErrorToStr(hr));
+			return;
 		}
 	}
 
@@ -283,9 +287,9 @@ void ensureBlendMode()
 	if (!gContext.blendModeDirty) return;
 	gContext.blendModeDirty = false;
 
-	const auto& blend_mode = gContext.blendMode;
+	const auto& blendMode = gContext.blendMode;
 
-	if (!gContext.blendModes.contains(blend_mode))
+	if (!gContext.blendModes.contains(blendMode))
 	{
 		const static std::unordered_map<Blend, D3D11_BLEND> ColorBlendMap = {
 			{ Blend::One, D3D11_BLEND_ONE },
@@ -327,12 +331,12 @@ void ensureBlendMode()
 		{
 			auto& blend = desc.RenderTarget[i];
 
-			blend.BlendEnable = blend_mode.has_value();
+			blend.BlendEnable = blendMode.has_value();
 
 			if (!blend.BlendEnable)
 				continue;
 
-			const auto& blend_mode_nn = blend_mode.value();
+			const auto& blend_mode_nn = blendMode.value();
 
 			if (blend_mode_nn.colorMask.red)
 				blend.RenderTargetWriteMask |= D3D11_COLOR_WRITE_ENABLE_RED;
@@ -355,14 +359,15 @@ void ensureBlendMode()
 			blend.BlendOpAlpha = BlendOpMap.at(blend_mode_nn.alphaFunc);
 		}
 
-		HRESULT hr = gContext.device->CreateBlendState(&desc, gContext.blendModes[blend_mode].GetAddressOf());
+		HRESULT hr = gContext.device->CreateBlendState(&desc, gContext.blendModes[blendMode].GetAddressOf());
 		if (FAILED(hr))
 		{
 			Fatal("CreateBlendState() failed: " + DXErrorToStr(hr));
+			return;
 		}
 	}
 
-	gContext.context->OMSetBlendState(gContext.blendModes.at(blend_mode).Get(), nullptr, 0xFFFFFFFF);
+	gContext.context->OMSetBlendState(gContext.blendModes.at(blendMode).Get(), nullptr, 0xFFFFFFFF);
 }
 //=============================================================================
 void ensureViewport()

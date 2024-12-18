@@ -15,10 +15,10 @@ public:
 	auto        GetTexture() const { return m_texture; }
 
 private:
-	ComPtr<ID3D11Texture2D>        m_depthStencilTexture;
-	ComPtr<ID3D11RenderTargetView> m_renderTargetView;
-	ComPtr<ID3D11DepthStencilView> m_depthStencilView;
 	TextureD3D11*                  m_texture{ nullptr };
+	ComPtr<ID3D11RenderTargetView> m_renderTargetView;
+	ComPtr<ID3D11Texture2D>        m_depthStencilTexture;
+	ComPtr<ID3D11DepthStencilView> m_depthStencilView;
 };
 
 #endif // RENDER_D3D11

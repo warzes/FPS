@@ -25,9 +25,13 @@ int main(
 	[[maybe_unused]] int   argc,
 	[[maybe_unused]] char* argv[])
 {
+https://www.3dgep.com/introduction-to-directx-11/
+	Adria d2d12
+		EveryRay - Rendering - Engine
+
 #if EXAMPLE
 	//E001();
-	E002(); https://www.3dgep.com/introduction-to-directx-11/
+	E002(); 
 	//E003();
 	//E004();
 	//E005();

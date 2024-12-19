@@ -19,6 +19,7 @@
 #include <cassert>
 #include <cstdint>
 
+#include <chrono>
 #include <optional>
 #include <variant>
 #include <typeindex>

@@ -782,7 +782,7 @@ utils::commands::SetMesh::SetMesh(const Mesh* _mesh) :
 {
 }
 
-utils::commands::SetTexture::SetTexture(uint32_t _binding, const Texture* _texture) :
+utils::commands::SetTexture::SetTexture(uint32_t _binding, const Texture2D* _texture) :
 	binding(_binding),
 	texture(_texture)
 {
@@ -802,12 +802,12 @@ utils::commands::DrawIndexed::DrawIndexed(uint32_t _index_count, uint32_t _index
 {
 }
 
-utils::commands::SetColorTexture::SetColorTexture(const Texture* _color_texture) :
+utils::commands::SetColorTexture::SetColorTexture(const Texture2D* _color_texture) :
 	color_texture(_color_texture)
 {
 }
 
-utils::commands::SetNormalTexture::SetNormalTexture(const Texture* _normal_texture) :
+utils::commands::SetNormalTexture::SetNormalTexture(const Texture2D* _normal_texture) :
 	normal_texture(_normal_texture)
 {
 }
@@ -1057,7 +1057,7 @@ void utils::ExecuteRenderPass(const RenderPass& render_pass)
 	ExecuteCommands(render_pass.commands);
 }
 
-void utils::passes::Blit(Texture* src, RenderTarget* dst, const BlitOptions& options)
+void utils::passes::Blit(Texture2D* src, RenderTarget* dst, const BlitOptions& options)
 {
 	auto render_pass = RenderPass{
 		.targets = { dst },
@@ -1429,7 +1429,7 @@ void utils::SetStageViewer(StageViewer* value)
 	gStageViewer = value;
 }
 
-void utils::ViewStage(const std::string& name, Texture* texture)
+void utils::ViewStage(const std::string& name, Texture2D* texture)
 {
 	if (gStageViewer == nullptr)
 		return;

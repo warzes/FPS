@@ -4,12 +4,12 @@
 
 #include "RHICoreD3D11.h"
 
-class TextureD3D11 final
+class Texture2DD3D11 final
 {
 public:
-	TextureD3D11() = delete;
-	TextureD3D11(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount);
-	TextureD3D11(uint32_t width, uint32_t height, PixelFormat format, ComPtr<ID3D11Texture2D> d3d11Texture);
+	Texture2DD3D11() = delete;
+	Texture2DD3D11(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount);
+	Texture2DD3D11(uint32_t width, uint32_t height, PixelFormat format, ComPtr<ID3D11Texture2D> d3d11Texture);
 
 	void Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offsetX, uint32_t offsetY);
 

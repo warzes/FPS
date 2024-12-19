@@ -8,9 +8,9 @@ namespace game
 
 	struct Material
 	{
-		std::shared_ptr<Texture> color_texture;
-		std::shared_ptr<Texture> normal_texture;
-		std::shared_ptr<Texture> metallic_roughness_texture;
+		std::shared_ptr<Texture2D> color_texture;
+		std::shared_ptr<Texture2D> normal_texture;
+		std::shared_ptr<Texture2D> metallic_roughness_texture;
 		glm::vec4 color;
 	};
 
@@ -37,9 +37,9 @@ namespace game
 
 		const auto& scene = model.scenes.at(0);
 
-		std::unordered_map<int, std::shared_ptr<Texture>> textures_cache;
+		std::unordered_map<int, std::shared_ptr<Texture2D>> textures_cache;
 
-		auto get_or_create_texture = [&](int index) -> std::shared_ptr<Texture> {
+		auto get_or_create_texture = [&](int index) -> std::shared_ptr<Texture2D> {
 			if (index == -1)
 				return nullptr;
 
@@ -47,7 +47,7 @@ namespace game
 			{
 				const auto& texture = model.textures.at(index);
 				const auto& image = model.images.at(texture.source);
-				textures_cache[index] = std::make_shared<Texture>((uint32_t)image.width,
+				textures_cache[index] = std::make_shared<Texture2D>((uint32_t)image.width,
 					(uint32_t)image.height, PixelFormat::RGBA8UNorm, (void*)image.image.data(), true);
 			}
 
@@ -286,11 +286,11 @@ namespace game
 		std::vector<Stage> mStages;
 
 	public:
-		void stage(const std::string& name, Texture* texture) override;
+		void stage(const std::string& name, Texture2D* texture) override;
 		void show();
 	};
 
-	void StageViewer::stage(const std::string& name, Texture* texture)
+	void StageViewer::stage(const std::string& name, Texture2D* texture)
 	{
 		if (texture == nullptr)
 			return;

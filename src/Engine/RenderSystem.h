@@ -21,7 +21,7 @@ public:
 		const std::optional<uint8_t>&   stencil = 0);
 	void Draw(uint32_t vertexCount, uint32_t vertexOffset = 0, uint32_t instanceCount = 1);
 	void DrawIndexed(uint32_t indexCount, uint32_t indexOffset = 0, uint32_t instanceCount = 1);
-	void ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, Texture& dstTexture);
+	void ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, Texture2D& dstTexture);
 
 	void SetTopology(Topology topology);
 	void SetViewport(const std::optional<Viewport>& viewport);
@@ -40,7 +40,7 @@ public:
 	void SetInputLayout(const InputLayout& value);
 	void SetInputLayout(const std::vector<InputLayout>& value);
 
-	void SetTexture(uint32_t binding, const Texture& texture);
+	void SetTexture(uint32_t binding, const Texture2D& texture);
 	void SetRenderTarget(const std::vector<const RenderTarget*>& value);
 	void SetRenderTarget(const RenderTarget& value);
 	void SetRenderTarget(std::nullopt_t value);

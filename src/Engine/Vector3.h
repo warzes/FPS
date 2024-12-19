@@ -3,9 +3,18 @@
 class Vector3 final
 {
 public:
+	static const Vector3 Zero;
+	static const Vector3 One;
+	static const Vector3 Forward;
+	static const Vector3 Backward;
+	static const Vector3 Up;
+	static const Vector3 Down;
+	static const Vector3 Right;
+	static const Vector3 Left;
+
 	Vector3() = default;
-	Vector3(float x, float y, float z);
-	Vector3(const Vector3& Vector);
+	constexpr Vector3(float x, float y, float z);
+	constexpr Vector3(const Vector3& Vector);
 
 	// vector operations
 	Vector3 Cross(const Vector3& A) const;
@@ -24,7 +33,7 @@ public:
 
 
 	// assignment
-	Vector3& operator=(const Vector3& Vector);
+	constexpr Vector3& operator=(const Vector3& Vector);
 
 	// member access
 	float operator[](int iPos) const;
@@ -56,11 +65,11 @@ public:
 	float z;
 };
 
-inline Vector3::Vector3(float X, float Y, float Z) : x(X), y(Y), z(Z)
+inline constexpr Vector3::Vector3(float X, float Y, float Z) : x(X), y(Y), z(Z)
 {
 }
 
-inline Vector3::Vector3(const Vector3& Vector)
+inline constexpr Vector3::Vector3(const Vector3& Vector)
 {
 	x = Vector.x;
 	y = Vector.y;
@@ -156,7 +165,7 @@ inline Vector3 Vector3::Perpendicular(const Vector3& A)
 	return vec.Perpendicular();
 }
 
-inline Vector3& Vector3::operator=(const Vector3& Vector)
+inline constexpr Vector3& Vector3::operator=(const Vector3& Vector)
 {
 	x = Vector.x;
 	y = Vector.y;

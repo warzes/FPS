@@ -2,18 +2,18 @@
 
 #include "RHICore.h"
 
-class Texture : Noncopyable
+class Texture2D : Noncopyable
 {
 public:
-	Texture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount);
-	Texture(uint32_t width, uint32_t height, PixelFormat format, const void* memory, bool generateMips = false);
-	Texture(Texture&& other) noexcept;
-	virtual ~Texture();
+	Texture2D(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount);
+	Texture2D(uint32_t width, uint32_t height, PixelFormat format, const void* memory, bool generateMips = false);
+	Texture2D(Texture2D&& other) noexcept;
+	virtual ~Texture2D();
 
 	void Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel = 0, uint32_t offsetX = 0, uint32_t offsetY = 0);
 	void GenerateMips();
 
-	Texture& operator=(Texture&& other) noexcept;
+	Texture2D& operator=(Texture2D&& other) noexcept;
 
 	operator TextureHandle*() { return m_textureHandle; }
 
@@ -30,7 +30,7 @@ private:
 	uint32_t       m_mipCount{ 0 };
 };
 
-class RenderTarget : public Texture
+class RenderTarget : public Texture2D
 {
 public:
 	RenderTarget(uint32_t width, uint32_t height, PixelFormat format = PixelFormat::RGBA32Float);

@@ -106,7 +106,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 	swapChainDesc.Width                 = data.width;
 	swapChainDesc.Height                = data.height;
-	swapChainDesc.Format                = gContext.backBufferFormat;
+	swapChainDesc.Format                = PixelFormatMap.at(gContext.backBufferFormat);
 	swapChainDesc.SampleDesc.Count      = 1;
 	swapChainDesc.SampleDesc.Quality    = 0;
 	swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -156,7 +156,7 @@ void RHIBackend::DestroyAPI()
 void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 {
 	DestroyMainRenderTargetD3D11();
-	HRESULT hr = gContext.swapChain->ResizeBuffers(RHI_BACKBUFFER_COUNT, (UINT)width, (UINT)height, gContext.backBufferFormat, 0);
+	HRESULT hr = gContext.swapChain->ResizeBuffers(RHI_BACKBUFFER_COUNT, (UINT)width, (UINT)height, PixelFormatMap.at(gContext.backBufferFormat), 0);
 	if (FAILED(hr))
 	{
 		Fatal("ResizeBuffers() failed: " + DXErrorToStr(hr));
@@ -218,7 +218,7 @@ void RHIBackend::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, T
 {
 	if (size.x <= 0 || size.y <= 0) return;
 
-	auto dstTexture = (TextureD3D11*)dstTextureHandle;
+	auto dstTexture = (Texture2DD3D11*)dstTextureHandle;
 	auto format = gContext.GetBackBufferFormat();
 
 	assert(dstTexture->GetWidth() == size.x);
@@ -299,19 +299,19 @@ void RHIBackend::DestroyShader(ShaderHandle* handle)
 //=============================================================================
 TextureHandle* RHIBackend::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mip_count)
 {
-	auto texture = new TextureD3D11(width, height, format, mip_count);
+	auto texture = new Texture2DD3D11(width, height, format, mip_count);
 	return (TextureHandle*)texture;
 }
 //=============================================================================
 void RHIBackend::WriteTexturePixels(TextureHandle* handle, uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mip_level, uint32_t offset_x, uint32_t offset_y)
 {
-	auto texture = (TextureD3D11*)handle;
+	auto texture = (Texture2DD3D11*)handle;
 	texture->Write(width, height, format, memory, mip_level, offset_x, offset_y);
 }
 //=============================================================================
 void RHIBackend::GenerateMips(TextureHandle* handle)
 {
-	auto texture = (TextureD3D11*)handle;
+	auto texture = (Texture2DD3D11*)handle;
 	texture->GenerateMips();
 }
 //=============================================================================
@@ -319,14 +319,14 @@ void RHIBackend::DestroyTexture(TextureHandle* handle)
 {
 	if (handle)
 	{
-		auto texture = (TextureD3D11*)handle;
+		auto texture = (Texture2DD3D11*)handle;
 		delete texture;
 	}
 }
 //=============================================================================
 RenderTargetHandle* RHIBackend::CreateRenderTarget(uint32_t width, uint32_t height, TextureHandle* textureHandle)
 {
-	auto texture = (TextureD3D11*)textureHandle;
+	auto texture = (Texture2DD3D11*)textureHandle;
 	auto renderTarget = new RenderTargetD3D11(width, height, texture);
 	return (RenderTargetHandle*)renderTarget;
 }
@@ -506,7 +506,7 @@ void RHIBackend::SetInputLayout(const std::vector<InputLayout>& value)
 //=============================================================================
 void RHIBackend::SetTexture(uint32_t binding, TextureHandle* handle)
 {
-	auto texture = (TextureD3D11*)handle;
+	auto texture = (Texture2DD3D11*)handle;
 	gContext.context->PSSetShaderResources((UINT)binding, 1, texture->GetD3D11ShaderResourceView().GetAddressOf());
 	gContext.textures[binding] = texture;
 }

@@ -12,11 +12,11 @@ private:
 	std::vector<Stage> mStages;
 
 public:
-	void stage(const std::string& name, Texture* texture) override;
+	void stage(const std::string& name, Texture2D* texture) override;
 	void show();
 };
 
-void StageViewer::stage(const std::string& name, Texture* texture)
+void StageViewer::stage(const std::string& name, Texture2D* texture)
 {
 	if (texture == nullptr)
 		return;
@@ -91,7 +91,7 @@ void E008()
 
 		auto [tex_width, tex_height, tex_memory] = LoadTextureFromSTBImage("assets/bricks.jpg");
 
-		auto texture = Texture(tex_width, tex_height, PixelFormat::RGBA8UNorm, tex_memory, true);
+		auto texture = Texture2D(tex_width, tex_height, PixelFormat::RGBA8UNorm, tex_memory, true);
 
 		const auto camera = utils::PerspectiveCamera{
 			.yaw = 0.0f,

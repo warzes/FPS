@@ -19,9 +19,9 @@ public:
 	ComPtr<ID3DUserDefinedAnnotation> annotation{ nullptr };
 	ComPtr<IDXGISwapChain4>           swapChain{ nullptr };
 
-	const DXGI_FORMAT                 backBufferFormat{ DXGI_FORMAT_R8G8B8A8_UNORM }; /*DXGI_FORMAT_R10G10B10A2_UNORM*/; // TODO: переделать под комент/ или DXGI_FORMAT_B8G8R8A8_UNORM. это также нужно указать в backBufferTexture/mainRenderTarget
+	const PixelFormat                 backBufferFormat{ PixelFormat::RGB10A2UNorm };
 	const DXGI_FORMAT                 depthBufferFormat{ DXGI_FORMAT_D24_UNORM_S8_UINT };
-	TextureD3D11*                     backBufferTexture{ nullptr };
+	Texture2DD3D11*                   backBufferTexture{ nullptr };
 	RenderTargetD3D11*                mainRenderTarget{ nullptr };
 
 	std::vector<RenderTargetD3D11*>   renderTargets;
@@ -42,7 +42,7 @@ public:
 	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>> blendModes;
 	std::optional<BlendMode>          blendMode;
 
-	std::unordered_map<uint32_t, TextureD3D11*> textures;
+	std::unordered_map<uint32_t, Texture2DD3D11*> textures;
 
 	bool shaderDirty = true;
 	bool inputLayoutsDirty = true;

@@ -8,8 +8,6 @@
 //=============================================================================
 void RenderContext::Reset()
 {
-	EveryRay - Rendering - Engine
-
 	renderTargets.clear();
 	viewport.reset();
 	shader = nullptr;
@@ -65,7 +63,7 @@ bool CreateMainRenderTargetD3D11(uint32_t width, uint32_t height)
 		return false;
 	}
 
-	gContext.backBufferTexture = new TextureD3D11(width, height, PixelFormat::RGBA8UNorm, backBuffer);
+	gContext.backBufferTexture = new Texture2DD3D11(width, height, gContext.backBufferFormat, backBuffer);
 	gContext.mainRenderTarget = new RenderTargetD3D11(width, height, gContext.backBufferTexture);
 
 	return true;
@@ -100,11 +98,13 @@ void ensureInputLayout()
 	if (!gContext.inputLayoutsDirty) return;
 	gContext.inputLayoutsDirty = false;
 
+	assert(gContext.shader);
+
 	auto& cache = gContext.shader->GetInputLayoutCache();
 
 	if (!cache.contains(gContext.inputLayouts))
 	{
-		std::vector<D3D11_INPUT_ELEMENT_DESC> input_elements;
+		std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements;
 
 		for (size_t i = 0; i < gContext.inputLayouts.size(); i++)
 		{
@@ -117,7 +117,7 @@ void ensureInputLayout()
 					{ InputLayout::Rate::Instance, D3D11_INPUT_PER_INSTANCE_DATA },
 				};
 
-				input_elements.push_back(D3D11_INPUT_ELEMENT_DESC{
+				inputElements.push_back(D3D11_INPUT_ELEMENT_DESC{
 					.SemanticName = "TEXCOORD",
 					.SemanticIndex = (UINT)location,
 					.Format = VertexFormatMap.at(attribute.format),
@@ -129,12 +129,14 @@ void ensureInputLayout()
 			}
 		}
 
-		HRESULT hr = gContext.device->CreateInputLayout(input_elements.data(), (UINT)input_elements.size(),
+		HRESULT hr = gContext.device->CreateInputLayout(
+			inputElements.data(), static_cast<UINT>(inputElements.size()),
 			gContext.shader->GetVertexShaderBlob()->GetBufferPointer(),
 			gContext.shader->GetVertexShaderBlob()->GetBufferSize(), cache[gContext.inputLayouts].GetAddressOf());
 		if (FAILED(hr))
 		{
 			Fatal("CreateInputLayout() failed: " + DXErrorToStr(hr));
+			return;
 		}
 	}
 

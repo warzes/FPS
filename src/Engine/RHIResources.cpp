@@ -2,7 +2,7 @@
 #include "RHIResources.h"
 #include "RHIBackend.h"
 //=============================================================================
-Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount)
+Texture2D::Texture2D(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount)
 	: m_width(width)
 	, m_height(height)
 	, m_format(format)
@@ -14,8 +14,8 @@ Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, uint32_t m
 	m_textureHandle = RHIBackend::CreateTexture(m_width, m_height, m_format, m_mipCount);
 }
 //=============================================================================
-Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, const void* memory, bool generateMips)
-	: Texture(width, height, format, generateMips ? ::GetMipCount(width, height) : 1)
+Texture2D::Texture2D(uint32_t width, uint32_t height, PixelFormat format, const void* memory, bool generateMips)
+	: Texture2D(width, height, format, generateMips ? ::GetMipCount(width, height) : 1)
 {
 	Write(width, height, format, memory);
 
@@ -23,7 +23,7 @@ Texture::Texture(uint32_t width, uint32_t height, PixelFormat format, const void
 		GenerateMips();
 }
 //=============================================================================
-Texture::Texture(Texture&& other) noexcept
+Texture2D::Texture2D(Texture2D&& other) noexcept
 {
 	m_textureHandle = std::exchange(other.m_textureHandle, nullptr);
 	m_width         = std::exchange(other.m_width, 0);
@@ -32,12 +32,12 @@ Texture::Texture(Texture&& other) noexcept
 	m_mipCount      = std::exchange(other.m_mipCount, 0);
 }
 //=============================================================================
-Texture::~Texture()
+Texture2D::~Texture2D()
 {
 	RHIBackend::DestroyTexture(m_textureHandle);
 }
 //=============================================================================
-void Texture::Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offsetX, uint32_t offsetY)
+void Texture2D::Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offsetX, uint32_t offsetY)
 {
 	assert(width > 0);
 	assert(height > 0);
@@ -48,12 +48,12 @@ void Texture::Write(uint32_t width, uint32_t height, PixelFormat format, const v
 	RHIBackend::WriteTexturePixels(m_textureHandle, width, height, format, memory, mipLevel, offsetX, offsetY);
 }
 //=============================================================================
-void Texture::GenerateMips()
+void Texture2D::GenerateMips()
 {
 	RHIBackend::GenerateMips(m_textureHandle);
 }
 //=============================================================================
-Texture& Texture::operator=(Texture&& other) noexcept
+Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
 {
 	if (this == &other) return *this;
 
@@ -70,13 +70,13 @@ Texture& Texture::operator=(Texture&& other) noexcept
 }
 //=============================================================================
 RenderTarget::RenderTarget(uint32_t width, uint32_t height, PixelFormat format) 
-	: Texture(width, height, format, 1)
+	: Texture2D(width, height, format, 1)
 {
 	m_renderTargetHandle = RHIBackend::CreateRenderTarget(width, height, *this);
 }
 //=============================================================================
 RenderTarget::RenderTarget(RenderTarget&& other) noexcept 
-	: Texture(std::move(other))
+	: Texture2D(std::move(other))
 {
 	m_renderTargetHandle = std::exchange(other.m_renderTargetHandle, nullptr);
 }
@@ -88,7 +88,7 @@ RenderTarget::~RenderTarget()
 //=============================================================================
 RenderTarget& RenderTarget::operator=(RenderTarget&& other) noexcept
 {
-	Texture::operator=(std::move(other));
+	Texture2D::operator=(std::move(other));
 
 	if (this == &other) return *this;
 

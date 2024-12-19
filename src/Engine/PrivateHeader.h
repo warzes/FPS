@@ -5,6 +5,7 @@
 #include <codecvt>
 #include <locale>
 
+
 #if RENDER_D3D11
 
 #	include <d3dcompiler.h>

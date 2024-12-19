@@ -4,6 +4,11 @@
 #include "WindowSystem.h"
 #include "InputSystem.h"
 #include "RenderSystem.h"
+#include "CPUProfiler.h"
+#include "CoreClock.h"
+#include "CoreTime.h"
+#include "CoreComponent.h"
+#include "CoreServicesContainer.h"
 
 struct EngineAppCreateInfo final
 {
@@ -30,8 +35,14 @@ public:
 	[[nodiscard]] auto& GetRenderSystem() { return m_render; }
 
 private:
-	LogSystem    m_log{};
-	WindowSystem m_window{};
-	InputSystem  m_input{};
-	RenderSystem m_render{};
+	LogSystem                   m_log{};
+	WindowSystem                m_window{};
+	InputSystem                 m_input{};
+	RenderSystem                m_render{};
+
+	CoreClock                   m_coreClock;
+	CoreTime                    m_coreTime;
+	CPUProfiler*                m_CPUProfiler{ nullptr };
+	CoreServicesContainer       m_coreServices;
+	std::vector<CoreComponent*> m_coreComponents;
 };

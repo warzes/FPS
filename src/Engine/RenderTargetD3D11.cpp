@@ -5,7 +5,7 @@
 #include "ContextD3D11.h"
 #include "Log.h"
 //=============================================================================
-RenderTargetD3D11::RenderTargetD3D11(uint32_t width, uint32_t height, TextureD3D11* texture) 
+RenderTargetD3D11::RenderTargetD3D11(uint32_t width, uint32_t height, Texture2DD3D11* texture) 
 	: m_texture(texture)
 {
 	assert(texture);

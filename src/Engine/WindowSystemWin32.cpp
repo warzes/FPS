@@ -201,6 +201,8 @@ void WindowSystem::Destroy()
 	m_input = nullptr;
 	if (m_hwnd) DestroyWindow(m_hwnd);
 	m_hwnd = nullptr;
+	if (m_handleInstance) UnregisterClass(windowClassName, m_handleInstance);
+	m_handleInstance = nullptr;
 }
 //=============================================================================
 void WindowSystem::ConnectInputSystem(InputSystem* input)

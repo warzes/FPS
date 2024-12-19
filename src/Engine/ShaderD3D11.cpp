@@ -4,6 +4,13 @@
 #include "ContextD3D11.h"
 #include "Log.h"
 //=============================================================================
+constexpr const char* vertexShaderModel = "vs_5_0";
+constexpr const char* pixelShaderModel = "ps_5_0";
+constexpr const char* hullShaderModel = "hs_5_0";
+constexpr const char* domainShaderModel = "ds_5_0";
+constexpr const char* geometryShaderModel = "gs_5_0";
+constexpr const char* computeShaderModel = "cs_5_0";
+//=============================================================================
 ShaderD3D11::ShaderD3D11(const std::string& vertexCode, const std::string& fragmentCode, std::vector<std::string> defines)
 {
 	HRESULT hr = E_FAIL;
@@ -20,7 +27,7 @@ ShaderD3D11::ShaderD3D11(const std::string& vertexCode, const std::string& fragm
 #endif
 
 	ComPtr<ID3DBlob> vertexShaderError;
-	hr = D3DCompile(hlslVert.c_str(), hlslVert.size(), nullptr, nullptr, nullptr, "main", "vs_5_0", flags, 0, m_vertexShaderBlob.GetAddressOf(), vertexShaderError.GetAddressOf());
+	hr = D3DCompile(hlslVert.c_str(), hlslVert.size(), nullptr, nullptr, nullptr, "main", vertexShaderModel, flags, 0, m_vertexShaderBlob.GetAddressOf(), vertexShaderError.GetAddressOf());
 	if (FAILED(hr))
 	{
 		std::string shaderErrorString = "";
@@ -33,7 +40,7 @@ ShaderD3D11::ShaderD3D11(const std::string& vertexCode, const std::string& fragm
 
 	ComPtr<ID3DBlob> pixelShaderError;
 	ComPtr<ID3DBlob> pixelShaderBlob;
-	hr = D3DCompile(hlslFrag.c_str(), hlslFrag.size(), nullptr, nullptr, nullptr, "main", "ps_5_0", flags, 0, pixelShaderBlob.GetAddressOf(), pixelShaderError.GetAddressOf());
+	hr = D3DCompile(hlslFrag.c_str(), hlslFrag.size(), nullptr, nullptr, nullptr, "main", pixelShaderModel, flags, 0, pixelShaderBlob.GetAddressOf(), pixelShaderError.GetAddressOf());
 	if (FAILED(hr))
 	{
 		std::string shaderErrorString = "";

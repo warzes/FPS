@@ -63,7 +63,7 @@ void main()
 
 		auto [tex_width, tex_height, tex_memory] = LoadTextureFromSTBImage("assets/bricks.jpg");
 
-		auto texture = Texture(tex_width, tex_height, PixelFormat::RGBA8UNorm, tex_memory, true);
+		auto texture = Texture2D(tex_width, tex_height, PixelFormat::RGBA8UNorm, tex_memory, true);
 
 		auto& rhi = engine.GetRenderSystem();
 

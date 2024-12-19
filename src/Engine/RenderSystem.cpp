@@ -73,7 +73,7 @@ void RenderSystem::DrawIndexed(uint32_t index_count, uint32_t index_offset, uint
 	RHIBackend::DrawIndexed(index_count, index_offset, instance_count);
 }
 //=============================================================================
-void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, Texture& dst_texture)
+void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, Texture2D& dst_texture)
 {
 	RHIBackend::ReadPixels(pos, size, dst_texture);
 }
@@ -148,9 +148,9 @@ void RenderSystem::SetInputLayout(const std::vector<InputLayout>& value)
 	RHIBackend::SetInputLayout(value);
 }
 //=============================================================================
-void RenderSystem::SetTexture(uint32_t binding, const Texture& texture)
+void RenderSystem::SetTexture(uint32_t binding, const Texture2D& texture)
 {
-	RHIBackend::SetTexture(binding, const_cast<Texture&>(texture));
+	RHIBackend::SetTexture(binding, const_cast<Texture2D&>(texture));
 }
 //=============================================================================
 void RenderSystem::SetRenderTarget(const std::vector<const RenderTarget*>& value)

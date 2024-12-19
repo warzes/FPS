@@ -22,7 +22,11 @@ enum class PixelFormat
 	RGBA32Float,
 	R8UNorm,
 	RG8UNorm,
-	RGBA8UNorm
+	RGBA8UNorm,
+
+	// TODO: ===> обновить под другие апи
+	RGB10A2UNorm, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+	BGRA8UNorm,   // D3D11, D3D12/Vulkan/OpenGL unsupported	
 };
 
 enum class CullMode

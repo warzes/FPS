@@ -5,13 +5,18 @@
 class Matrix4 final
 {
 public:
+	static const Matrix4 Identity;
+	static const Matrix4 Zero;
+
 	Matrix4() = default;
 	Matrix4(bool bZero);
 	Matrix4(const Matrix4& Matrix);
-	Matrix4(float fM11, float fM12, float fM13, float fM14,
+	Matrix4(
+		float fM11, float fM12, float fM13, float fM14,
 		float fM21, float fM22, float fM23, float fM24,
 		float fM31, float fM32, float fM33, float fM34,
 		float fM41, float fM42, float fM43, float fM44);
+
 	Matrix4 Inverse() const;
 
 	void RotationX(float fRadians);
@@ -46,8 +51,6 @@ public:
 	void MakeIdentity();
 	void MakeTranspose();
 
-	static Matrix4 Zero();
-	static Matrix4 Identity();
 	Matrix4 Transpose();
 
 	// Operators
@@ -612,31 +615,6 @@ inline void Matrix4::MakeTranspose()
 	}
 
 	memcpy(m_afEntry, mTranspose.m_afEntry, 4 * 4 * sizeof(float));
-}
-
-inline Matrix4 Matrix4::Zero()
-{
-	Matrix4 mReturn = Matrix4(true);
-
-	return(mReturn);
-}
-
-inline Matrix4 Matrix4::Identity()
-{
-	Matrix4 mIdent;
-
-	for (int iRow = 0; iRow < 4; iRow++)
-	{
-		for (int iCol = 0; iCol < 4; iCol++)
-		{
-			if (iRow == iCol)
-				mIdent.m_afEntry[I(iRow, iCol)] = 1.0f;
-			else
-				mIdent.m_afEntry[I(iRow, iCol)] = 0.0f;
-		}
-	}
-
-	return(mIdent);
 }
 
 inline Matrix4 Matrix4::Transpose()

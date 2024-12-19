@@ -109,7 +109,7 @@ Font::Font(void* data, size_t size)
 		}
 	}
 
-	m_texture = std::make_shared<Texture>(image.GetWidth(), image.GetHeight(), PixelFormat::RGBA8UNorm, image.GetMemory());
+	m_texture = std::make_shared<Texture2D>(image.GetWidth(), image.GetHeight(), PixelFormat::RGBA8UNorm, image.GetMemory());
 
 	int ascent = 0;
 	int descent = 0;

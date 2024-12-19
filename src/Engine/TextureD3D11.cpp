@@ -4,7 +4,7 @@
 #include "ContextD3D11.h"
 #include "Log.h"
 //=============================================================================
-TextureD3D11::TextureD3D11(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount)
+Texture2DD3D11::Texture2DD3D11(uint32_t width, uint32_t height, PixelFormat format, uint32_t mipCount)
 	: m_width(width)
 	, m_height(height)
 	, m_format(format)
@@ -32,7 +32,7 @@ TextureD3D11::TextureD3D11(uint32_t width, uint32_t height, PixelFormat format, 
 	}
 }
 //=============================================================================
-TextureD3D11::TextureD3D11(uint32_t width, uint32_t height, PixelFormat format, ComPtr<ID3D11Texture2D> texture)
+Texture2DD3D11::Texture2DD3D11(uint32_t width, uint32_t height, PixelFormat format, ComPtr<ID3D11Texture2D> texture)
 	: m_width(width)
 	, m_height(height)
 	, m_format(format)
@@ -40,7 +40,7 @@ TextureD3D11::TextureD3D11(uint32_t width, uint32_t height, PixelFormat format, 
 {
 }
 //=============================================================================
-void TextureD3D11::Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offsetX, uint32_t offsetY)
+void Texture2DD3D11::Write(uint32_t width, uint32_t height, PixelFormat format, const void* memory, uint32_t mipLevel, uint32_t offsetX, uint32_t offsetY)
 {
 	auto channels      = GetFormatChannelsCount(format);
 	auto channelSize   = GetFormatChannelSize(format);
@@ -50,7 +50,7 @@ void TextureD3D11::Write(uint32_t width, uint32_t height, PixelFormat format, co
 	gContext.context->UpdateSubresource(m_texture2D.Get(), mipLevel, &dstBox, memory, memPitch, memSlicePitch);
 }
 //=============================================================================
-void TextureD3D11::GenerateMips()
+void Texture2DD3D11::GenerateMips()
 {
 	gContext.context->GenerateMips(m_shaderResourceView.Get());
 }

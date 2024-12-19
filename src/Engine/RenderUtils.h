@@ -245,7 +245,7 @@ namespace utils
 
 		std::unordered_map<std::type_index, Shader> shaders;
 		Mesh default_mesh;
-		Texture white_pixel_texture;
+		Texture2D white_pixel_texture;
 	};
 
 	Context& GetContext();
@@ -382,9 +382,9 @@ namespace utils
 
 		struct SetTexture
 		{
-			SetTexture(uint32_t binding, const Texture* texture);
+			SetTexture(uint32_t binding, const Texture2D* texture);
 			uint32_t binding;
-			const Texture* texture;
+			const Texture2D* texture;
 		};
 
 		struct Draw
@@ -411,14 +411,14 @@ namespace utils
 
 		struct SetColorTexture
 		{
-			SetColorTexture(const Texture* color_texture);
-			const Texture* color_texture;
+			SetColorTexture(const Texture2D* color_texture);
+			const Texture2D* color_texture;
 		};
 
 		struct SetNormalTexture
 		{
-			SetNormalTexture(const Texture* normal_texture);
-			const Texture* normal_texture;
+			SetNormalTexture(const Texture2D* normal_texture);
+			const Texture2D* normal_texture;
 		};
 
 		struct SetColor
@@ -559,7 +559,7 @@ namespace utils
 			std::optional<commands::SetEffect> effect;
 		};
 
-		void Blit(Texture* src, RenderTarget* dst, const BlitOptions& options = {});
+		void Blit(Texture2D* src, RenderTarget* dst, const BlitOptions& options = {});
 
 		void GaussianBlur(RenderTarget* src, RenderTarget* dst = nullptr);
 		void Grayscale(RenderTarget* src, RenderTarget* dst = nullptr, float intensity = 1.0f);
@@ -570,8 +570,8 @@ namespace utils
 	struct Model
 	{
 		Mesh* mesh = nullptr;
-		Texture* color_texture = nullptr;
-		Texture* normal_texture = nullptr;
+		Texture2D* color_texture = nullptr;
+		Texture2D* normal_texture = nullptr;
 		glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		std::optional<commands::DrawMesh::DrawCommand> draw_command = std::nullopt;
 		glm::mat4 matrix = glm::mat4(1.0f);
@@ -625,9 +625,9 @@ namespace utils
 	class StageViewer
 	{
 	public:
-		virtual void stage(const std::string& name, Texture* texture) = 0;
+		virtual void stage(const std::string& name, Texture2D* texture) = 0;
 	};
 
 	void SetStageViewer(StageViewer* value);
-	void ViewStage(const std::string& name, Texture* texture);
+	void ViewStage(const std::string& name, Texture2D* texture);
 }

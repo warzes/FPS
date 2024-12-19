@@ -37,7 +37,7 @@ public:
 	void SetCustomVerticalOffset(float value) { m_customVerticalOffset = value; }
 
 private:
-	std::shared_ptr<Texture>                                        m_texture{ nullptr };
+	std::shared_ptr<Texture2D>                                        m_texture{ nullptr };
 	std::unordered_map<wchar_t, Glyph>                              m_glyphs;
 	std::unordered_map<wchar_t, std::unordered_map<wchar_t, float>> m_kernings;
 	float                                                           m_ascent = 0.0f;

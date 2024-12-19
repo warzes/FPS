@@ -6,7 +6,7 @@
 #include "RenderCoreD3D.h"
 
 class ShaderD3D11;
-class TextureD3D11;
+class Texture2DD3D11;
 class RenderTargetD3D11;
 
 static const std::unordered_map<VertexFormat, DXGI_FORMAT> VertexFormatMap = {
@@ -29,7 +29,10 @@ static const std::unordered_map<PixelFormat, DXGI_FORMAT> PixelFormatMap = {
 	{ PixelFormat::RGBA32Float, DXGI_FORMAT_R32G32B32A32_FLOAT },
 	{ PixelFormat::R8UNorm, DXGI_FORMAT_R8_UNORM },
 	{ PixelFormat::RG8UNorm, DXGI_FORMAT_R8G8_UNORM },
-	{ PixelFormat::RGBA8UNorm, DXGI_FORMAT_R8G8B8A8_UNORM }
+	{ PixelFormat::RGBA8UNorm, DXGI_FORMAT_R8G8B8A8_UNORM },
+
+	{ PixelFormat::RGB10A2UNorm, DXGI_FORMAT_R10G10B10A2_UNORM },
+	{ PixelFormat::BGRA8UNorm, DXGI_FORMAT_B8G8R8A8_UNORM },
 };
 
 #endif // RENDER_D3D11

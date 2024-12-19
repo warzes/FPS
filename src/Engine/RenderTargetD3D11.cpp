@@ -26,7 +26,7 @@ RenderTargetD3D11::RenderTargetD3D11(uint32_t width, uint32_t height, Texture2DD
 	hr = gContext.device->CreateTexture2D(&depthStencilDesc, nullptr, m_depthStencilTexture.GetAddressOf());
 	if (FAILED(hr))
 	{
-		Fatal("CreateTexture2D() failed:" + DXErrorToStr(hr));
+		Fatal("Create DepthStencil Texture2D failed:" + DXErrorToStr(hr));
 		return;
 	}
 

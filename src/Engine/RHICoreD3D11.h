@@ -35,4 +35,22 @@ static const std::unordered_map<PixelFormat, DXGI_FORMAT> PixelFormatMap = {
 	{ PixelFormat::BGRA8UNorm, DXGI_FORMAT_B8G8R8A8_UNORM },
 };
 
+inline D3D11_COMPARISON_FUNC ToD3D11(ComparisonFunc func)
+{
+	switch (func)
+	{
+	case ComparisonFunc::Always:       return D3D11_COMPARISON_ALWAYS;
+	case ComparisonFunc::Never:        return D3D11_COMPARISON_NEVER;
+	case ComparisonFunc::Less:         return D3D11_COMPARISON_LESS;
+	case ComparisonFunc::Equal:        return D3D11_COMPARISON_EQUAL;
+	case ComparisonFunc::NotEqual:     return D3D11_COMPARISON_NOT_EQUAL;
+	case ComparisonFunc::LessEqual:    return D3D11_COMPARISON_LESS_EQUAL;
+	case ComparisonFunc::Greater:      return D3D11_COMPARISON_GREATER;
+	case ComparisonFunc::GreaterEqual: return D3D11_COMPARISON_GREATER_EQUAL;
+	default:
+		Fatal("ComparisonFunc unknown");
+		return {};
+	}
+}
+
 #endif // RENDER_D3D11

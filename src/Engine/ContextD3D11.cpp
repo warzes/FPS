@@ -12,13 +12,13 @@ void RenderContext::Reset()
 	viewport.reset();
 	shader = nullptr;
 	inputLayouts.clear();
-	depthStencilStates.clear();
+	cacheDepthStencilStates.clear();
 	depthStencilState = {};
-	rasterizerStates.clear();
+	cacheRasterizerStates.clear();
 	rasterizerState = {};
-	samplerStates.clear();
+	cacheSamplerStates.clear();
 	samplerState = {};
-	blendModes.clear();
+	cacheBlendModes.clear();
 	blendMode.reset();
 	textures.clear();
 
@@ -59,7 +59,7 @@ bool CreateMainRenderTargetD3D11(uint32_t width, uint32_t height)
 	HRESULT hr = gContext.swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
 	if (FAILED(hr))
 	{
-		Fatal("GetBuffer() failed: " + DXErrorToStr(hr));
+		Fatal("IDXGISwapChain::GetBuffer() failed: " + DXErrorToStr(hr));
 		return false;
 	}
 
@@ -153,18 +153,9 @@ void ensureDepthStencilState()
 	auto depth_mode = depth_stencil_state.depthMode.value_or(DepthMode());
 	auto stencil_mode = depth_stencil_state.stencilMode.value_or(StencilMode());
 
-	if (!gContext.depthStencilStates.contains(depth_stencil_state))
+	if (!gContext.cacheDepthStencilStates.contains(depth_stencil_state))
 	{
-		const static std::unordered_map<ComparisonFunc, D3D11_COMPARISON_FUNC> ComparisonFuncMap = {
-			{ ComparisonFunc::Always, D3D11_COMPARISON_ALWAYS },
-			{ ComparisonFunc::Never, D3D11_COMPARISON_NEVER },
-			{ ComparisonFunc::Less, D3D11_COMPARISON_LESS },
-			{ ComparisonFunc::Equal, D3D11_COMPARISON_EQUAL },
-			{ ComparisonFunc::NotEqual, D3D11_COMPARISON_NOT_EQUAL },
-			{ ComparisonFunc::LessEqual, D3D11_COMPARISON_LESS_EQUAL },
-			{ ComparisonFunc::Greater, D3D11_COMPARISON_GREATER },
-			{ ComparisonFunc::GreaterEqual, D3D11_COMPARISON_GREATER_EQUAL }
-		};
+
 
 		const static std::unordered_map<StencilOp, D3D11_STENCIL_OP> StencilOpMap = {
 			{ StencilOp::Keep, D3D11_STENCIL_OP_KEEP },
@@ -179,7 +170,7 @@ void ensureDepthStencilState()
 
 		auto desc = CD3D11_DEPTH_STENCIL_DESC(D3D11_DEFAULT);
 		desc.DepthEnable = depth_stencil_state.depthMode.has_value();
-		desc.DepthFunc = ComparisonFuncMap.at(depth_mode.func);
+		desc.DepthFunc = ToD3D11(depth_mode.func);
 		desc.DepthWriteMask = depth_mode.writeMask ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
 
 		desc.StencilEnable = depth_stencil_state.stencilMode.has_value();
@@ -188,19 +179,19 @@ void ensureDepthStencilState()
 
 		desc.FrontFace.StencilDepthFailOp = StencilOpMap.at(stencil_mode.depthFailOp);
 		desc.FrontFace.StencilFailOp = StencilOpMap.at(stencil_mode.failOp);
-		desc.FrontFace.StencilFunc = ComparisonFuncMap.at(stencil_mode.func);
+		desc.FrontFace.StencilFunc = ToD3D11(stencil_mode.func);
 		desc.FrontFace.StencilPassOp = StencilOpMap.at(stencil_mode.passOp);
 
 		desc.BackFace = desc.FrontFace;
 
-		HRESULT hr = gContext.device->CreateDepthStencilState(&desc, gContext.depthStencilStates[depth_stencil_state].GetAddressOf());
+		HRESULT hr = gContext.device->CreateDepthStencilState(&desc, gContext.cacheDepthStencilStates[depth_stencil_state].GetAddressOf());
 		if (FAILED(hr))
 		{
 			Fatal("CreateDepthStencilState() failed: " + DXErrorToStr(hr));
 		}
 	}
 
-	gContext.context->OMSetDepthStencilState(gContext.depthStencilStates.at(depth_stencil_state).Get(), stencil_mode.reference);
+	gContext.context->OMSetDepthStencilState(gContext.cacheDepthStencilStates.at(depth_stencil_state).Get(), stencil_mode.reference);
 }
 //=============================================================================
 void ensureRasterizerState()
@@ -210,7 +201,7 @@ void ensureRasterizerState()
 
 	const auto& value = gContext.rasterizerState;
 
-	if (!gContext.rasterizerStates.contains(value))
+	if (!gContext.cacheRasterizerStates.contains(value))
 	{
 		const static std::unordered_map<CullMode, D3D11_CULL_MODE> CullMap = {
 			{ CullMode::None, D3D11_CULL_NONE },
@@ -232,7 +223,7 @@ void ensureRasterizerState()
 			desc.SlopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
 			desc.DepthBias            = D3D11_DEFAULT_DEPTH_BIAS;
 		}
-		HRESULT hr = gContext.device->CreateRasterizerState(&desc, gContext.rasterizerStates[value].GetAddressOf());
+		HRESULT hr = gContext.device->CreateRasterizerState(&desc, gContext.cacheRasterizerStates[value].GetAddressOf());
 		if (FAILED(hr))
 		{
 			Fatal("CreateRasterizerState() failed: " + DXErrorToStr(hr));
@@ -240,7 +231,7 @@ void ensureRasterizerState()
 		}
 	}
 
-	gContext.context->RSSetState(gContext.rasterizerStates.at(value).Get());
+	gContext.context->RSSetState(gContext.cacheRasterizerStates.at(value).Get());
 }
 //=============================================================================
 void ensureSamplerState()
@@ -250,27 +241,31 @@ void ensureSamplerState()
 
 	const auto& value = gContext.samplerState;
 
-	if (!gContext.samplerStates.contains(value))
+	if (!gContext.cacheSamplerStates.contains(value))
 	{
 		// TODO: see D3D11_ENCODE_BASIC_FILTER
 
 		const static std::unordered_map<Sampler, D3D11_FILTER> SamplerMap = {
-			{ Sampler::Linear, D3D11_FILTER_MIN_MAG_MIP_LINEAR },
-			{ Sampler::Nearest, D3D11_FILTER_MIN_MAG_MIP_POINT },
+			{ Sampler::Linear,      D3D11_FILTER_MIN_MAG_MIP_LINEAR },
+			{ Sampler::Nearest,     D3D11_FILTER_MIN_MAG_MIP_POINT },
+			{ Sampler::Anisotropic, D3D11_FILTER_ANISOTROPIC },
+			{ Sampler::LinearPoint, D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT },
 		};
 
 		const static std::unordered_map<TextureAddress, D3D11_TEXTURE_ADDRESS_MODE> TextureAddressMap = {
-			{ TextureAddress::Clamp, D3D11_TEXTURE_ADDRESS_CLAMP },
-			{ TextureAddress::Wrap, D3D11_TEXTURE_ADDRESS_WRAP },
-			{ TextureAddress::MirrorWrap, D3D11_TEXTURE_ADDRESS_MIRROR }
+			{ TextureAddress::Clamp,      D3D11_TEXTURE_ADDRESS_CLAMP },
+			{ TextureAddress::Wrap,       D3D11_TEXTURE_ADDRESS_WRAP },
+			{ TextureAddress::MirrorWrap, D3D11_TEXTURE_ADDRESS_MIRROR },
+			{ TextureAddress::Border,     D3D11_TEXTURE_ADDRESS_BORDER }
 		};
 
-		auto desc = CD3D11_SAMPLER_DESC(D3D11_DEFAULT);
-		desc.Filter = SamplerMap.at(value.sampler);
-		desc.AddressU = TextureAddressMap.at(value.textureAddress);
-		desc.AddressV = TextureAddressMap.at(value.textureAddress);
-		desc.AddressW = TextureAddressMap.at(value.textureAddress);
-		HRESULT hr = gContext.device->CreateSamplerState(&desc, gContext.samplerStates[value].GetAddressOf());
+		auto desc           = CD3D11_SAMPLER_DESC(D3D11_DEFAULT);
+		desc.Filter         = SamplerMap.at(value.sampler);
+		desc.AddressU       = TextureAddressMap.at(value.textureAddress);
+		desc.AddressV       = TextureAddressMap.at(value.textureAddress);
+		desc.AddressW       = TextureAddressMap.at(value.textureAddress);
+		desc.ComparisonFunc = ToD3D11(value.comparisonFunc);
+		HRESULT hr = gContext.device->CreateSamplerState(&desc, gContext.cacheSamplerStates[value].GetAddressOf());
 		if (FAILED(hr))
 		{
 			Fatal("CreateSamplerState() failed: " + DXErrorToStr(hr));
@@ -280,7 +275,7 @@ void ensureSamplerState()
 
 	for (auto [binding, _] : gContext.textures)
 	{
-		gContext.context->PSSetSamplers(binding, 1, gContext.samplerStates.at(value).GetAddressOf());
+		gContext.context->PSSetSamplers(binding, 1, gContext.cacheSamplerStates.at(value).GetAddressOf());
 	}
 }
 //=============================================================================
@@ -291,7 +286,7 @@ void ensureBlendMode()
 
 	const auto& blendMode = gContext.blendMode;
 
-	if (!gContext.blendModes.contains(blendMode))
+	if (!gContext.cacheBlendModes.contains(blendMode))
 	{
 		const static std::unordered_map<Blend, D3D11_BLEND> ColorBlendMap = {
 			{ Blend::One, D3D11_BLEND_ONE },
@@ -361,7 +356,7 @@ void ensureBlendMode()
 			blend.BlendOpAlpha = BlendOpMap.at(blend_mode_nn.alphaFunc);
 		}
 
-		HRESULT hr = gContext.device->CreateBlendState(&desc, gContext.blendModes[blendMode].GetAddressOf());
+		HRESULT hr = gContext.device->CreateBlendState(&desc, gContext.cacheBlendModes[blendMode].GetAddressOf());
 		if (FAILED(hr))
 		{
 			Fatal("CreateBlendState() failed: " + DXErrorToStr(hr));
@@ -369,7 +364,7 @@ void ensureBlendMode()
 		}
 	}
 
-	gContext.context->OMSetBlendState(gContext.blendModes.at(blendMode).Get(), nullptr, 0xFFFFFFFF);
+	gContext.context->OMSetBlendState(gContext.cacheBlendModes.at(blendMode).Get(), nullptr, 0xFFFFFFFF);
 }
 //=============================================================================
 void ensureViewport()

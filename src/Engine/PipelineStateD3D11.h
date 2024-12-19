@@ -36,15 +36,17 @@ SE_MAKE_HASHABLE(RasterizerStateD3D11,
 
 struct SamplerStateD3D11 final
 {
+	bool operator==(const SamplerStateD3D11&) const = default;
+
 	Sampler        sampler = Sampler::Linear;
 	TextureAddress textureAddress = TextureAddress::Clamp;
-
-	bool operator==(const SamplerStateD3D11&) const = default;
+	ComparisonFunc comparisonFunc = ComparisonFunc::Never;
 };
 
 SE_MAKE_HASHABLE(SamplerStateD3D11,
 	t.sampler,
-	t.textureAddress
+	t.textureAddress,
+	t.comparisonFunc
 );
 
 #endif // RENDER_D3D11

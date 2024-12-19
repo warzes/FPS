@@ -24,9 +24,11 @@ enum class PixelFormat
 	RG8UNorm,
 	RGBA8UNorm,
 
+#if RENDER_D3D11
 	// TODO: ===> обновить под другие апи
 	RGB10A2UNorm, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
-	BGRA8UNorm,   // D3D11, D3D12/Vulkan/OpenGL unsupported	
+	BGRA8UNorm,   // D3D11, D3D12/Vulkan/OpenGL unsupported
+#endif
 };
 
 enum class CullMode
@@ -134,14 +136,23 @@ enum class ShaderStage
 enum class Sampler
 {
 	Linear,
-	Nearest
+	Nearest,
+
+#if RENDER_D3D11
+	Anisotropic, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+	LinearPoint // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+#endif
 };
 
 enum class TextureAddress
 {
 	Wrap,  // Texels outside range will form the tile at every integer junction.		
 	Clamp, // Texels outside range will be set to color of 0.0 or 1.0 texel.
-	MirrorWrap
+	MirrorWrap,
+
+#if RENDER_D3D11
+	Border, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+#endif
 };
 
 struct Viewport final

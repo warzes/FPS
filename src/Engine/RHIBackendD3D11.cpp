@@ -113,11 +113,11 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	swapChainDesc.BufferCount           = RHI_BACKBUFFER_COUNT;
 	//swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
-	fsSwapChainDesc.Windowed = TRUE;
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenSwapChainDesc = {};
+	fullScreenSwapChainDesc.Windowed = TRUE;
 
 	ComPtr<IDXGISwapChain1> swapChain = nullptr;
-	hr = dxgiFactory->CreateSwapChainForHwnd(device.Get(), data.hwnd, &swapChainDesc, &fsSwapChainDesc, nullptr, swapChain.ReleaseAndGetAddressOf());
+	hr = dxgiFactory->CreateSwapChainForHwnd(device.Get(), data.hwnd, &swapChainDesc, &fullScreenSwapChainDesc, nullptr, swapChain.ReleaseAndGetAddressOf());
 	if (FAILED(hr))
 	{
 		Fatal("CreateSwapChainForHwnd() failed: " + DXErrorToStr(hr));

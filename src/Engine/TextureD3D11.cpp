@@ -12,7 +12,7 @@ Texture2DD3D11::Texture2DD3D11(uint32_t width, uint32_t height, PixelFormat form
 {
 	HRESULT hr = E_FAIL;
 
-	auto texDesc = CD3D11_TEXTURE2D_DESC(PixelFormatMap.at(format), width, height);
+	auto texDesc = CD3D11_TEXTURE2D_DESC(ToD3D11(format), width, height);
 	texDesc.MipLevels = mipCount;
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;

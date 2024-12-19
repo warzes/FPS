@@ -12,7 +12,7 @@ RenderTargetD3D11::RenderTargetD3D11(uint32_t width, uint32_t height, Texture2DD
 
 	HRESULT hr = E_FAIL;
 
-	const auto format = PixelFormatMap.at(texture->GetFormat());
+	const auto format = ToD3D11(texture->GetFormat());
 	const auto rtvDesc = CD3D11_RENDER_TARGET_VIEW_DESC(D3D11_RTV_DIMENSION_TEXTURE2D, format);
 
 	hr = gContext.device->CreateRenderTargetView(texture->GetD3D11Texture2D().Get(), &rtvDesc, m_renderTargetView.GetAddressOf());

@@ -31,6 +31,8 @@ inline void HashCombine(std::size_t& seed, const std::unordered_map<T, U>& value
 	HashCombine(seed, rest...);
 }
 
+// TODO: сделать так чтобы хеш вычислялся в компайлтайме, и тогда бы здесь было одно число (а точнее это вообще было бы не нужно- можно было сразу хранить хеш)
+
 #define SE_MAKE_HASHABLE(T, ...) \
 	namespace std {\
 		template<> struct hash<T> {\

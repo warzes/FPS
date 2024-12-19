@@ -2,12 +2,18 @@
 
 #include "HashCombine.h"
 
+#pragma region [ Constant ]
+
 // TODO: сделать общее для всех
 #if RENDER_D3D11
 constexpr const int RHI_BACKBUFFER_COUNT = 3;
 #else
 constexpr const int RHI_BACKBUFFER_COUNT = 2;
 #endif
+
+#pragma endregion
+
+#pragma region [ Enum ]
 
 enum class RenderFeature
 {
@@ -133,7 +139,7 @@ enum class ShaderStage
 	ClosestHit
 };
 
-enum class Sampler
+enum class Filter
 {
 	Linear,
 	Nearest,
@@ -154,6 +160,13 @@ enum class TextureAddress
 	Border, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
 #endif
 };
+
+#pragma endregion
+
+
+#pragma region [ OLD ]
+
+
 
 struct Viewport final
 {
@@ -221,8 +234,9 @@ struct ColorMask final
 
 struct BlendMode final
 {
-	constexpr BlendMode(Blend color_src, Blend color_dst, Blend alpha_src, Blend alpha_dst) 
-		: colorSrc(color_src), colorDst(color_dst), alphaSrc(alpha_src), alphaDst(alpha_dst) {}
+	constexpr BlendMode(Blend color_src, Blend color_dst, Blend alpha_src, Blend alpha_dst)
+		: colorSrc(color_src), colorDst(color_dst), alphaSrc(alpha_src), alphaDst(alpha_dst) {
+	}
 	constexpr BlendMode(Blend src, Blend dst) : BlendMode(src, dst, src, dst) {}
 
 	BlendFunction colorFunc = BlendFunction::Add;
@@ -240,9 +254,9 @@ struct BlendMode final
 
 namespace BlendStates
 {
-	constexpr BlendMode Opaque           = BlendMode(Blend::One, Blend::Zero);
-	constexpr BlendMode AlphaBlend       = BlendMode(Blend::One, Blend::InvSrcAlpha);
-	constexpr BlendMode Additive         = BlendMode(Blend::SrcAlpha, Blend::One);
+	constexpr BlendMode Opaque = BlendMode(Blend::One, Blend::Zero);
+	constexpr BlendMode AlphaBlend = BlendMode(Blend::One, Blend::InvSrcAlpha);
+	constexpr BlendMode Additive = BlendMode(Blend::SrcAlpha, Blend::One);
 	constexpr BlendMode NonPremultiplied = BlendMode(Blend::SrcAlpha, Blend::InvSrcAlpha);
 }
 
@@ -368,3 +382,5 @@ struct RenderSystemCreateInfo final
 	std::unordered_set<RenderFeature> features{};
 	bool                              vsync{ false };
 };
+
+#pragma endregion

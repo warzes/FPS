@@ -722,7 +722,7 @@ utils::commands::SetBlendMode::SetBlendMode(std::optional<BlendMode> _blend_mode
 {
 }
 
-utils::commands::SetSampler::SetSampler(Sampler _sampler) :
+utils::commands::SetSampler::SetSampler(Filter _sampler) :
 	sampler(_sampler)
 {
 }
@@ -863,7 +863,7 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 	gRenderSystem->SetViewport(std::nullopt);
 	gRenderSystem->SetScissor(std::nullopt);
 	gRenderSystem->SetBlendMode(std::nullopt);
-	gRenderSystem->SetSampler(Sampler::Linear);
+	gRenderSystem->SetSampler(Filter::Linear);
 	gRenderSystem->SetCullMode(CullMode::None);
 	gRenderSystem->SetTextureAddress(TextureAddress::Clamp);
 	gRenderSystem->SetFrontFace(FrontFace::Clockwise);

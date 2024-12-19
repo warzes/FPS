@@ -314,8 +314,8 @@ namespace utils
 
 		struct SetSampler
 		{
-			SetSampler(Sampler sampler);
-			Sampler sampler;
+			SetSampler(Filter sampler);
+			Filter sampler;
 		};
 
 		struct SetCullMode
@@ -553,7 +553,7 @@ namespace utils
 		struct BlitOptions
 		{
 			bool clear = false;
-			Sampler sampler = Sampler::Linear;
+			Filter sampler = Filter::Linear;
 			glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 			std::optional<BlendMode> blendMode;
 			std::optional<commands::SetEffect> effect;
@@ -578,7 +578,7 @@ namespace utils
 		CullMode cull_mode = CullMode::None;
 		TextureAddress texture_address = TextureAddress::Clamp;
 		DepthMode depth_mode;
-		Sampler sampler = Sampler::Linear;
+		Filter sampler = Filter::Linear;
 
 		static std::vector<Command> Draw(const Model& model, bool use_color_texture = true, bool use_normal_texture = true);
 	};

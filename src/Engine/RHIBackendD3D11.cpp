@@ -106,7 +106,7 @@ bool RHIBackend::CreateAPI(const WindowData& data, const RenderSystemCreateInfo&
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 	swapChainDesc.Width                 = data.width;
 	swapChainDesc.Height                = data.height;
-	swapChainDesc.Format                = PixelFormatMap.at(gContext.backBufferFormat);
+	swapChainDesc.Format                = ToD3D11(gContext.backBufferFormat);
 	swapChainDesc.SampleDesc.Count      = 1;
 	swapChainDesc.SampleDesc.Quality    = 0;
 	swapChainDesc.BufferUsage           = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -156,7 +156,7 @@ void RHIBackend::DestroyAPI()
 void RHIBackend::ResizeFrameBuffer(uint32_t width, uint32_t height)
 {
 	DestroyMainRenderTargetD3D11();
-	HRESULT hr = gContext.swapChain->ResizeBuffers(RHI_BACKBUFFER_COUNT, (UINT)width, (UINT)height, PixelFormatMap.at(gContext.backBufferFormat), 0);
+	HRESULT hr = gContext.swapChain->ResizeBuffers(RHI_BACKBUFFER_COUNT, (UINT)width, (UINT)height, ToD3D11(gContext.backBufferFormat), 0);
 	if (FAILED(hr))
 	{
 		Fatal("ResizeBuffers() failed: " + DXErrorToStr(hr));
@@ -467,9 +467,9 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 	gContext.rasterizerStateDirty = true;
 }
 //=============================================================================
-void RHIBackend::SetSampler(Sampler value)
+void RHIBackend::SetSampler(Filter value)
 {
-	gContext.samplerState.sampler = value;
+	gContext.samplerState.filter = value;
 	gContext.samplerStateDirty = true;
 }
 //=============================================================================

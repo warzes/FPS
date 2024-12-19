@@ -113,7 +113,7 @@ void RenderSystem::SetCullMode(CullMode cull_mode)
 	RHIBackend::SetCullMode(cull_mode);
 }
 //=============================================================================
-void RenderSystem::SetSampler(Sampler value)
+void RenderSystem::SetSampler(Filter value)
 {
 	RHIBackend::SetSampler(value);
 }

@@ -120,7 +120,7 @@ void ensureInputLayout()
 				inputElements.push_back(D3D11_INPUT_ELEMENT_DESC{
 					.SemanticName = "TEXCOORD",
 					.SemanticIndex = (UINT)location,
-					.Format = VertexFormatMap.at(attribute.format),
+					.Format = ToD3D11(attribute.format),
 					.InputSlot = (UINT)i,
 					.AlignedByteOffset = (UINT)attribute.offset,
 					.InputSlotClass = InputRateMap.at(input_layout.rate),
@@ -243,34 +243,9 @@ void ensureSamplerState()
 
 	if (!gContext.cacheSamplerStates.contains(value))
 	{
-		// TODO: see D3D11_ENCODE_BASIC_FILTER
-
-		const static std::unordered_map<Sampler, D3D11_FILTER> SamplerMap = {
-			{ Sampler::Linear,      D3D11_FILTER_MIN_MAG_MIP_LINEAR },
-			{ Sampler::Nearest,     D3D11_FILTER_MIN_MAG_MIP_POINT },
-			{ Sampler::Anisotropic, D3D11_FILTER_ANISOTROPIC },
-			{ Sampler::LinearPoint, D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT },
-		};
-
-		const static std::unordered_map<TextureAddress, D3D11_TEXTURE_ADDRESS_MODE> TextureAddressMap = {
-			{ TextureAddress::Clamp,      D3D11_TEXTURE_ADDRESS_CLAMP },
-			{ TextureAddress::Wrap,       D3D11_TEXTURE_ADDRESS_WRAP },
-			{ TextureAddress::MirrorWrap, D3D11_TEXTURE_ADDRESS_MIRROR },
-			{ TextureAddress::Border,     D3D11_TEXTURE_ADDRESS_BORDER }
-		};
-
-		auto desc           = CD3D11_SAMPLER_DESC(D3D11_DEFAULT);
-		desc.Filter         = SamplerMap.at(value.sampler);
-		desc.AddressU       = TextureAddressMap.at(value.textureAddress);
-		desc.AddressV       = TextureAddressMap.at(value.textureAddress);
-		desc.AddressW       = TextureAddressMap.at(value.textureAddress);
-		desc.ComparisonFunc = ToD3D11(value.comparisonFunc);
-		HRESULT hr = gContext.device->CreateSamplerState(&desc, gContext.cacheSamplerStates[value].GetAddressOf());
-		if (FAILED(hr))
-		{
-			Fatal("CreateSamplerState() failed: " + DXErrorToStr(hr));
-			return;
-		}
+		auto state = CreateSamplerStateD3D11(value);
+		if (!state) return;
+		gContext.cacheSamplerStates[value] = state;
 	}
 
 	for (auto [binding, _] : gContext.textures)

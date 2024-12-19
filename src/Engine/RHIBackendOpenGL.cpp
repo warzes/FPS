@@ -573,7 +573,7 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 	glCullFace(CullMap.at(cull_mode));
 }
 //=============================================================================
-void RHIBackend::SetSampler(Sampler value)
+void RHIBackend::SetSamplerFilter(Sampler value)
 {
 	gContext.samplerState.sampler = value;
 	gContext.samplerStateDirty = true;

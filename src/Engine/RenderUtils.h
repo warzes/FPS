@@ -312,9 +312,9 @@ namespace utils
 			std::optional<BlendMode> blendMode;
 		};
 
-		struct SetSampler
+		struct SetSamplerFilter
 		{
-			SetSampler(Filter sampler);
+			SetSamplerFilter(Filter sampler);
 			Filter sampler;
 		};
 
@@ -494,7 +494,7 @@ namespace utils
 		commands::SetViewport,
 		commands::SetScissor,
 		commands::SetBlendMode,
-		commands::SetSampler,
+		commands::SetSamplerFilter,
 		commands::SetCullMode,
 		commands::SetTextureAddress,
 		commands::SetFrontFace,

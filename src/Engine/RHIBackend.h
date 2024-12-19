@@ -50,8 +50,13 @@ namespace RHIBackend
 	void SetDepthMode(const std::optional<DepthMode>& depth_mode);
 	void SetStencilMode(const std::optional<StencilMode>& stencil_mode);
 	void SetCullMode(CullMode cull_mode);
-	void SetSampler(Filter value);
+
+	void SetRasterizerState(const RasterizerState& state);
+
+	void SetSamplerState(const SamplerState& state);
+	void SetSamplerFilter(Filter value);
 	void SetTextureAddress(TextureAddress value);
+
 	void SetFrontFace(FrontFace value);
 	void SetDepthBias(const std::optional<DepthBias> depth_bias);
 

@@ -467,7 +467,7 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 	gContext.rasterizerStateDirty = true;
 }
 //=============================================================================
-void RHIBackend::SetSampler(Filter value)
+void RHIBackend::SetSamplerFilter(Filter value)
 {
 	gContext.samplerState.filter = value;
 	gContext.samplerStateDirty = true;
@@ -476,6 +476,20 @@ void RHIBackend::SetSampler(Filter value)
 void RHIBackend::SetTextureAddress(TextureAddress value)
 {
 	gContext.samplerState.textureAddress = value;
+	gContext.samplerStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetRasterizerState(const RasterizerState& state)
+{
+	// TODO: если в стейте будет хранится хеш вычисленный при компиляции, то тут можно сравнить его чтобы точно знать - нужно ли ставить или уже стоит
+	gContext.rasterizerState = state;
+	gContext.rasterizerStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetSamplerState(const SamplerState& state)
+{
+	// TODO: если в стейте будет хранится хеш вычисленный при компиляции, то тут можно сравнить его чтобы точно знать - нужно ли ставить или уже стоит
+	gContext.samplerState = state;
 	gContext.samplerStateDirty = true;
 }
 //=============================================================================

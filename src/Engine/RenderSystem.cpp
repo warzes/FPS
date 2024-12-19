@@ -113,9 +113,19 @@ void RenderSystem::SetCullMode(CullMode cull_mode)
 	RHIBackend::SetCullMode(cull_mode);
 }
 //=============================================================================
-void RenderSystem::SetSampler(Filter value)
+void RenderSystem::SetSamplerFilter(Filter value)
 {
-	RHIBackend::SetSampler(value);
+	RHIBackend::SetSamplerFilter(value);
+}
+//=============================================================================
+void RenderSystem::SetRasterizerState(const RasterizerState& state)
+{
+	RHIBackend::SetRasterizerState(state);
+}
+//=============================================================================
+void RenderSystem::SetSamplerState(const SamplerState& state)
+{
+	RHIBackend::SetSamplerState(state);
 }
 //=============================================================================
 void RenderSystem::SetTextureAddress(TextureAddress value)

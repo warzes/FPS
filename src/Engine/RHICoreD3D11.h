@@ -54,10 +54,11 @@ inline D3D11_FILTER ToD3D11(Filter sampler)
 {
 	switch (sampler)
 	{
-	case Filter::Linear:      return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	case Filter::Nearest:     return D3D11_FILTER_MIN_MAG_MIP_POINT;
-	case Filter::Anisotropic: return D3D11_FILTER_ANISOTROPIC;
-	case Filter::LinearPoint: return D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	case Filter::Linear:                return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	case Filter::Nearest:               return D3D11_FILTER_MIN_MAG_MIP_POINT;
+	case Filter::Anisotropic:           return D3D11_FILTER_ANISOTROPIC;
+	case Filter::LinearPoint:           return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+	case Filter::ComparisonLinearPoint: return D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 	default:
 		Fatal("Sampler unknown");
 		return {};
@@ -96,6 +97,17 @@ inline D3D11_COMPARISON_FUNC ToD3D11(ComparisonFunc func)
 	}
 }
 
-
+inline D3D11_CULL_MODE ToD3D11(CullMode mode)
+{
+	switch (mode)
+	{
+	case CullMode::None: return  D3D11_CULL_NONE;
+	case CullMode::Front: return D3D11_CULL_FRONT;
+	case CullMode::Back: return  D3D11_CULL_BACK;
+	default:
+		Fatal("CullMode unknown");
+		return {};
+	}
+}
 
 #endif // RENDER_D3D11

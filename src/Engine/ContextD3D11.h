@@ -27,22 +27,19 @@ public:
 	std::vector<RenderTargetD3D11*>   renderTargets;
 	std::optional<Viewport>           viewport;
 
-	ShaderD3D11*                      shader = nullptr;
+	ShaderD3D11*                      shader{ nullptr };
 	std::vector<InputLayout>          inputLayouts;
 
-	std::unordered_map<DepthStencilStateD3D11, ComPtr<ID3D11DepthStencilState>> cacheDepthStencilStates;
 	DepthStencilStateD3D11            depthStencilState;
-
-	std::unordered_map<RasterizerStateD3D11, ComPtr<ID3D11RasterizerState>> cacheRasterizerStates;
-	RasterizerStateD3D11              rasterizerState;
-
-	std::unordered_map<SamplerStateD3D11, ComPtr<ID3D11SamplerState>> cacheSamplerStates;
-	SamplerStateD3D11                 samplerState;
-
-	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>> cacheBlendModes;
+	RasterizerState              rasterizerState;
+	SamplerState                      samplerState;
 	std::optional<BlendMode>          blendMode;
-
 	std::unordered_map<uint32_t, Texture2DD3D11*> textures;
+
+	std::unordered_map<DepthStencilStateD3D11, ComPtr<ID3D11DepthStencilState>> cacheDepthStencilStates;
+	std::unordered_map<RasterizerState, ComPtr<ID3D11RasterizerState>>          cacheRasterizerStates;
+	std::unordered_map<SamplerState, ComPtr<ID3D11SamplerState>>                cacheSamplerStates;
+	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>>      cacheBlendModes;
 
 	bool shaderDirty = true;
 	bool inputLayoutsDirty = true;

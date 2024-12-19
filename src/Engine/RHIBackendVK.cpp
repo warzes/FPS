@@ -634,7 +634,7 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 	gContext.cullModeDirty = true;
 }
 //=============================================================================
-void RHIBackend::SetSampler(Sampler value)
+void RHIBackend::SetSamplerFilter(Sampler value)
 {
 	gContext.samplerState.sampler = value;
 }

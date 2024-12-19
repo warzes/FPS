@@ -199,39 +199,14 @@ void ensureRasterizerState()
 	if (!gContext.rasterizerStateDirty) return;
 	gContext.rasterizerStateDirty = false;
 
-	const auto& value = gContext.rasterizerState;
-
-	if (!gContext.cacheRasterizerStates.contains(value))
+	if (!gContext.cacheRasterizerStates.contains(gContext.rasterizerState))
 	{
-		const static std::unordered_map<CullMode, D3D11_CULL_MODE> CullMap = {
-			{ CullMode::None, D3D11_CULL_NONE },
-			{ CullMode::Front, D3D11_CULL_FRONT },
-			{ CullMode::Back, D3D11_CULL_BACK }
-		};
-
-		auto desc = CD3D11_RASTERIZER_DESC(D3D11_DEFAULT);
-		desc.CullMode              = CullMap.at(value.cullMode);
-		desc.ScissorEnable         = value.scissorEnabled;
-		desc.FrontCounterClockwise = value.frontFace == FrontFace::CounterClockwise;
-		if (value.depthBias.has_value())
-		{
-			desc.SlopeScaledDepthBias = value.depthBias->factor;
-			desc.DepthBias            = (INT)value.depthBias->units;
-		}
-		else
-		{
-			desc.SlopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-			desc.DepthBias            = D3D11_DEFAULT_DEPTH_BIAS;
-		}
-		HRESULT hr = gContext.device->CreateRasterizerState(&desc, gContext.cacheRasterizerStates[value].GetAddressOf());
-		if (FAILED(hr))
-		{
-			Fatal("CreateRasterizerState() failed: " + DXErrorToStr(hr));
-			return;
-		}
+		auto state = CreateRasterizerStateD3D11(gContext.rasterizerState);
+		if (!state) return;
+		gContext.cacheRasterizerStates[gContext.rasterizerState] = state;
 	}
 
-	gContext.context->RSSetState(gContext.cacheRasterizerStates.at(value).Get());
+	gContext.context->RSSetState(gContext.cacheRasterizerStates.at(gContext.rasterizerState).Get());
 }
 //=============================================================================
 void ensureSamplerState()
@@ -239,18 +214,16 @@ void ensureSamplerState()
 	if (!gContext.samplerStateDirty) return;
 	gContext.samplerStateDirty = false;
 
-	const auto& value = gContext.samplerState;
-
-	if (!gContext.cacheSamplerStates.contains(value))
+	if (!gContext.cacheSamplerStates.contains(gContext.samplerState))
 	{
-		auto state = CreateSamplerStateD3D11(value);
+		auto state = CreateSamplerStateD3D11(gContext.samplerState);
 		if (!state) return;
-		gContext.cacheSamplerStates[value] = state;
+		gContext.cacheSamplerStates[gContext.samplerState] = state;
 	}
 
-	for (auto [binding, _] : gContext.textures)
+	for (const auto& [binding, _] : gContext.textures)
 	{
-		gContext.context->PSSetSamplers(binding, 1, gContext.cacheSamplerStates.at(value).GetAddressOf());
+		gContext.context->PSSetSamplers(binding, 1, gContext.cacheSamplerStates.at(gContext.samplerState).GetAddressOf());
 	}
 }
 //=============================================================================

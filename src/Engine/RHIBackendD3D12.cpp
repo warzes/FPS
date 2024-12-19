@@ -448,7 +448,7 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 	gContext.pipelineState.rasterizerState.cullMode = cull_mode;
 }
 //=============================================================================
-void RHIBackend::SetSampler(Sampler value)
+void RHIBackend::SetSamplerFilter(Sampler value)
 {
 
 }

@@ -722,7 +722,7 @@ utils::commands::SetBlendMode::SetBlendMode(std::optional<BlendMode> _blend_mode
 {
 }
 
-utils::commands::SetSampler::SetSampler(Filter _sampler) :
+utils::commands::SetSamplerFilter::SetSamplerFilter(Filter _sampler) :
 	sampler(_sampler)
 {
 }
@@ -863,7 +863,7 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 	gRenderSystem->SetViewport(std::nullopt);
 	gRenderSystem->SetScissor(std::nullopt);
 	gRenderSystem->SetBlendMode(std::nullopt);
-	gRenderSystem->SetSampler(Filter::Linear);
+	gRenderSystem->SetSamplerFilter(Filter::Linear);
 	gRenderSystem->SetCullMode(CullMode::None);
 	gRenderSystem->SetTextureAddress(TextureAddress::Clamp);
 	gRenderSystem->SetFrontFace(FrontFace::Clockwise);
@@ -912,7 +912,7 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 			[&](const commands::SetViewport& cmd) { gRenderSystem->SetViewport(cmd.viewport); },
 			[&](const commands::SetScissor& cmd) { gRenderSystem->SetScissor(cmd.scissor); },
 			[&](const commands::SetBlendMode& cmd) { gRenderSystem->SetBlendMode(cmd.blendMode); },
-			[&](const commands::SetSampler& cmd) { gRenderSystem->SetSampler(cmd.sampler); },
+			[&](const commands::SetSamplerFilter& cmd) { gRenderSystem->SetSamplerFilter(cmd.sampler); },
 			[&](const commands::SetCullMode& cmd) { gRenderSystem->SetCullMode(cmd.cull_mode); },
 			[&](const commands::SetTextureAddress& cmd) { gRenderSystem->SetTextureAddress(cmd.texture_address); },
 			[&](const commands::SetFrontFace& cmd) { gRenderSystem->SetFrontFace(cmd.front_face); },
@@ -1068,7 +1068,7 @@ void utils::passes::Blit(Texture2D* src, RenderTarget* dst, const BlitOptions& o
 		render_pass.commands.push_back(options.effect.value());
 
 	render_pass.commands.insert(render_pass.commands.end(), {
-		commands::SetSampler(options.sampler),
+		commands::SetSamplerFilter(options.sampler),
 		commands::SetColor(options.color),
 		commands::SetBlendMode(options.blendMode),
 		commands::SetColorTexture(src),
@@ -1233,7 +1233,7 @@ std::vector<utils::Command> utils::Model::Draw(const Model& model, bool use_colo
 		commands::SetTextureAddress(model.texture_address),
 		commands::SetDepthMode(model.depth_mode),
 		commands::SetColor(model.color),
-		commands::SetSampler(model.sampler),
+		commands::SetSamplerFilter(model.sampler),
 		commands::DrawMesh(model.draw_command)
 	};
 }

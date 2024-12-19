@@ -146,7 +146,8 @@ enum class Filter
 
 #if RENDER_D3D11
 	Anisotropic, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
-	LinearPoint // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+	LinearPoint, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+	ComparisonLinearPoint // D3D11 support, D3D12/Vulkan/OpenGL unsupported
 #endif
 };
 
@@ -162,6 +163,72 @@ enum class TextureAddress
 };
 
 #pragma endregion
+
+#pragma region [ Struct ]
+
+struct DepthBias final
+{
+	bool operator==(const DepthBias&) const = default;
+
+	float factor{ 0.0f };
+	float units{ 0.0f };
+};
+
+SE_MAKE_HASHABLE(DepthBias,
+	t.factor,
+	t.units
+);
+
+struct RasterizerState final
+{
+	bool operator==(const RasterizerState&) const = default;
+
+	CullMode                 cullMode{ CullMode::None };
+	FrontFace                frontFace{ FrontFace::Clockwise };
+	bool                     depthClipEnable{ true };
+	bool                     scissorEnabled{ false };
+	std::optional<DepthBias> depthBias;
+};
+
+SE_MAKE_HASHABLE(RasterizerState,
+	t.cullMode,
+	t.frontFace,
+	t.depthClipEnable,
+	t.scissorEnabled,
+	t.depthBias
+);
+
+struct SamplerState final
+{
+	bool operator==(const SamplerState&) const = default;
+
+	Filter         filter{ Filter::Linear };
+	TextureAddress textureAddress{ TextureAddress::Clamp };
+	float          mipLODBias{ 0.0f };
+	uint32_t       maxAnisotropy{ 1 };
+	ComparisonFunc comparisonFunc{ ComparisonFunc::Never };
+	float          borderColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float          minLOD{ -FLT_MAX };
+	float          maxLOD{ FLT_MAX };
+};
+
+SE_MAKE_HASHABLE(SamplerState,
+	t.filter,
+	t.textureAddress,
+	t.mipLODBias,
+	t.maxAnisotropy,
+	t.comparisonFunc,
+	t.borderColor[0],
+	t.borderColor[1],
+	t.borderColor[2],
+	t.borderColor[3],
+	t.minLOD,
+	t.maxLOD
+);
+
+
+#pragma endregion
+
 
 
 #pragma region [ OLD ]
@@ -212,15 +279,6 @@ struct StencilMode final
 	bool operator==(const StencilMode&) const = default;
 };
 
-struct DepthBias final
-{
-	DepthBias(float _factor = 0.0f, float _units = 0.0f) : factor(_factor), units(_units) {}
-
-	float factor;
-	float units;
-
-	bool operator==(const DepthBias&) const = default;
-};
 
 struct ColorMask final
 {
@@ -328,10 +386,7 @@ SE_MAKE_HASHABLE(StencilMode,
 	t.passOp
 );
 
-SE_MAKE_HASHABLE(DepthBias,
-	t.factor,
-	t.units
-)
+
 
 SE_MAKE_HASHABLE(std::vector<InputLayout>, t);
 

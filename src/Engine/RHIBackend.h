@@ -52,31 +52,33 @@ namespace RHIBackend
 
 #pragma region [ Binding ]
 
+	// DepthStencilState
+	void SetDepthStencilState(const DepthStencilState& state);
+	void SetDepthMode(const std::optional<DepthMode>& depthMode);
+	void SetStencilMode(const std::optional<StencilMode>& stencilMode);
+
+	// Rasterizer State
 	void SetRasterizerState(const RasterizerState& state);
+	void SetCullMode(CullingMode cullMode);
+	void SetFrontFace(FrontFace value);
+	void SetDepthBias(const std::optional<DepthBias> depthBias);
+
+	// Sampler State
 	void SetSamplerState(const SamplerState& state);
+	void SetSamplerFilter(Filter value);
+	void SetTextureAddress(TextureAddress value);
+
 
 #pragma endregion
 
-#pragma region [ OLD]
+#pragma region [ OLD ]
 
 	void SetTopology(Topology topology);
 	void SetViewport(std::optional<Viewport> viewport);
 	void SetScissor(std::optional<Scissor> scissor);
 
 	void SetBlendMode(const std::optional<BlendMode>& blend_mode);
-	void SetDepthMode(const std::optional<DepthMode>& depth_mode);
-	void SetStencilMode(const std::optional<StencilMode>& stencil_mode);
-	void SetCullMode(CullingMode cull_mode);
 
-	void SetRasterizerState(const RasterizerState& state);
-	void SetSamplerState(const SamplerState& state);
-
-
-	void SetSamplerFilter(Filter value);
-	void SetTextureAddress(TextureAddress value);
-
-	void SetFrontFace(FrontFace value);
-	void SetDepthBias(const std::optional<DepthBias> depth_bias);
 
 	void SetShader(ShaderHandle* handle);
 	void SetInputLayout(const std::vector<InputLayout>& value);

@@ -404,6 +404,78 @@ void RHIBackend::WriteUniformBufferMemory(UniformBufferHandle* handle, const voi
 	auto buffer = (UniformBufferD3D11*)handle;
 	buffer->Write(memory, size);
 }
+#pragma region [ Binding ]
+//=============================================================================
+void RHIBackend::SetDepthStencilState(const DepthStencilState& state)
+{
+	// TODO: если в стейте будет хранится хеш вычисленный при компиляции, то тут можно сравнить его чтобы точно знать - нужно ли ставить или уже стоит
+	gContext.depthStencilState = state;
+	gContext.depthStencilStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetDepthMode(const std::optional<DepthMode>& depthMode)
+{
+	gContext.depthStencilState.depthMode = depthMode;
+	gContext.depthStencilStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencilMode)
+{
+	gContext.depthStencilState.stencilMode = stencilMode;
+	gContext.depthStencilStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetRasterizerState(const RasterizerState& state)
+{
+	// TODO: если в стейте будет хранится хеш вычисленный при компиляции, то тут можно сравнить его чтобы точно знать - нужно ли ставить или уже стоит
+	gContext.rasterizerState = state;
+	gContext.rasterizerStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetCullMode(CullingMode cullMode)
+{
+	gContext.rasterizerState.cullMode = cullMode;
+	gContext.rasterizerStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetFrontFace(FrontFace value)
+{
+	gContext.rasterizerState.frontFace = value;
+	gContext.rasterizerStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetDepthBias(const std::optional<DepthBias> depthBias)
+{
+	gContext.rasterizerState.depthBias = depthBias;
+	gContext.rasterizerStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetSamplerState(const SamplerState& state)
+{
+	// TODO: если в стейте будет хранится хеш вычисленный при компиляции, то тут можно сравнить его чтобы точно знать - нужно ли ставить или уже стоит
+	gContext.samplerState = state;
+	gContext.samplerStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetSamplerFilter(Filter value)
+{
+	gContext.samplerState.filter = value;
+	gContext.samplerStateDirty = true;
+}
+//=============================================================================
+void RHIBackend::SetTextureAddress(TextureAddress value)
+{
+	gContext.samplerState.textureAddress = value;
+	gContext.samplerStateDirty = true;
+}
+#pragma endregion
+
+
+
+
+
+
+
 //=============================================================================
 void RHIBackend::SetTopology(Topology topology)
 {
@@ -447,62 +519,6 @@ void RHIBackend::SetBlendMode(const std::optional<BlendMode>& blend_mode)
 {
 	gContext.blendMode = blend_mode;
 	gContext.blendModeDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetDepthMode(const std::optional<DepthMode>& depth_mode)
-{
-	gContext.depthStencilState.depthMode = depth_mode;
-	gContext.depthStencilStateDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
-{
-	gContext.depthStencilState.stencilMode = stencil_mode;
-	gContext.depthStencilStateDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetCullMode(CullingMode cull_mode)
-{
-	gContext.rasterizerState.cullMode = cull_mode;
-	gContext.rasterizerStateDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetSamplerFilter(Filter value)
-{
-	gContext.samplerState.filter = value;
-	gContext.samplerStateDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetTextureAddress(TextureAddress value)
-{
-	gContext.samplerState.textureAddress = value;
-	gContext.samplerStateDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetRasterizerState(const RasterizerState& state)
-{
-	// TODO: если в стейте будет хранится хеш вычисленный при компиляции, то тут можно сравнить его чтобы точно знать - нужно ли ставить или уже стоит
-	gContext.rasterizerState = state;
-	gContext.rasterizerStateDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetSamplerState(const SamplerState& state)
-{
-	// TODO: если в стейте будет хранится хеш вычисленный при компиляции, то тут можно сравнить его чтобы точно знать - нужно ли ставить или уже стоит
-	gContext.samplerState = state;
-	gContext.samplerStateDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetFrontFace(FrontFace value)
-{
-	gContext.rasterizerState.frontFace = value;
-	gContext.rasterizerStateDirty = true;
-}
-//=============================================================================
-void RHIBackend::SetDepthBias(const std::optional<DepthBias> depth_bias)
-{
-	gContext.rasterizerState.depthBias = depth_bias;
-	gContext.rasterizerStateDirty = true;
 }
 //=============================================================================
 void RHIBackend::SetShader(ShaderHandle* handle)

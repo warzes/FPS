@@ -110,4 +110,26 @@ inline D3D11_CULL_MODE ToD3D11(CullingMode mode)
 	}
 }
 
+inline D3D11_STENCIL_OP ToD3D11(StencilOperation op)
+{
+	switch (op)
+	{
+	case StencilOperation::Keep:                return D3D11_STENCIL_OP_KEEP;
+	case StencilOperation::Zero:                return D3D11_STENCIL_OP_ZERO;
+	case StencilOperation::Replace:             return D3D11_STENCIL_OP_REPLACE;
+	case StencilOperation::Increment:           return D3D11_STENCIL_OP_INCR;
+	case StencilOperation::Decrement:           return D3D11_STENCIL_OP_DECR;
+	case StencilOperation::IncrementSaturation: return D3D11_STENCIL_OP_INCR_SAT;
+	case StencilOperation::DecrementSaturation: return D3D11_STENCIL_OP_DECR_SAT;
+	case StencilOperation::Invert:              return D3D11_STENCIL_OP_INVERT;
+	default:
+		Fatal("StencilOperation unknown");
+		return {};
+	}
+}
+
+ComPtr<ID3D11DepthStencilState> CreateDepthStencilStateD3D11(const DepthStencilState& state);
+ComPtr<ID3D11RasterizerState>   CreateRasterizerStateD3D11(const RasterizerState& state);
+ComPtr<ID3D11SamplerState>      CreateSamplerStateD3D11(const SamplerState& state);
+
 #endif // RENDER_D3D11

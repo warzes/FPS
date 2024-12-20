@@ -132,7 +132,6 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="LogSystem.h" />
     <ClInclude Include="Mouse.h" />
-    <ClInclude Include="PipelineStateD3D11.h" />
     <ClInclude Include="PipelineStateD3D12.h" />
     <ClInclude Include="PipelineStateOpenGL.h" />
     <ClInclude Include="PipelineStateVK.h" />
@@ -202,7 +201,6 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="LogSystem.cpp" />
     <ClCompile Include="MouseWin32.cpp" />
-    <ClCompile Include="PipelineStateD3D11.cpp" />
     <ClCompile Include="PipelineStateD3D12.cpp" />
     <ClCompile Include="PipelineStateOpenGL.cpp" />
     <ClCompile Include="PipelineStateVK.cpp" />

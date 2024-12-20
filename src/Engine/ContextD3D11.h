@@ -2,7 +2,7 @@
 
 #if RENDER_D3D11
 
-#include "PipelineStateD3D11.h"
+#include "RHICoreD3D11.h"
 
 class RenderContext final
 {
@@ -30,16 +30,16 @@ public:
 	ShaderD3D11*                      shader{ nullptr };
 	std::vector<InputLayout>          inputLayouts;
 
-	DepthStencilStateD3D11            depthStencilState;
-	RasterizerState              rasterizerState;
+	DepthStencilState            depthStencilState;
+	RasterizerState                   rasterizerState;
 	SamplerState                      samplerState;
 	std::optional<BlendMode>          blendMode;
 	std::unordered_map<uint32_t, Texture2DD3D11*> textures;
 
-	std::unordered_map<DepthStencilStateD3D11, ComPtr<ID3D11DepthStencilState>> cacheDepthStencilStates;
-	std::unordered_map<RasterizerState, ComPtr<ID3D11RasterizerState>>          cacheRasterizerStates;
-	std::unordered_map<SamplerState, ComPtr<ID3D11SamplerState>>                cacheSamplerStates;
-	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>>      cacheBlendModes;
+	std::unordered_map<DepthStencilState, ComPtr<ID3D11DepthStencilState>> cacheDepthStencilStates;
+	std::unordered_map<RasterizerState, ComPtr<ID3D11RasterizerState>>     cacheRasterizerStates;
+	std::unordered_map<SamplerState, ComPtr<ID3D11SamplerState>>           cacheSamplerStates;
+	std::unordered_map<std::optional<BlendMode>, ComPtr<ID3D11BlendState>> cacheBlendModes;
 
 	bool shaderDirty = true;
 	bool inputLayoutsDirty = true;

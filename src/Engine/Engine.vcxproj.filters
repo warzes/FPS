@@ -74,9 +74,6 @@
     <ClCompile Include="BufferD3D11.cpp">
       <Filter>RHI\Direct3D11\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="PipelineStateD3D11.cpp">
-      <Filter>RHI\Direct3D11\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="RenderTargetD3D11.cpp">
       <Filter>RHI\Direct3D11\Resources</Filter>
     </ClCompile>
@@ -261,9 +258,6 @@
       <Filter>RHI\Direct3D11</Filter>
     </ClInclude>
     <ClInclude Include="BufferD3D11.h">
-      <Filter>RHI\Direct3D11\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="PipelineStateD3D11.h">
       <Filter>RHI\Direct3D11\Resources</Filter>
     </ClInclude>
     <ClInclude Include="RenderTargetD3D11.h">

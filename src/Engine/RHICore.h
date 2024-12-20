@@ -181,11 +181,64 @@ SE_MAKE_HASHABLE(DepthBias,
 	t.units
 );
 
+struct DepthMode final
+{
+	DepthMode() = default;
+	DepthMode(ComparisonFunction _func) : func(_func) {}
+
+	bool operator==(const DepthMode&) const = default;
+
+	bool               writeMask = true;
+	ComparisonFunction func = ComparisonFunction::Always;
+};
+
+SE_MAKE_HASHABLE(DepthMode,
+	t.writeMask,
+	t.func
+);
+
+struct StencilMode final
+{
+	bool operator==(const StencilMode&) const = default;
+
+	uint8_t            readMask = 255;
+	uint8_t            writeMask = 255;
+
+	StencilOperation   depthFailOp = StencilOperation::Keep;
+	StencilOperation   failOp = StencilOperation::Keep;
+	ComparisonFunction func = ComparisonFunction::Always;
+	StencilOperation   passOp = StencilOperation::Keep;
+
+	uint8_t            reference = 1;
+};
+
+SE_MAKE_HASHABLE(StencilMode,
+	t.readMask,
+	t.writeMask,
+	t.depthFailOp,
+	t.failOp,
+	t.func,
+	t.passOp
+);
+
+struct DepthStencilState final
+{
+	std::optional<DepthMode>   depthMode;
+	std::optional<StencilMode> stencilMode;
+
+	bool operator==(const DepthStencilState&) const = default;
+};
+
+SE_MAKE_HASHABLE(DepthStencilState,
+	t.depthMode,
+	t.stencilMode
+);
+
 struct RasterizerState final
 {
 	bool operator==(const RasterizerState&) const = default;
 
-	CullingMode                 cullMode{ CullingMode::None };
+	CullingMode              cullMode{ CullingMode::None };
 	FrontFace                frontFace{ FrontFace::Clockwise };
 	bool                     depthClipEnable{ true };
 	bool                     scissorEnabled{ false };
@@ -204,14 +257,14 @@ struct SamplerState final
 {
 	bool operator==(const SamplerState&) const = default;
 
-	Filter         filter{ Filter::Linear };
-	TextureAddress textureAddress{ TextureAddress::Clamp };
-	float          mipLODBias{ 0.0f };
-	uint32_t       maxAnisotropy{ 1 };
+	Filter             filter{ Filter::Linear };
+	TextureAddress     textureAddress{ TextureAddress::Clamp };
+	float              mipLODBias{ 0.0f };
+	uint32_t           maxAnisotropy{ 1 };
 	ComparisonFunction comparisonFunc{ ComparisonFunction::Never };
-	float          borderColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	float          minLOD{ -FLT_MAX };
-	float          maxLOD{ FLT_MAX };
+	float              borderColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float              minLOD{ -FLT_MAX };
+	float              maxLOD{ FLT_MAX };
 };
 
 SE_MAKE_HASHABLE(SamplerState,
@@ -254,33 +307,6 @@ struct Scissor final
 
 	bool operator==(const Scissor&) const = default;
 };
-
-struct DepthMode final
-{
-	DepthMode() = default;
-	DepthMode(ComparisonFunction _func) : func(_func) {}
-
-	bool           writeMask = true;
-	ComparisonFunction func = ComparisonFunction::Always;
-
-	bool operator==(const DepthMode&) const = default;
-};
-
-struct StencilMode final
-{
-	uint8_t        readMask = 255;
-	uint8_t        writeMask = 255;
-
-	StencilOperation      depthFailOp = StencilOperation::Keep;
-	StencilOperation      failOp = StencilOperation::Keep;
-	ComparisonFunction func = ComparisonFunction::Always;
-	StencilOperation      passOp = StencilOperation::Keep;
-
-	uint8_t        reference = 1;
-
-	bool operator==(const StencilMode&) const = default;
-};
-
 
 struct ColorMask final
 {
@@ -373,21 +399,6 @@ SE_MAKE_HASHABLE(BlendMode,
 	t.colorSrc,
 	t.colorMask
 );
-
-SE_MAKE_HASHABLE(DepthMode,
-	t.writeMask,
-	t.func
-);
-
-SE_MAKE_HASHABLE(StencilMode,
-	t.readMask,
-	t.writeMask,
-	t.depthFailOp,
-	t.failOp,
-	t.func,
-	t.passOp
-);
-
 
 
 SE_MAKE_HASHABLE(std::vector<InputLayout>, t);

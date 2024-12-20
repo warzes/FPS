@@ -148,50 +148,15 @@ void ensureDepthStencilState()
 	if (!gContext.depthStencilStateDirty) return;
 	gContext.depthStencilStateDirty = false;
 
-	const auto& depth_stencil_state = gContext.depthStencilState;
-
-	auto depth_mode = depth_stencil_state.depthMode.value_or(DepthMode());
-	auto stencil_mode = depth_stencil_state.stencilMode.value_or(StencilMode());
-
-	if (!gContext.cacheDepthStencilStates.contains(depth_stencil_state))
+	if (!gContext.cacheDepthStencilStates.contains(gContext.depthStencilState))
 	{
-
-
-		const static std::unordered_map<StencilOperation, D3D11_STENCIL_OP> StencilOpMap = {
-			{ StencilOperation::Keep, D3D11_STENCIL_OP_KEEP },
-			{ StencilOperation::Zero, D3D11_STENCIL_OP_ZERO },
-			{ StencilOperation::Replace, D3D11_STENCIL_OP_REPLACE },
-			{ StencilOperation::IncrementSaturation, D3D11_STENCIL_OP_INCR_SAT },
-			{ StencilOperation::DecrementSaturation, D3D11_STENCIL_OP_DECR_SAT },
-			{ StencilOperation::Invert, D3D11_STENCIL_OP_INVERT },
-			{ StencilOperation::Increment, D3D11_STENCIL_OP_INCR },
-			{ StencilOperation::Decrement, D3D11_STENCIL_OP_DECR },
-		};
-
-		auto desc = CD3D11_DEPTH_STENCIL_DESC(D3D11_DEFAULT);
-		desc.DepthEnable = depth_stencil_state.depthMode.has_value();
-		desc.DepthFunc = ToD3D11(depth_mode.func);
-		desc.DepthWriteMask = depth_mode.writeMask ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
-
-		desc.StencilEnable = depth_stencil_state.stencilMode.has_value();
-		desc.StencilReadMask = stencil_mode.readMask;
-		desc.StencilWriteMask = stencil_mode.writeMask;
-
-		desc.FrontFace.StencilDepthFailOp = StencilOpMap.at(stencil_mode.depthFailOp);
-		desc.FrontFace.StencilFailOp = StencilOpMap.at(stencil_mode.failOp);
-		desc.FrontFace.StencilFunc = ToD3D11(stencil_mode.func);
-		desc.FrontFace.StencilPassOp = StencilOpMap.at(stencil_mode.passOp);
-
-		desc.BackFace = desc.FrontFace;
-
-		HRESULT hr = gContext.device->CreateDepthStencilState(&desc, gContext.cacheDepthStencilStates[depth_stencil_state].GetAddressOf());
-		if (FAILED(hr))
-		{
-			Fatal("CreateDepthStencilState() failed: " + DXErrorToStr(hr));
-		}
+		auto state = CreateDepthStencilStateD3D11(gContext.depthStencilState);
+		if (!state) return;
+		gContext.cacheDepthStencilStates[gContext.depthStencilState] = state;
 	}
 
-	gContext.context->OMSetDepthStencilState(gContext.cacheDepthStencilStates.at(depth_stencil_state).Get(), stencil_mode.reference);
+	auto stencilMode = gContext.depthStencilState.stencilMode.value_or(StencilMode());
+	gContext.context->OMSetDepthStencilState(gContext.cacheDepthStencilStates.at(gContext.depthStencilState).Get(), stencilMode.reference);
 }
 //=============================================================================
 void ensureRasterizerState()

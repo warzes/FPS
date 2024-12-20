@@ -502,17 +502,17 @@ void RHIBackend::SetBlendMode(const std::optional<BlendMode>& blend_mode)
 		return;
 	}
 
-	const static std::unordered_map<Blend, GLenum> BlendMap = {
-		{ Blend::One, GL_ONE },
-		{ Blend::Zero, GL_ZERO },
-		{ Blend::SrcColor, GL_SRC_COLOR },
-		{ Blend::InvSrcColor, GL_ONE_MINUS_SRC_COLOR },
-		{ Blend::SrcAlpha, GL_SRC_ALPHA },
-		{ Blend::InvSrcAlpha, GL_ONE_MINUS_SRC_ALPHA },
-		{ Blend::DstColor, GL_DST_COLOR },
-		{ Blend::InvDstColor, GL_ONE_MINUS_DST_COLOR },
-		{ Blend::DstAlpha, GL_DST_ALPHA },
-		{ Blend::InvDstAlpha, GL_ONE_MINUS_DST_ALPHA }
+	const static std::unordered_map<BlendFactor, GLenum> BlendMap = {
+		{ BlendFactor::One, GL_ONE },
+		{ BlendFactor::Zero, GL_ZERO },
+		{ BlendFactor::SrcColor, GL_SRC_COLOR },
+		{ BlendFactor::InvSrcColor, GL_ONE_MINUS_SRC_COLOR },
+		{ BlendFactor::SrcAlpha, GL_SRC_ALPHA },
+		{ BlendFactor::InvSrcAlpha, GL_ONE_MINUS_SRC_ALPHA },
+		{ BlendFactor::DstColor, GL_DST_COLOR },
+		{ BlendFactor::InvDstColor, GL_ONE_MINUS_DST_COLOR },
+		{ BlendFactor::DstAlpha, GL_DST_ALPHA },
+		{ BlendFactor::InvDstAlpha, GL_ONE_MINUS_DST_ALPHA }
 	};
 
 	const static std::unordered_map<BlendFunction, GLenum> BlendOpMap = {

@@ -37,7 +37,8 @@ enum class PixelFormat
 #endif
 };
 
-enum class Blend
+// Factors used when blending new pixels with existing pixels.
+enum class BlendFactor
 {
 	One, // Each component of the color is multiplied by {1, 1, 1, 1}.
 	Zero, // Each component of the color is multiplied by {0, 0, 0, 0}.
@@ -53,22 +54,6 @@ enum class Blend
 	//	InverseBlendFactor, // Each component of the color is multiplied by a inversed constant in the BlendFactor
 	//	SourceAlphaSaturation // Each component of the color is multiplied by either the alpha of the source color, or the inverse of the alpha of the source color, whichever is greater. {f, f, f, 1}, where f = min(As, 1 - As), where As is the source alpha value.
 };
-
-/**	Factors used when blending new pixels with existing pixels. */
-enum BlendFactor
-{
-	BF_ONE, /**< Use a value of one for all pixel components. */
-	BF_ZERO, /**< Use a value of zero for all pixel components. */
-	BF_DEST_COLOR, /**< Use the existing pixel value. */
-	BF_SOURCE_COLOR, /**< Use the newly generated pixel value. */
-	BF_INV_DEST_COLOR, /**< Use the inverse of the existing value. */
-	BF_INV_SOURCE_COLOR, /**< Use the inverse of the newly generated pixel value. */
-	BF_DEST_ALPHA, /**< Use the existing alpha value. */
-	BF_SOURCE_ALPHA, /**< Use the newly generated alpha value. */
-	BF_INV_DEST_ALPHA, /**< Use the inverse of the existing alpha value. */
-	BF_INV_SOURCE_ALPHA /**< Use the inverse of the newly generated alpha value. */
-};
-
 
 
 
@@ -313,18 +298,18 @@ struct ColorMask final
 
 struct BlendMode final
 {
-	constexpr BlendMode(Blend color_src, Blend color_dst, Blend alpha_src, Blend alpha_dst)
+	constexpr BlendMode(BlendFactor color_src, BlendFactor color_dst, BlendFactor alpha_src, BlendFactor alpha_dst)
 		: colorSrc(color_src), colorDst(color_dst), alphaSrc(alpha_src), alphaDst(alpha_dst) {
 	}
-	constexpr BlendMode(Blend src, Blend dst) : BlendMode(src, dst, src, dst) {}
+	constexpr BlendMode(BlendFactor src, BlendFactor dst) : BlendMode(src, dst, src, dst) {}
 
 	BlendFunction colorFunc = BlendFunction::Add;
-	Blend         colorSrc;
-	Blend         colorDst;
+	BlendFactor         colorSrc;
+	BlendFactor         colorDst;
 
 	BlendFunction alphaFunc = BlendFunction::Add;
-	Blend         alphaSrc;
-	Blend         alphaDst;
+	BlendFactor         alphaSrc;
+	BlendFactor         alphaDst;
 
 	ColorMask     colorMask;
 
@@ -333,10 +318,10 @@ struct BlendMode final
 
 namespace BlendStates
 {
-	constexpr BlendMode Opaque = BlendMode(Blend::One, Blend::Zero);
-	constexpr BlendMode AlphaBlend = BlendMode(Blend::One, Blend::InvSrcAlpha);
-	constexpr BlendMode Additive = BlendMode(Blend::SrcAlpha, Blend::One);
-	constexpr BlendMode NonPremultiplied = BlendMode(Blend::SrcAlpha, Blend::InvSrcAlpha);
+	constexpr BlendMode Opaque = BlendMode(BlendFactor::One, BlendFactor::Zero);
+	constexpr BlendMode AlphaBlend = BlendMode(BlendFactor::One, BlendFactor::InvSrcAlpha);
+	constexpr BlendMode Additive = BlendMode(BlendFactor::SrcAlpha, BlendFactor::One);
+	constexpr BlendMode NonPremultiplied = BlendMode(BlendFactor::SrcAlpha, BlendFactor::InvSrcAlpha);
 }
 
 struct InputLayout final

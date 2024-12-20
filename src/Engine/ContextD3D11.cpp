@@ -236,30 +236,30 @@ void ensureBlendMode()
 
 	if (!gContext.cacheBlendModes.contains(blendMode))
 	{
-		const static std::unordered_map<Blend, D3D11_BLEND> ColorBlendMap = {
-			{ Blend::One, D3D11_BLEND_ONE },
-			{ Blend::Zero, D3D11_BLEND_ZERO },
-			{ Blend::SrcColor, D3D11_BLEND_SRC_COLOR },
-			{ Blend::InvSrcColor, D3D11_BLEND_INV_SRC_COLOR },
-			{ Blend::SrcAlpha, D3D11_BLEND_SRC_ALPHA },
-			{ Blend::InvSrcAlpha, D3D11_BLEND_INV_SRC_ALPHA },
-			{ Blend::DstColor, D3D11_BLEND_DEST_COLOR },
-			{ Blend::InvDstColor, D3D11_BLEND_INV_DEST_COLOR },
-			{ Blend::DstAlpha, D3D11_BLEND_DEST_ALPHA },
-			{ Blend::InvDstAlpha, D3D11_BLEND_INV_DEST_ALPHA }
+		const static std::unordered_map<BlendFactor, D3D11_BLEND> ColorBlendMap = {
+			{ BlendFactor::One, D3D11_BLEND_ONE },
+			{ BlendFactor::Zero, D3D11_BLEND_ZERO },
+			{ BlendFactor::SrcColor, D3D11_BLEND_SRC_COLOR },
+			{ BlendFactor::InvSrcColor, D3D11_BLEND_INV_SRC_COLOR },
+			{ BlendFactor::SrcAlpha, D3D11_BLEND_SRC_ALPHA },
+			{ BlendFactor::InvSrcAlpha, D3D11_BLEND_INV_SRC_ALPHA },
+			{ BlendFactor::DstColor, D3D11_BLEND_DEST_COLOR },
+			{ BlendFactor::InvDstColor, D3D11_BLEND_INV_DEST_COLOR },
+			{ BlendFactor::DstAlpha, D3D11_BLEND_DEST_ALPHA },
+			{ BlendFactor::InvDstAlpha, D3D11_BLEND_INV_DEST_ALPHA }
 		};
 
-		const static std::unordered_map<Blend, D3D11_BLEND> AlphaBlendMap = {
-			{ Blend::One, D3D11_BLEND_ONE },
-			{ Blend::Zero, D3D11_BLEND_ZERO },
-			{ Blend::SrcColor, D3D11_BLEND_SRC_ALPHA },
-			{ Blend::InvSrcColor, D3D11_BLEND_INV_SRC_ALPHA },
-			{ Blend::SrcAlpha, D3D11_BLEND_SRC_ALPHA },
-			{ Blend::InvSrcAlpha, D3D11_BLEND_INV_SRC_ALPHA },
-			{ Blend::DstColor, D3D11_BLEND_DEST_ALPHA },
-			{ Blend::InvDstColor, D3D11_BLEND_INV_DEST_ALPHA },
-			{ Blend::DstAlpha, D3D11_BLEND_DEST_ALPHA },
-			{ Blend::InvDstAlpha, D3D11_BLEND_INV_DEST_ALPHA }
+		const static std::unordered_map<BlendFactor, D3D11_BLEND> AlphaBlendMap = {
+			{ BlendFactor::One, D3D11_BLEND_ONE },
+			{ BlendFactor::Zero, D3D11_BLEND_ZERO },
+			{ BlendFactor::SrcColor, D3D11_BLEND_SRC_ALPHA },
+			{ BlendFactor::InvSrcColor, D3D11_BLEND_INV_SRC_ALPHA },
+			{ BlendFactor::SrcAlpha, D3D11_BLEND_SRC_ALPHA },
+			{ BlendFactor::InvSrcAlpha, D3D11_BLEND_INV_SRC_ALPHA },
+			{ BlendFactor::DstColor, D3D11_BLEND_DEST_ALPHA },
+			{ BlendFactor::InvDstColor, D3D11_BLEND_INV_DEST_ALPHA },
+			{ BlendFactor::DstAlpha, D3D11_BLEND_DEST_ALPHA },
+			{ BlendFactor::InvDstAlpha, D3D11_BLEND_INV_DEST_ALPHA }
 		};
 
 		const static std::unordered_map<BlendFunction, D3D11_BLEND_OP> BlendOpMap = {

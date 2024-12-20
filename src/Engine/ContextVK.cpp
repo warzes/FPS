@@ -980,17 +980,17 @@ void EnsureBlendMode(vk::raii::CommandBuffer& cmdlist)
 
 	gContext.blendModeDirty = false;
 
-	static const std::unordered_map<Blend, vk::BlendFactor> BlendFactorMap = {
-		{ Blend::One, vk::BlendFactor::eOne },
-		{ Blend::Zero, vk::BlendFactor::eZero },
-		{ Blend::SrcColor, vk::BlendFactor::eSrcColor },
-		{ Blend::InvSrcColor, vk::BlendFactor::eOneMinusSrcColor },
-		{ Blend::SrcAlpha, vk::BlendFactor::eSrcAlpha },
-		{ Blend::InvSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha },
-		{ Blend::DstColor, vk::BlendFactor::eDstColor },
-		{ Blend::InvDstColor, vk::BlendFactor::eOneMinusDstColor },
-		{ Blend::DstAlpha, vk::BlendFactor::eDstAlpha },
-		{ Blend::InvDstAlpha, vk::BlendFactor::eOneMinusDstAlpha }
+	static const std::unordered_map<BlendFactor, vk::BlendFactor> BlendFactorMap = {
+		{ BlendFactor::One, vk::BlendFactor::eOne },
+		{ BlendFactor::Zero, vk::BlendFactor::eZero },
+		{ BlendFactor::SrcColor, vk::BlendFactor::eSrcColor },
+		{ BlendFactor::InvSrcColor, vk::BlendFactor::eOneMinusSrcColor },
+		{ BlendFactor::SrcAlpha, vk::BlendFactor::eSrcAlpha },
+		{ BlendFactor::InvSrcAlpha, vk::BlendFactor::eOneMinusSrcAlpha },
+		{ BlendFactor::DstColor, vk::BlendFactor::eDstColor },
+		{ BlendFactor::InvDstColor, vk::BlendFactor::eOneMinusDstColor },
+		{ BlendFactor::DstAlpha, vk::BlendFactor::eDstAlpha },
+		{ BlendFactor::InvDstAlpha, vk::BlendFactor::eOneMinusDstAlpha }
 	};
 
 	static const std::unordered_map<BlendFunction, vk::BlendOp> BlendFuncMap = {

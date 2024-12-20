@@ -58,15 +58,15 @@ static const std::unordered_map<vk::Format, PixelFormat> ReversedPixelFormatMap 
 	{ vk::Format::eR8G8B8A8Unorm, PixelFormat::RGBA8UNorm }
 };
 
-const static std::unordered_map<ComparisonFunc, vk::CompareOp> CompareOpMap = {
-	{ ComparisonFunc::Always, vk::CompareOp::eAlways },
-	{ ComparisonFunc::Never, vk::CompareOp::eNever },
-	{ ComparisonFunc::Less, vk::CompareOp::eLess },
-	{ ComparisonFunc::Equal, vk::CompareOp::eEqual },
-	{ ComparisonFunc::NotEqual, vk::CompareOp::eNotEqual },
-	{ ComparisonFunc::LessEqual, vk::CompareOp::eLessOrEqual },
-	{ ComparisonFunc::Greater, vk::CompareOp::eGreater },
-	{ ComparisonFunc::GreaterEqual, vk::CompareOp::eGreaterOrEqual }
+const static std::unordered_map<ComparisonFunction, vk::CompareOp> CompareOpMap = {
+	{ ComparisonFunction::Always, vk::CompareOp::eAlways },
+	{ ComparisonFunction::Never, vk::CompareOp::eNever },
+	{ ComparisonFunction::Less, vk::CompareOp::eLess },
+	{ ComparisonFunction::Equal, vk::CompareOp::eEqual },
+	{ ComparisonFunction::NotEqual, vk::CompareOp::eNotEqual },
+	{ ComparisonFunction::LessEqual, vk::CompareOp::eLessOrEqual },
+	{ ComparisonFunction::Greater, vk::CompareOp::eGreater },
+	{ ComparisonFunction::GreaterEqual, vk::CompareOp::eGreaterOrEqual }
 };
 
 const static std::unordered_map<ShaderStage, vk::ShaderStageFlagBits> ShaderStageMap = {

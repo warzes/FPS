@@ -40,29 +40,63 @@ enum class PixelFormat
 // Factors used when blending new pixels with existing pixels.
 enum class BlendFactor
 {
-	One, // Each component of the color is multiplied by {1, 1, 1, 1}.
-	Zero, // Each component of the color is multiplied by {0, 0, 0, 0}.
-	SrcColor, // Each component of the color is multiplied by the source color. {Rs, Gs, Bs, As}, where Rs, Gs, Bs, As are color source values.		
+	One,         // Each component of the color is multiplied by {1, 1, 1, 1}.
+	Zero,        // Each component of the color is multiplied by {0, 0, 0, 0}.
+	SrcColor,    // Each component of the color is multiplied by the source color. {Rs, Gs, Bs, As}, where Rs, Gs, Bs, As are color source values.
 	InvSrcColor, // Each component of the color is multiplied by the inverse of the source color. {1 - Rs, 1 - Gs, 1 - Bs, 1 - As}, where Rs, Gs, Bs, As are color source values.
-	SrcAlpha, // Each component of the color is multiplied by the alpha value of the source. {As, As, As, As}, where As is the source alpha value.		
+	SrcAlpha,    // Each component of the color is multiplied by the alpha value of the source. {As, As, As, As}, where As is the source alpha value.
 	InvSrcAlpha, // Each component of the color is multiplied by the inverse of the alpha value of the source. {1 - As, 1 - As, 1 - As, 1 - As}, where As is the source alpha value.
-	DstColor, // Each component color is multiplied by the destination color. {Rd, Gd, Bd, Ad}, where Rd, Gd, Bd, Ad are color destination values.
+	DstColor,    // Each component color is multiplied by the destination color. {Rd, Gd, Bd, Ad}, where Rd, Gd, Bd, Ad are color destination values.
 	InvDstColor, // Each component of the color is multiplied by the inversed destination color. {1 - Rd, 1 - Gd, 1 - Bd, 1 - Ad}, where Rd, Gd, Bd, Ad are color destination values.
-	DstAlpha, // Each component of the color is multiplied by the alpha value of the destination. {Ad, Ad, Ad, Ad}, where Ad is the destination alpha value.
+	DstAlpha,    // Each component of the color is multiplied by the alpha value of the destination. {Ad, Ad, Ad, Ad}, where Ad is the destination alpha value.
 	InvDstAlpha, // Each component of the color is multiplied by the inversed alpha value of the destination. {1 - Ad, 1 - Ad, 1 - Ad, 1 - Ad}, where Ad is the destination alpha value.
-	//	BlendFactor, // Each component of the color is multiplied by a constant in the BlendFactor
-	//	InverseBlendFactor, // Each component of the color is multiplied by a inversed constant in the BlendFactor
-	//	SourceAlphaSaturation // Each component of the color is multiplied by either the alpha of the source color, or the inverse of the alpha of the source color, whichever is greater. {f, f, f, 1}, where f = min(As, 1 - As), where As is the source alpha value.
 };
 
-
-
-
-enum class CullMode
+// Operations that determines how are blending factors combined.
+enum class BlendFunction
 {
-	None,  // No culling
-	Front, // Cull front-facing primitives
-	Back,  // Cull back-facing primitives
+	Add,             // The function will adds destination to the source. (srcColor * srcBlend) + (destColor * destBlend)
+	Subtract,        // The function will subtracts destination from source. (srcColor * srcBlend) - (destColor * destBlend)
+	ReverseSubtract, // The function will subtracts source from destination. (destColor * destBlend) - (srcColor * srcBlend)
+	Min,             // The function will extracts minimum of the source and destination. min((srcColor * srcBlend),(destColor * destBlend))
+	Max              // The function will extracts maximum of the source and destination. max((srcColor * srcBlend),(destColor * destBlend))
+};
+
+// Comparison functions used for the depth/stencil buffer.
+enum class ComparisonFunction
+{
+	Always,       // comparison always succeeds
+	Never,        // comparison always fails
+	Less,         // passes if source is less than the destination
+	Equal,        // passes if source is equal to the destination
+	NotEqual,     // passes if source is not equal to the destination
+	LessEqual,    // passes if source is less than or equal to the destination
+	Greater,      // passes if source is greater than to the destination
+	GreaterEqual, // passes if source is greater than or equal to the destination
+};
+
+// Types of texture addressing modes that determine what happens when texture coordinates are outside of the valid range.
+enum class TextureAddress
+{
+	Wrap,       // Texels outside range will form the tile at every integer junction.
+	Clamp,      // Texels outside range will be set to color of 0.0 or 1.0 texel.
+	MirrorWrap, // Coordinates flip every time the size of the valid range is passed.
+#if RENDER_D3D11
+	Border,     // Coordinates outside of the valid range will return a separately set border color.
+#endif
+};
+
+// Filtering options for textures.
+enum class Filter
+{
+	Linear,
+	Nearest,
+
+#if RENDER_D3D11
+	Anisotropic, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+	LinearPoint, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+	ComparisonLinearPoint // D3D11 support, D3D12/Vulkan/OpenGL unsupported
+#endif
 };
 
 enum class FrontFace
@@ -71,19 +105,8 @@ enum class FrontFace
 	CounterClockwise
 };
 
-enum class ComparisonFunc
-{
-	Always,         // comparison always succeeds
-	Never,          // comparison always fails
-	Less,           // passes if source is less than the destination
-	Equal,          // passes if source is equal to the destination
-	NotEqual,       // passes if source is not equal to the destination
-	LessEqual,      // passes if source is less than or equal to the destination
-	Greater,        // passes if source is greater than to the destination
-	GreaterEqual,   // passes if source is greater than or equal to the destination
-};
-
-enum class StencilOp
+// Types of action that can happen on the stencil buffer. 
+enum class StencilOperation
 {
 	Keep,                // Does not update the stencil buffer entry.
 	Zero,                // Sets the stencil buffer entry to 0.
@@ -95,15 +118,11 @@ enum class StencilOp
 	Invert               // Inverts the bits in the stencil buffer entry.
 };
 
-
-
-enum class BlendFunction
+enum class CullingMode
 {
-	Add,             // The function will adds destination to the source. (srcColor * srcBlend) + (destColor * destBlend)	
-	Subtract,        // The function will subtracts destination from source. (srcColor * srcBlend) - (destColor * destBlend)
-	ReverseSubtract, // The function will subtracts source from destination. (destColor * destBlend) - (srcColor * srcBlend) 
-	Min,             // The function will extracts minimum of the source and destination. min((srcColor * srcBlend),(destColor * destBlend))
-	Max              // The function will extracts maximum of the source and destination. max((srcColor * srcBlend),(destColor * destBlend))
+	None,  // No culling
+	Front, // Cull front-facing primitives
+	Back,  // Cull back-facing primitives
 };
 
 enum class Topology
@@ -145,29 +164,6 @@ enum class ShaderStage
 	ClosestHit
 };
 
-enum class Filter
-{
-	Linear,
-	Nearest,
-
-#if RENDER_D3D11
-	Anisotropic, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
-	LinearPoint, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
-	ComparisonLinearPoint // D3D11 support, D3D12/Vulkan/OpenGL unsupported
-#endif
-};
-
-enum class TextureAddress
-{
-	Wrap,  // Texels outside range will form the tile at every integer junction.		
-	Clamp, // Texels outside range will be set to color of 0.0 or 1.0 texel.
-	MirrorWrap,
-
-#if RENDER_D3D11
-	Border, // D3D11 support, D3D12/Vulkan/OpenGL unsupported
-#endif
-};
-
 #pragma endregion
 
 #pragma region [ Struct ]
@@ -189,7 +185,7 @@ struct RasterizerState final
 {
 	bool operator==(const RasterizerState&) const = default;
 
-	CullMode                 cullMode{ CullMode::None };
+	CullingMode                 cullMode{ CullingMode::None };
 	FrontFace                frontFace{ FrontFace::Clockwise };
 	bool                     depthClipEnable{ true };
 	bool                     scissorEnabled{ false };
@@ -212,7 +208,7 @@ struct SamplerState final
 	TextureAddress textureAddress{ TextureAddress::Clamp };
 	float          mipLODBias{ 0.0f };
 	uint32_t       maxAnisotropy{ 1 };
-	ComparisonFunc comparisonFunc{ ComparisonFunc::Never };
+	ComparisonFunction comparisonFunc{ ComparisonFunction::Never };
 	float          borderColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float          minLOD{ -FLT_MAX };
 	float          maxLOD{ FLT_MAX };
@@ -262,10 +258,10 @@ struct Scissor final
 struct DepthMode final
 {
 	DepthMode() = default;
-	DepthMode(ComparisonFunc _func) : func(_func) {}
+	DepthMode(ComparisonFunction _func) : func(_func) {}
 
 	bool           writeMask = true;
-	ComparisonFunc func = ComparisonFunc::Always;
+	ComparisonFunction func = ComparisonFunction::Always;
 
 	bool operator==(const DepthMode&) const = default;
 };
@@ -275,10 +271,10 @@ struct StencilMode final
 	uint8_t        readMask = 255;
 	uint8_t        writeMask = 255;
 
-	StencilOp      depthFailOp = StencilOp::Keep;
-	StencilOp      failOp = StencilOp::Keep;
-	ComparisonFunc func = ComparisonFunc::Always;
-	StencilOp      passOp = StencilOp::Keep;
+	StencilOperation      depthFailOp = StencilOperation::Keep;
+	StencilOperation      failOp = StencilOperation::Keep;
+	ComparisonFunction func = ComparisonFunction::Always;
+	StencilOperation      passOp = StencilOperation::Keep;
 
 	uint8_t        reference = 1;
 

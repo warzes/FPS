@@ -214,9 +214,9 @@ void GameStart()
 				model.color = material->color;
 				model.color_texture = material->color_texture.get();
 				model.normal_texture = material->normal_texture.get();
-				model.cull_mode = CullMode::Front;
+				model.cull_mode = CullingMode::Front;
 				model.texture_address = TextureAddress::Wrap;
-				model.depth_mode = ComparisonFunc::LessEqual;
+				model.depth_mode = ComparisonFunction::LessEqual;
 				models.push_back(model);
 			}
 		}

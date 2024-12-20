@@ -461,7 +461,7 @@ void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 	gContext.depthStencilStateDirty = true;
 }
 //=============================================================================
-void RHIBackend::SetCullMode(CullMode cull_mode)
+void RHIBackend::SetCullMode(CullingMode cull_mode)
 {
 	gContext.rasterizerState.cullMode = cull_mode;
 	gContext.rasterizerStateDirty = true;

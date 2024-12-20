@@ -53,15 +53,15 @@ static const std::unordered_map<VertexFormat, GLboolean> VertexFormatNormalizeMa
 	{ VertexFormat::UChar4Normalized, GL_TRUE }
 };
 
-static const std::unordered_map<ComparisonFunc, GLenum> ComparisonFuncMap = {
-	{ ComparisonFunc::Always, GL_ALWAYS },
-	{ ComparisonFunc::Never, GL_NEVER },
-	{ ComparisonFunc::Less, GL_LESS },
-	{ ComparisonFunc::Equal, GL_EQUAL },
-	{ ComparisonFunc::NotEqual, GL_NOTEQUAL },
-	{ ComparisonFunc::LessEqual, GL_LEQUAL },
-	{ ComparisonFunc::Greater, GL_GREATER },
-	{ ComparisonFunc::GreaterEqual, GL_GEQUAL }
+static const std::unordered_map<ComparisonFunction, GLenum> ComparisonFuncMap = {
+	{ ComparisonFunction::Always, GL_ALWAYS },
+	{ ComparisonFunction::Never, GL_NEVER },
+	{ ComparisonFunction::Less, GL_LESS },
+	{ ComparisonFunction::Equal, GL_EQUAL },
+	{ ComparisonFunction::NotEqual, GL_NOTEQUAL },
+	{ ComparisonFunction::LessEqual, GL_LEQUAL },
+	{ ComparisonFunction::Greater, GL_GREATER },
+	{ ComparisonFunction::GreaterEqual, GL_GEQUAL }
 };
 
 static const std::unordered_map<PixelFormat, GLenum> TextureInternalFormatMap = {

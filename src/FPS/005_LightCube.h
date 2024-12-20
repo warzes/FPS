@@ -159,7 +159,7 @@ void main()
 		rhi.SetVertexBuffer(vertices);
 		rhi.SetIndexBuffer(indices);
 		rhi.SetUniformBuffer(2, light);
-		rhi.SetCullMode(CullMode::Back);
+		rhi.SetCullMode(CullingMode::Back);
 		rhi.SetInputLayout(Vertex::Layout);
 
 		while (!engine.IsShouldClose())

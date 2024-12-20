@@ -122,7 +122,7 @@ void E008()
 		auto model = utils::Model{
 			.mesh = &cube_mesh,
 			.color_texture = &texture,
-			.cull_mode = CullMode::Back
+			.cull_mode = CullingMode::Back
 		};
 
 		StageViewer stage_viewer;

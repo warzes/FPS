@@ -37,7 +37,7 @@ public:
 	void SetBlendMode(const std::optional<BlendMode>& blendMode);
 	void SetDepthMode(const std::optional<DepthMode>& depthMode);
 	void SetStencilMode(const std::optional<StencilMode>& stencilMode);
-	void SetCullMode(CullMode cullMode);
+	void SetCullMode(CullingMode cullMode);
 
 
 

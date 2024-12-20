@@ -727,7 +727,7 @@ utils::commands::SetSamplerFilter::SetSamplerFilter(Filter _sampler) :
 {
 }
 
-utils::commands::SetCullMode::SetCullMode(CullMode _cull_mode) :
+utils::commands::SetCullMode::SetCullMode(CullingMode _cull_mode) :
 	cull_mode(_cull_mode)
 {
 }
@@ -864,7 +864,7 @@ void utils::ExecuteCommands(const std::vector<Command>& cmds)
 	gRenderSystem->SetScissor(std::nullopt);
 	gRenderSystem->SetBlendMode(std::nullopt);
 	gRenderSystem->SetSamplerFilter(Filter::Linear);
-	gRenderSystem->SetCullMode(CullMode::None);
+	gRenderSystem->SetCullMode(CullingMode::None);
 	gRenderSystem->SetTextureAddress(TextureAddress::Clamp);
 	gRenderSystem->SetFrontFace(FrontFace::Clockwise);
 	gRenderSystem->SetDepthBias(std::nullopt);

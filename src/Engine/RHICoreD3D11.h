@@ -79,33 +79,33 @@ inline D3D11_TEXTURE_ADDRESS_MODE ToD3D11(TextureAddress address)
 	}
 }
 
-inline D3D11_COMPARISON_FUNC ToD3D11(ComparisonFunc func)
+inline D3D11_COMPARISON_FUNC ToD3D11(ComparisonFunction func)
 {
 	switch (func)
 	{
-	case ComparisonFunc::Always:       return D3D11_COMPARISON_ALWAYS;
-	case ComparisonFunc::Never:        return D3D11_COMPARISON_NEVER;
-	case ComparisonFunc::Less:         return D3D11_COMPARISON_LESS;
-	case ComparisonFunc::Equal:        return D3D11_COMPARISON_EQUAL;
-	case ComparisonFunc::NotEqual:     return D3D11_COMPARISON_NOT_EQUAL;
-	case ComparisonFunc::LessEqual:    return D3D11_COMPARISON_LESS_EQUAL;
-	case ComparisonFunc::Greater:      return D3D11_COMPARISON_GREATER;
-	case ComparisonFunc::GreaterEqual: return D3D11_COMPARISON_GREATER_EQUAL;
+	case ComparisonFunction::Always:       return D3D11_COMPARISON_ALWAYS;
+	case ComparisonFunction::Never:        return D3D11_COMPARISON_NEVER;
+	case ComparisonFunction::Less:         return D3D11_COMPARISON_LESS;
+	case ComparisonFunction::Equal:        return D3D11_COMPARISON_EQUAL;
+	case ComparisonFunction::NotEqual:     return D3D11_COMPARISON_NOT_EQUAL;
+	case ComparisonFunction::LessEqual:    return D3D11_COMPARISON_LESS_EQUAL;
+	case ComparisonFunction::Greater:      return D3D11_COMPARISON_GREATER;
+	case ComparisonFunction::GreaterEqual: return D3D11_COMPARISON_GREATER_EQUAL;
 	default:
-		Fatal("ComparisonFunc unknown");
+		Fatal("ComparisonFunction unknown");
 		return {};
 	}
 }
 
-inline D3D11_CULL_MODE ToD3D11(CullMode mode)
+inline D3D11_CULL_MODE ToD3D11(CullingMode mode)
 {
 	switch (mode)
 	{
-	case CullMode::None: return  D3D11_CULL_NONE;
-	case CullMode::Front: return D3D11_CULL_FRONT;
-	case CullMode::Back: return  D3D11_CULL_BACK;
+	case CullingMode::None: return  D3D11_CULL_NONE;
+	case CullingMode::Front: return D3D11_CULL_FRONT;
+	case CullingMode::Back: return  D3D11_CULL_BACK;
 	default:
-		Fatal("CullMode unknown");
+		Fatal("CullingMode unknown");
 		return {};
 	}
 }

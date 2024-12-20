@@ -127,8 +127,8 @@ void main()
 		rhi.SetTopology(Topology::TriangleList);
 		rhi.SetShader(shader);
 		rhi.SetIndexBuffer(indices);
-		rhi.SetCullMode(CullMode::Back);
-		rhi.SetDepthMode(ComparisonFunc::Less);
+		rhi.SetCullMode(CullingMode::Back);
+		rhi.SetDepthMode(ComparisonFunction::Less);
 		rhi.SetVertexBuffer({ &vertices_buffer, &model_matrices_buffer });
 		rhi.SetInputLayout({ Vertex::Layout, model_matrices_layout });
 		

@@ -113,7 +113,7 @@ void RenderSystem::SetStencilMode(const std::optional<StencilMode>& stencil_mode
 	RHIBackend::SetStencilMode(stencil_mode);
 }
 //=============================================================================
-void RenderSystem::SetCullMode(CullMode cull_mode)
+void RenderSystem::SetCullMode(CullingMode cull_mode)
 {
 	RHIBackend::SetCullMode(cull_mode);
 }

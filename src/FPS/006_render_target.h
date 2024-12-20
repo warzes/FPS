@@ -193,7 +193,7 @@ void main()
 
 		rhi.SetRenderTarget(target);
 		rhi.SetTopology(Topology::TriangleList);
-		rhi.SetCullMode(CullMode::None);
+		rhi.SetCullMode(CullingMode::None);
 		rhi.SetVertexBuffer(triangle_vertices);
 		rhi.SetIndexBuffer(triangle_indices);
 		rhi.SetShader(triangle_shader);
@@ -205,7 +205,7 @@ void main()
 
 		rhi.SetRenderTarget(std::nullopt);
 		rhi.SetTopology(Topology::TriangleList);
-		rhi.SetCullMode(CullMode::Back);
+		rhi.SetCullMode(CullingMode::Back);
 		rhi.SetVertexBuffer(cube_vertices);
 		rhi.SetIndexBuffer(cube_indices);
 		rhi.SetUniformBuffer(2, light);

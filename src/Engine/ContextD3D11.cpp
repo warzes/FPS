@@ -157,15 +157,15 @@ void ensureDepthStencilState()
 	{
 
 
-		const static std::unordered_map<StencilOp, D3D11_STENCIL_OP> StencilOpMap = {
-			{ StencilOp::Keep, D3D11_STENCIL_OP_KEEP },
-			{ StencilOp::Zero, D3D11_STENCIL_OP_ZERO },
-			{ StencilOp::Replace, D3D11_STENCIL_OP_REPLACE },
-			{ StencilOp::IncrementSaturation, D3D11_STENCIL_OP_INCR_SAT },
-			{ StencilOp::DecrementSaturation, D3D11_STENCIL_OP_DECR_SAT },
-			{ StencilOp::Invert, D3D11_STENCIL_OP_INVERT },
-			{ StencilOp::Increment, D3D11_STENCIL_OP_INCR },
-			{ StencilOp::Decrement, D3D11_STENCIL_OP_DECR },
+		const static std::unordered_map<StencilOperation, D3D11_STENCIL_OP> StencilOpMap = {
+			{ StencilOperation::Keep, D3D11_STENCIL_OP_KEEP },
+			{ StencilOperation::Zero, D3D11_STENCIL_OP_ZERO },
+			{ StencilOperation::Replace, D3D11_STENCIL_OP_REPLACE },
+			{ StencilOperation::IncrementSaturation, D3D11_STENCIL_OP_INCR_SAT },
+			{ StencilOperation::DecrementSaturation, D3D11_STENCIL_OP_DECR_SAT },
+			{ StencilOperation::Invert, D3D11_STENCIL_OP_INVERT },
+			{ StencilOperation::Increment, D3D11_STENCIL_OP_INCR },
+			{ StencilOperation::Decrement, D3D11_STENCIL_OP_DECR },
 		};
 
 		auto desc = CD3D11_DEPTH_STENCIL_DESC(D3D11_DEFAULT);

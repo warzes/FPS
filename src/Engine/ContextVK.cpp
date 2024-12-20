@@ -949,10 +949,10 @@ void EnsureCullMode(vk::raii::CommandBuffer& cmdlist)
 
 	gContext.cullModeDirty = false;
 
-	const static std::unordered_map<CullMode, vk::CullModeFlags> CullModeMap = {
-		{ CullMode::None, vk::CullModeFlagBits::eNone },
-		{ CullMode::Front, vk::CullModeFlagBits::eFront },
-		{ CullMode::Back, vk::CullModeFlagBits::eBack },
+	const static std::unordered_map<CullingMode, vk::CullModeFlags> CullModeMap = {
+		{ CullingMode::None, vk::CullModeFlagBits::eNone },
+		{ CullingMode::Front, vk::CullModeFlagBits::eFront },
+		{ CullingMode::Back, vk::CullModeFlagBits::eBack },
 	};
 
 	cmdlist.setCullMode(CullModeMap.at(gContext.cull_mode));

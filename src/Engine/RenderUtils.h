@@ -320,8 +320,8 @@ namespace utils
 
 		struct SetCullMode
 		{
-			SetCullMode(CullMode cull_mode);
-			CullMode cull_mode;
+			SetCullMode(CullingMode cull_mode);
+			CullingMode cull_mode;
 		};
 
 		struct SetTextureAddress
@@ -575,7 +575,7 @@ namespace utils
 		glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		std::optional<commands::DrawMesh::DrawCommand> draw_command = std::nullopt;
 		glm::mat4 matrix = glm::mat4(1.0f);
-		CullMode cull_mode = CullMode::None;
+		CullingMode cull_mode = CullingMode::None;
 		TextureAddress texture_address = TextureAddress::Clamp;
 		DepthMode depth_mode;
 		Filter sampler = Filter::Linear;

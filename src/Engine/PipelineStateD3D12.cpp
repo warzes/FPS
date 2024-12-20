@@ -6,21 +6,21 @@
 //=============================================================================
 ComPtr<ID3D12PipelineState> CreateGraphicsPipelineState(const PipelineStateD3D12& pipeline_state)
 {
-	const static std::unordered_map<CullMode, D3D12_CULL_MODE> CullMap = {
-		{ CullMode::None, D3D12_CULL_MODE_NONE },
-		{ CullMode::Front, D3D12_CULL_MODE_FRONT },
-		{ CullMode::Back, D3D12_CULL_MODE_BACK }
+	const static std::unordered_map<CullingMode, D3D12_CULL_MODE> CullMap = {
+		{ CullingMode::None, D3D12_CULL_MODE_NONE },
+		{ CullingMode::Front, D3D12_CULL_MODE_FRONT },
+		{ CullingMode::Back, D3D12_CULL_MODE_BACK }
 	};
 
-	const static std::unordered_map<ComparisonFunc, D3D12_COMPARISON_FUNC> ComparisonFuncMap = {
-		{ ComparisonFunc::Always, D3D12_COMPARISON_FUNC_ALWAYS },
-		{ ComparisonFunc::Never, D3D12_COMPARISON_FUNC_NEVER },
-		{ ComparisonFunc::Less, D3D12_COMPARISON_FUNC_LESS },
-		{ ComparisonFunc::Equal, D3D12_COMPARISON_FUNC_EQUAL },
-		{ ComparisonFunc::NotEqual, D3D12_COMPARISON_FUNC_NOT_EQUAL },
-		{ ComparisonFunc::LessEqual, D3D12_COMPARISON_FUNC_LESS_EQUAL },
-		{ ComparisonFunc::Greater, D3D12_COMPARISON_FUNC_GREATER },
-		{ ComparisonFunc::GreaterEqual, D3D12_COMPARISON_FUNC_GREATER_EQUAL }
+	const static std::unordered_map<ComparisonFunction, D3D12_COMPARISON_FUNC> ComparisonFuncMap = {
+		{ ComparisonFunction::Always, D3D12_COMPARISON_FUNC_ALWAYS },
+		{ ComparisonFunction::Never, D3D12_COMPARISON_FUNC_NEVER },
+		{ ComparisonFunction::Less, D3D12_COMPARISON_FUNC_LESS },
+		{ ComparisonFunction::Equal, D3D12_COMPARISON_FUNC_EQUAL },
+		{ ComparisonFunction::NotEqual, D3D12_COMPARISON_FUNC_NOT_EQUAL },
+		{ ComparisonFunction::LessEqual, D3D12_COMPARISON_FUNC_LESS_EQUAL },
+		{ ComparisonFunction::Greater, D3D12_COMPARISON_FUNC_GREATER },
+		{ ComparisonFunction::GreaterEqual, D3D12_COMPARISON_FUNC_GREATER_EQUAL }
 	};
 
 	const static std::unordered_map<BlendFactor, D3D12_BLEND> BlendMap = {

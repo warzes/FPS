@@ -6,7 +6,7 @@
 
 struct RasterizerStateD3D12 final
 {
-	CullMode  cullMode = CullMode::None;
+	CullingMode  cullMode = CullingMode::None;
 	FrontFace frontFace = FrontFace::Clockwise;
 
 	bool operator==(const RasterizerStateD3D12&) const = default;

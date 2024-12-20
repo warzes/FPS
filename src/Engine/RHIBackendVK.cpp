@@ -638,7 +638,7 @@ void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 	gContext.stencil_mode = stencil_mode;
 }
 //=============================================================================
-void RHIBackend::SetCullMode(CullMode cull_mode)
+void RHIBackend::SetCullMode(CullingMode cull_mode)
 {
 	gContext.cull_mode = cull_mode;
 	gContext.cullModeDirty = true;

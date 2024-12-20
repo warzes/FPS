@@ -67,7 +67,7 @@ public:
 	std::optional<Viewport> viewport;
 	std::optional<DepthMode> depth_mode = DepthMode();
 	std::optional<StencilMode> stencil_mode;
-	CullMode cull_mode = CullMode::None;
+	CullingMode cull_mode = CullingMode::None;
 	FrontFace front_face = FrontFace::Clockwise;
 	Topology topology = Topology::TriangleList;
 	std::vector<VertexBufferVK*> vertex_buffers; // TODO: store pointer and count, not std::vector

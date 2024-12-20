@@ -443,7 +443,7 @@ void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 
 }
 //=============================================================================
-void RHIBackend::SetCullMode(CullMode cull_mode)
+void RHIBackend::SetCullMode(CullingMode cull_mode)
 {
 	gContext.pipelineState.rasterizerState.cullMode = cull_mode;
 }

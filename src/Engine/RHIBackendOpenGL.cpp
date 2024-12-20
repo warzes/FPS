@@ -546,15 +546,15 @@ void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 		return;
 	}
 
-	static const std::unordered_map<StencilOp, GLenum> StencilOpMap = {
-		{ StencilOp::Keep, GL_KEEP },
-		{ StencilOp::Zero, GL_ZERO },
-		{ StencilOp::Replace, GL_REPLACE },
-		{ StencilOp::IncrementSaturation, GL_INCR },
-		{ StencilOp::DecrementSaturation, GL_DECR },
-		{ StencilOp::Invert, GL_INVERT },
-		{ StencilOp::Increment, GL_INCR_WRAP },
-		{ StencilOp::Decrement, GL_DECR_WRAP },
+	static const std::unordered_map<StencilOperation, GLenum> StencilOpMap = {
+		{ StencilOperation::Keep, GL_KEEP },
+		{ StencilOperation::Zero, GL_ZERO },
+		{ StencilOperation::Replace, GL_REPLACE },
+		{ StencilOperation::IncrementSaturation, GL_INCR },
+		{ StencilOperation::DecrementSaturation, GL_DECR },
+		{ StencilOperation::Invert, GL_INVERT },
+		{ StencilOperation::Increment, GL_INCR_WRAP },
+		{ StencilOperation::Decrement, GL_DECR_WRAP },
 	};
 
 	auto stencil_mode_nn = stencil_mode.value();
@@ -565,18 +565,18 @@ void RHIBackend::SetStencilMode(const std::optional<StencilMode>& stencil_mode)
 	glStencilFunc(ComparisonFuncMap.at(stencil_mode_nn.func), stencil_mode_nn.reference, stencil_mode_nn.readMask);
 }
 //=============================================================================
-void RHIBackend::SetCullMode(CullMode cull_mode)
+void RHIBackend::SetCullMode(CullingMode cull_mode)
 {
-	if (cull_mode == CullMode::None)
+	if (cull_mode == CullingMode::None)
 	{
 		glDisable(GL_CULL_FACE);
 		return;
 	}
 
-	static const std::unordered_map<CullMode, GLenum> CullMap = {
-		{ CullMode::None, GL_NONE },
-		{ CullMode::Front, GL_FRONT },
-		{ CullMode::Back, GL_BACK }
+	static const std::unordered_map<CullingMode, GLenum> CullMap = {
+		{ CullingMode::None, GL_NONE },
+		{ CullingMode::Front, GL_FRONT },
+		{ CullingMode::Back, GL_BACK }
 	};
 
 	glEnable(GL_CULL_FACE);

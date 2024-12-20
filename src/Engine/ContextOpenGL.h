@@ -31,8 +31,8 @@ public:
 		NoMipmap
 	};
 
-	std::unordered_map<SamplerStateGL, std::unordered_map<SamplerType, GLuint>> sampler_states;
-	SamplerStateGL sampler_state;
+	std::unordered_map<SamplerStateGL, std::unordered_map<SamplerType, GLuint>> samplerStates;
+	SamplerStateGL samplerState;
 
 	std::vector<RenderTargetGL*> render_targets;
 
@@ -46,17 +46,17 @@ public:
 	std::optional<Viewport> viewport;
 	std::optional<Scissor> scissor;
 	FrontFace front_face = FrontFace::Clockwise;
-	std::vector<InputLayout> input_layouts;
+	std::vector<InputLayout> inputLayouts;
 	std::optional<DepthMode> depth_mode;
 
-	bool shader_dirty = false;
-	bool vertex_array_dirty = false;
-	bool index_buffer_dirty = false;
-	bool viewport_dirty = true;
-	bool scissor_dirty = true;
-	bool sampler_state_dirty = true;
-	bool front_face_dirty = true;
-	bool depth_mode_dirty = true;
+	bool shaderDirty = false;
+	bool vertexArrayDirty = false;
+	bool indexBufferDirty = false;
+	bool viewportDirty = true;
+	bool scissorDirty = true;
+	bool samplerStateDirty = true;
+	bool frontFaceDirty = true;
+	bool depthModeDirty = true;
 
 	uint32_t GetBackBufferWidth();
 	uint32_t GetBackBufferHeight();

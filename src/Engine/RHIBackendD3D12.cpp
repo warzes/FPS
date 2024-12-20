@@ -448,7 +448,16 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 	gContext.pipelineState.rasterizerState.cullMode = cull_mode;
 }
 //=============================================================================
-void RHIBackend::SetSamplerFilter(Sampler value)
+void RHIBackend::SetRasterizerState(const RasterizerState& state)
+{
+}
+//=============================================================================
+void RHIBackend::SetSamplerState(const SamplerState& state)
+{
+
+}
+//=============================================================================
+void RHIBackend::SetSamplerFilter(Filter value)
 {
 
 }

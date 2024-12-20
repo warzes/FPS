@@ -27,7 +27,7 @@ void RenderContext::Destroy()
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &pixel_buffer);
 
-	for (const auto& [state, objects_map] : sampler_states)
+	for (const auto& [state, objects_map] : samplerStates)
 	{
 		for (const auto& [type, object] : objects_map)
 		{
@@ -53,10 +53,10 @@ PixelFormat RenderContext::GetBackBufferFormat()
 //=============================================================================
 void EnsureScissor()
 {
-	if (!gContext.scissor_dirty)
+	if (!gContext.scissorDirty)
 		return;
 
-	gContext.scissor_dirty = false;
+	gContext.scissorDirty = false;
 
 	const auto& scissor = gContext.scissor;
 
@@ -77,10 +77,10 @@ void EnsureScissor()
 //=============================================================================
 void EnsureDepthMode()
 {
-	if (!gContext.depth_mode_dirty)
+	if (!gContext.depthModeDirty)
 		return;
 
-	gContext.depth_mode_dirty = false;
+	gContext.depthModeDirty = false;
 
 	const auto& depth_mode = gContext.depth_mode;
 
@@ -101,20 +101,20 @@ void EnsureGraphicsState(bool draw_indexed)
 	if (gContext.shaderDirty)
 	{
 		glUseProgram(gContext.shader->GetProgram());
-		gContext.vertex_array_dirty = true;
-		gContext.index_buffer_dirty = draw_indexed;
+		gContext.vertexArrayDirty = true;
+		gContext.indexBufferDirty = draw_indexed;
 		gContext.shaderDirty = false;
 	}
 
-	if (gContext.index_buffer_dirty && draw_indexed)
+	if (gContext.indexBufferDirty && draw_indexed)
 	{
-		gContext.index_buffer_dirty = false;
+		gContext.indexBufferDirty = false;
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gContext.index_buffer->GetGLBuffer());
 	}
 
-	if (gContext.vertex_array_dirty)
+	if (gContext.vertexArrayDirty)
 	{
-		gContext.vertex_array_dirty = false;
+		gContext.vertexArrayDirty = false;
 
 		std::unordered_set<uint32_t> active_locations;
 
@@ -168,12 +168,12 @@ void EnsureGraphicsState(bool draw_indexed)
 
 		if (!gContext.samplerStates.contains(value))
 		{
-			const static std::unordered_map<Sampler, std::unordered_map<RenderContext::SamplerType, GLint>> SamplerMap = {
-				{ Sampler::Nearest, {
+			const static std::unordered_map<Filter, std::unordered_map<RenderContext::SamplerType, GLint>> SamplerMap = {
+				{ Filter::Nearest, {
 					{ RenderContext::SamplerType::Mipmap, GL_NEAREST_MIPMAP_NEAREST },
 					{ RenderContext::SamplerType::NoMipmap, GL_NEAREST },
 				} },
-				{ Sampler::Linear, {
+				{ Filter::Linear, {
 					{ RenderContext::SamplerType::Mipmap, GL_LINEAR_MIPMAP_LINEAR },
 					{ RenderContext::SamplerType::NoMipmap, GL_LINEAR },
 				} },
@@ -192,8 +192,8 @@ void EnsureGraphicsState(bool draw_indexed)
 				GLuint sampler_object;
 				glGenSamplers(1, &sampler_object);
 
-				glSamplerParameteri(sampler_object, GL_TEXTURE_MIN_FILTER, SamplerMap.at(value.sampler).at(sampler_type));
-				glSamplerParameteri(sampler_object, GL_TEXTURE_MAG_FILTER, SamplerMap.at(value.sampler).at(RenderContext::SamplerType::NoMipmap));
+				glSamplerParameteri(sampler_object, GL_TEXTURE_MIN_FILTER, SamplerMap.at(value.filter).at(sampler_type));
+				glSamplerParameteri(sampler_object, GL_TEXTURE_MAG_FILTER, SamplerMap.at(value.filter).at(RenderContext::SamplerType::NoMipmap));
 				glSamplerParameteri(sampler_object, GL_TEXTURE_WRAP_S, TextureAddressMap.at(value.textureAddress));
 				glSamplerParameteri(sampler_object, GL_TEXTURE_WRAP_T, TextureAddressMap.at(value.textureAddress));
 
@@ -212,9 +212,9 @@ void EnsureGraphicsState(bool draw_indexed)
 		}
 	}
 
-	if (gContext.front_face_dirty)
+	if (gContext.frontFaceDirty)
 	{
-		gContext.front_face_dirty = false;
+		gContext.frontFaceDirty = false;
 
 		static const std::unordered_map<FrontFace, GLenum> FrontFaceMap = {
 			{ FrontFace::Clockwise, GL_CW },

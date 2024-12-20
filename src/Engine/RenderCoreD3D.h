@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#if RENDER_D3D11 || RENDER_D3D12
+#if RENDER_D3D
 
 const std::string DXErrorToStr(HRESULT hr);
 

@@ -16,12 +16,19 @@ public:
 	void Present();
 
 	void Clear(
-		const std::optional<glm::vec4>& color = glm::vec4{ 0.2f, 0.4f, 0.6f, 1.0f }, 
-		const std::optional<float>&     depth = 1.0f, 
+		const std::optional<glm::vec4>& color = glm::vec4{ 0.2f, 0.4f, 0.6f, 1.0f },
+		const std::optional<float>&     depth = 1.0f,
 		const std::optional<uint8_t>&   stencil = 0);
 	void Draw(uint32_t vertexCount, uint32_t vertexOffset = 0, uint32_t instanceCount = 1);
 	void DrawIndexed(uint32_t indexCount, uint32_t indexOffset = 0, uint32_t instanceCount = 1);
 	void ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, Texture2D& dstTexture);
+
+	
+	void SetRasterizerState(const RasterizerState& state);
+
+
+
+
 
 	void SetTopology(Topology topology);
 	void SetViewport(const std::optional<Viewport>& viewport);
@@ -32,7 +39,7 @@ public:
 	void SetStencilMode(const std::optional<StencilMode>& stencilMode);
 	void SetCullMode(CullMode cullMode);
 
-	void SetRasterizerState(const RasterizerState& state);
+
 
 	void SetSamplerState(const SamplerState& state);
 	void SetSamplerFilter(Filter value);

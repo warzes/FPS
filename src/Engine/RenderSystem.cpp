@@ -78,6 +78,11 @@ void RenderSystem::ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size,
 	RHIBackend::ReadPixels(pos, size, dst_texture);
 }
 //=============================================================================
+void RenderSystem::SetRasterizerState(const RasterizerState& state)
+{
+	RHIBackend::SetRasterizerState(state);
+}
+//=============================================================================
 void RenderSystem::SetTopology(Topology topology)
 {
 	RHIBackend::SetTopology(topology);
@@ -117,11 +122,7 @@ void RenderSystem::SetSamplerFilter(Filter value)
 {
 	RHIBackend::SetSamplerFilter(value);
 }
-//=============================================================================
-void RenderSystem::SetRasterizerState(const RasterizerState& state)
-{
-	RHIBackend::SetRasterizerState(state);
-}
+
 //=============================================================================
 void RenderSystem::SetSamplerState(const SamplerState& state)
 {

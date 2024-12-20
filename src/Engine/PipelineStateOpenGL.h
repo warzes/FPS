@@ -6,14 +6,14 @@
 
 struct SamplerStateGL
 {
-	Sampler sampler = Sampler::Linear;
+	Filter filter = Filter::Linear;
 	TextureAddress textureAddress = TextureAddress::Clamp;
 
 	bool operator==(const SamplerStateGL&) const = default;
 };
 
 SE_MAKE_HASHABLE(SamplerStateGL,
-	t.sampler,
+	t.filter,
 	t.textureAddress
 );
 

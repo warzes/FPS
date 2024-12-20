@@ -4,7 +4,7 @@
 
 #include "RHICore.h"
 #include "RenderCoreD3D.h"
-#include "log.h"
+#include "Log.h"
 
 class ShaderD3D11;
 class Texture2DD3D11;

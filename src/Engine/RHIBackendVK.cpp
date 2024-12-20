@@ -592,6 +592,16 @@ void RHIBackend::WriteUniformBufferMemory(UniformBufferHandle* handle, const voi
 	buffer->Write(memory, size);
 }
 //=============================================================================
+void RHIBackend::SetRasterizerState(const RasterizerState& state)
+{
+
+}
+//=============================================================================
+void RHIBackend::SetSamplerState(const SamplerState& state)
+{
+
+}
+//=============================================================================
 void RHIBackend::SetTopology(Topology topology)
 {
 	gContext.topology = topology;
@@ -634,9 +644,9 @@ void RHIBackend::SetCullMode(CullMode cull_mode)
 	gContext.cullModeDirty = true;
 }
 //=============================================================================
-void RHIBackend::SetSamplerFilter(Sampler value)
+void RHIBackend::SetSamplerFilter(Filter value)
 {
-	gContext.samplerState.sampler = value;
+	gContext.samplerState.filter = value;
 }
 //=============================================================================
 void RHIBackend::SetTextureAddress(TextureAddress value)

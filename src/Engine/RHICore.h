@@ -37,6 +37,42 @@ enum class PixelFormat
 #endif
 };
 
+enum class Blend
+{
+	One, // Each component of the color is multiplied by {1, 1, 1, 1}.
+	Zero, // Each component of the color is multiplied by {0, 0, 0, 0}.
+	SrcColor, // Each component of the color is multiplied by the source color. {Rs, Gs, Bs, As}, where Rs, Gs, Bs, As are color source values.		
+	InvSrcColor, // Each component of the color is multiplied by the inverse of the source color. {1 - Rs, 1 - Gs, 1 - Bs, 1 - As}, where Rs, Gs, Bs, As are color source values.
+	SrcAlpha, // Each component of the color is multiplied by the alpha value of the source. {As, As, As, As}, where As is the source alpha value.		
+	InvSrcAlpha, // Each component of the color is multiplied by the inverse of the alpha value of the source. {1 - As, 1 - As, 1 - As, 1 - As}, where As is the source alpha value.
+	DstColor, // Each component color is multiplied by the destination color. {Rd, Gd, Bd, Ad}, where Rd, Gd, Bd, Ad are color destination values.
+	InvDstColor, // Each component of the color is multiplied by the inversed destination color. {1 - Rd, 1 - Gd, 1 - Bd, 1 - Ad}, where Rd, Gd, Bd, Ad are color destination values.
+	DstAlpha, // Each component of the color is multiplied by the alpha value of the destination. {Ad, Ad, Ad, Ad}, where Ad is the destination alpha value.
+	InvDstAlpha, // Each component of the color is multiplied by the inversed alpha value of the destination. {1 - Ad, 1 - Ad, 1 - Ad, 1 - Ad}, where Ad is the destination alpha value.
+	//	BlendFactor, // Each component of the color is multiplied by a constant in the BlendFactor
+	//	InverseBlendFactor, // Each component of the color is multiplied by a inversed constant in the BlendFactor
+	//	SourceAlphaSaturation // Each component of the color is multiplied by either the alpha of the source color, or the inverse of the alpha of the source color, whichever is greater. {f, f, f, 1}, where f = min(As, 1 - As), where As is the source alpha value.
+};
+
+/**	Factors used when blending new pixels with existing pixels. */
+enum BlendFactor
+{
+	BF_ONE, /**< Use a value of one for all pixel components. */
+	BF_ZERO, /**< Use a value of zero for all pixel components. */
+	BF_DEST_COLOR, /**< Use the existing pixel value. */
+	BF_SOURCE_COLOR, /**< Use the newly generated pixel value. */
+	BF_INV_DEST_COLOR, /**< Use the inverse of the existing value. */
+	BF_INV_SOURCE_COLOR, /**< Use the inverse of the newly generated pixel value. */
+	BF_DEST_ALPHA, /**< Use the existing alpha value. */
+	BF_SOURCE_ALPHA, /**< Use the newly generated alpha value. */
+	BF_INV_DEST_ALPHA, /**< Use the inverse of the existing alpha value. */
+	BF_INV_SOURCE_ALPHA /**< Use the inverse of the newly generated alpha value. */
+};
+
+
+
+
+
 enum class CullMode
 {
 	None,  // No culling
@@ -74,22 +110,7 @@ enum class StencilOp
 	Invert               // Inverts the bits in the stencil buffer entry.
 };
 
-enum class Blend
-{
-	One, // Each component of the color is multiplied by {1, 1, 1, 1}.
-	Zero, // Each component of the color is multiplied by {0, 0, 0, 0}.
-	SrcColor, // Each component of the color is multiplied by the source color. {Rs, Gs, Bs, As}, where Rs, Gs, Bs, As are color source values.		
-	InvSrcColor, // Each component of the color is multiplied by the inverse of the source color. {1 - Rs, 1 - Gs, 1 - Bs, 1 - As}, where Rs, Gs, Bs, As are color source values.
-	SrcAlpha, // Each component of the color is multiplied by the alpha value of the source. {As, As, As, As}, where As is the source alpha value.		
-	InvSrcAlpha, // Each component of the color is multiplied by the inverse of the alpha value of the source. {1 - As, 1 - As, 1 - As, 1 - As}, where As is the source alpha value.
-	DstColor, // Each component color is multiplied by the destination color. {Rd, Gd, Bd, Ad}, where Rd, Gd, Bd, Ad are color destination values.
-	InvDstColor, // Each component of the color is multiplied by the inversed destination color. {1 - Rd, 1 - Gd, 1 - Bd, 1 - Ad}, where Rd, Gd, Bd, Ad are color destination values.
-	DstAlpha, // Each component of the color is multiplied by the alpha value of the destination. {Ad, Ad, Ad, Ad}, where Ad is the destination alpha value.
-	InvDstAlpha, // Each component of the color is multiplied by the inversed alpha value of the destination. {1 - Ad, 1 - Ad, 1 - Ad, 1 - Ad}, where Ad is the destination alpha value.
-	//	BlendFactor, // Each component of the color is multiplied by a constant in the BlendFactor
-	//	InverseBlendFactor, // Each component of the color is multiplied by a inversed constant in the BlendFactor
-	//	SourceAlphaSaturation // Each component of the color is multiplied by either the alpha of the source color, or the inverse of the alpha of the source color, whichever is greater. {f, f, f, 1}, where f = min(As, 1 - As), where As is the source alpha value.
-};
+
 
 enum class BlendFunction
 {

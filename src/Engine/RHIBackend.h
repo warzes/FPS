@@ -8,6 +8,9 @@ class VertexBuffer;
 
 namespace RHIBackend
 {
+
+#pragma region [ Core ]
+
 	bool CreateAPI(const WindowData& data, const RenderSystemCreateInfo& createInfo);
 	void DestroyAPI();
 	void ResizeFrameBuffer(uint32_t width, uint32_t height);
@@ -18,6 +21,10 @@ namespace RHIBackend
 	void DrawIndexed(uint32_t index_count, uint32_t index_offset, uint32_t instance_count);
 
 	void ReadPixels(const glm::i32vec2& pos, const glm::i32vec2& size, TextureHandle* dst_texture);
+
+#pragma endregion
+
+#pragma region [ Resources Create/Destroy/Modify ]
 
 	ShaderHandle* CreateShader(const std::string& vertexCode, const std::string& fragmentCode, const std::vector<std::string>& defines);
 	void DestroyShader(ShaderHandle* handle);
@@ -41,6 +48,16 @@ namespace RHIBackend
 	UniformBufferHandle* CreateUniformBuffer(size_t size);
 	void DestroyUniformBuffer(UniformBufferHandle* handle);
 	void WriteUniformBufferMemory(UniformBufferHandle* handle, const void* memory, size_t size);
+#pragma endregion
+
+#pragma region [ Binding ]
+
+	void SetRasterizerState(const RasterizerState& state);
+	void SetSamplerState(const SamplerState& state);
+
+#pragma endregion
+
+#pragma region [ OLD]
 
 	void SetTopology(Topology topology);
 	void SetViewport(std::optional<Viewport> viewport);
@@ -52,8 +69,9 @@ namespace RHIBackend
 	void SetCullMode(CullMode cull_mode);
 
 	void SetRasterizerState(const RasterizerState& state);
-
 	void SetSamplerState(const SamplerState& state);
+
+
 	void SetSamplerFilter(Filter value);
 	void SetTextureAddress(TextureAddress value);
 
@@ -95,5 +113,7 @@ namespace RHIBackend
 
 	void DispatchRays(uint32_t width, uint32_t height, uint32_t depth);
 #endif // RENDER_VULKAN
+
+#pragma endregion
 
 } // namespace RHIBackend

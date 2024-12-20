@@ -25,7 +25,7 @@ struct RaytracingPipelineStateVK
 {
 	RaytracingShaderVK* shader = nullptr;
 
-	bool operator==(const RaytracingPipelineStateVK& other) const = default;
+	bool operator==(const RaytracingPipelineStateVK&) const = default;
 };
 
 SE_MAKE_HASHABLE(RaytracingPipelineStateVK,
@@ -34,14 +34,14 @@ SE_MAKE_HASHABLE(RaytracingPipelineStateVK,
 
 struct SamplerStateVK
 {
-	Sampler sampler = Sampler::Linear;
+	Filter filter = Filter::Linear;
 	TextureAddress texture_address = TextureAddress::Clamp;
 
-	bool operator==(const SamplerStateVK& other) const = default;
+	bool operator==(const SamplerStateVK&) const = default;
 };
 
 SE_MAKE_HASHABLE(SamplerStateVK,
-	t.sampler,
+	t.filter,
 	t.texture_address
 );
 

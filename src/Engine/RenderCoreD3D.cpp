@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#if RENDER_D3D11 || RENDER_D3D12
+#if RENDER_D3D
 #include "RenderCoreD3D.h"
 //=============================================================================
 const std::string DXErrorToStr(HRESULT hr)

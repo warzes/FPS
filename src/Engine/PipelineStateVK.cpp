@@ -5,9 +5,9 @@
 //=============================================================================
 vk::raii::Sampler CreateSamplerState(const SamplerStateVK& sampler_state)
 {
-	static const std::unordered_map<Sampler, vk::Filter> FilterMap = {
-		{ Sampler::Linear, vk::Filter::eLinear },
-		{ Sampler::Nearest, vk::Filter::eNearest },
+	static const std::unordered_map<Filter, vk::Filter> FilterMap = {
+		{ Filter::Linear, vk::Filter::eLinear },
+		{ Filter::Nearest, vk::Filter::eNearest },
 	};
 
 	static const std::unordered_map<TextureAddress, vk::SamplerAddressMode> AddressModeMap = {
@@ -17,8 +17,8 @@ vk::raii::Sampler CreateSamplerState(const SamplerStateVK& sampler_state)
 	};
 
 	auto sampler_create_info = vk::SamplerCreateInfo()
-		.setMagFilter(FilterMap.at(sampler_state.sampler))
-		.setMinFilter(FilterMap.at(sampler_state.sampler))
+		.setMagFilter(FilterMap.at(sampler_state.filter))
+		.setMinFilter(FilterMap.at(sampler_state.filter))
 		.setMipmapMode(vk::SamplerMipmapMode::eLinear)
 		.setAddressModeU(AddressModeMap.at(sampler_state.texture_address))
 		.setAddressModeV(AddressModeMap.at(sampler_state.texture_address))

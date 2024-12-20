@@ -12,7 +12,7 @@ bool EngineApp::Create(const EngineAppCreateInfo& createInfo)
 {
 	IsRequestExit = true;
 
-#if PLATFORM_WINDOWS
+#if PLATFORM_WINDOWS && RENDER_D3D
 	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 	{
 		Fatal("Failed to call CoInitializeEx");

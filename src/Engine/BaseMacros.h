@@ -14,6 +14,12 @@
 #define RENDER_OPENGL 0
 #define RENDER_WEBGPU 0
 
+#define RENDER_D3D 0
+#if (RENDER_D3D11 || RENDER_D3D11ON12 || RENDER_D3D12)
+#	undef RENDER_D3D
+#	define RENDER_D3D 1
+#endif
+
 #if defined(__ANDROID__) || defined(__android__) || defined(ANDROID) || defined(__ANDROID_API__)
 #	undef PLATFORM_ANDROID
 #	define PLATFORM_ANDROID 1
